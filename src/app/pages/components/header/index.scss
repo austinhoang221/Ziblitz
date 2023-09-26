@@ -1,0 +1,13 @@
+.c-header{
+    border-bottom: 1px solid rgb(242, 243, 244);
+    height: 56px;
+    display: flex;
+    flex-shrink: 0;
+    padding: 0 12px;
+    width: 100%;    
+    align-items: center;
+    justify-content: space-between;
+    &.-dropdown-item{
+        height: 100%;
+    }
+}

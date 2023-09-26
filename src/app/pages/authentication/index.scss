@@ -1,0 +1,25 @@
+.c-login{
+    background-image: url(../../assets/images/login1.svg), 
+    url(../../assets/images/login2.svg);
+    background-repeat: no-repeat, no-repeat;
+    background-attachment: fixed, fixed;
+    background-size: 368px, 368px;
+    background-position: left bottom, right bottom;
+    &.-section{
+      display: flex;
+      flex-direction: column;
+      margin: 0px auto 24px;
+      width: 400px;
+      padding: 32px 40px;
+      background: rgb(255, 255, 255);
+      border-radius: 3px;
+      box-shadow: rgb(0 0 0 / 10%) 0px 0px 10px;
+      box-sizing: border-box;
+      color: rgb(94, 108, 132);
+  }
+    &.-header{
+    text-align: center;
+    padding: 40px 0px;
+  }
+  }
+

@@ -1,25 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
+import React from "react";
+import { useSelector } from "react-redux";
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import Authentication from "./app/pages/authentication";
+import Content from "./app/pages/content";
+import { RootState } from "./redux/store";
+function render(isLoggedIn: boolean) {
+  if (!isLoggedIn) {
+    return <Route path="*" element={<Authentication />}></Route>;
+  } else {
+    return <Route path="/" element={<Content />}></Route>;
+  }
+}
 function App() {
+  const isLoggedIn: boolean = useSelector(
+    (state: RootState) => state.authentication?.isLoggedIn
+  );
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Routes>{render(isLoggedIn)}</Routes>
+    </>
   );
 }
 
