@@ -1,5 +1,6 @@
 import { Button, Checkbox, Form, Input } from "antd";
 import React from "react";
+import { validateEmail } from "../../../helpers";
 
 export default function Login(props: any) {
   return (
@@ -10,8 +11,13 @@ export default function Login(props: any) {
       onFinish={props.onSubmit}
     >
       <Form.Item
-        name="username"
-        rules={[{ required: true, message: "Please input your email" }]}
+        name="email"
+        rules={[
+          { required: true, message: "Please input your email" },
+          {
+            validator: validateEmail,
+          },
+        ]}
       >
         <Input placeholder="Email" />
       </Form.Item>
