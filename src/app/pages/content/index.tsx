@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/header";
 import Dashboard from "./dashboard";
 
@@ -8,7 +8,7 @@ export default function Content() {
     <>
       <Header></Header>
       <Routes>
-        <Route path="/" element={<Dashboard />}></Route>
+        <Route path="/dashboard" element={<Dashboard />}></Route>
       </Routes>
     </>
   );
