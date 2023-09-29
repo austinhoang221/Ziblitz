@@ -1,14 +1,18 @@
 import { Button, Checkbox, Form, Input } from "antd";
 import React from "react";
+import { AuthenticationService } from "../../../../services/authentication";
 import { validateEmail } from "../../../helpers";
 
 export default function Login(props: any) {
+  const onSubmit = async (payload: any) => {
+    return await AuthenticationService.logIn(payload);
+  };
+
   return (
     <Form
       name="normal_login"
       className="login-form"
-      initialValues={{ remember: true }}
-      onFinish={props.onSubmit}
+      onFinish={onSubmit}
     >
       <Form.Item
         name="email"
@@ -37,7 +41,7 @@ export default function Login(props: any) {
       </Form.Item>
 
       <div className="text-center text-lg-start mt-4 pt-2">
-        <Button type="default" className="pl-4 pr-4">
+        <Button type="default" className="pl-4 pr-4" htmlType="submit">
           Login
         </Button>
       </div>

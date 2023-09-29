@@ -4,7 +4,6 @@ import "./index.scss";
 import Login from "./login";
 import SignUp from "./signup";
 export default function Authentication() {
-  const onSubmit = () => {};
   const [defaultTabIndex, setDefaultTabIndex] = useState<string>("1");
   const goToSignUp = () => {
     setDefaultTabIndex("2");
@@ -16,12 +15,12 @@ export default function Authentication() {
     {
       key: "1",
       label: "Tab 1",
-      children: <Login onSubmit={onSubmit} goToSignUp={goToSignUp} />,
+      children: <Login goToSignUp={goToSignUp} />,
     },
     {
       key: "2",
       label: "Tab 2",
-      children: <SignUp onSubmit={onSubmit} goToLogin={goToLogin} />,
+      children: <SignUp goToLogin={goToLogin} />,
     },
   ];
   return (

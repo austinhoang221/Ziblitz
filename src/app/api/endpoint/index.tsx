@@ -1,6 +1,7 @@
 export default class Endpoint {
   public static get baseUrl(): string {
-    return `${(window as any).context.api as string}/api`;
+    return `https://localhost:7271/`;
   }
-  private static login: string = "/login";
+  public static loginUrl: string = this.baseUrl + "users/signin";
+  public static signUpUrl: string = this.baseUrl + "users/signup";
 }
