@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
@@ -13,17 +13,19 @@ function App() {
   );
   return (
     <>
-      <Routes>
-        <Route path="/login" element={<Authentication />} />
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <Content />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
+      <Suspense fallback={<h1>Loading...</h1>}>
+        <Routes>
+          <Route path="/login" element={<Authentication />} />
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Content />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </Suspense>
     </>
   );
 }

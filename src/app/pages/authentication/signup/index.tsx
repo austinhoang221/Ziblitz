@@ -1,26 +1,34 @@
-import { Button, Checkbox, Form, Input, Tooltip } from "antd";
-import React from "react";
+import { Button, Form, Input, Tooltip } from "antd";
 import { AuthenticationService } from "../../../../services/authentication";
-import { validateEmail, validatePassword } from "../../../helpers";
-import { InfoCircleOutlined } from '@ant-design/icons';
+import {
+  checkResponseStatus,
+  validateEmail,
+  validatePassword,
+} from "../../../helpers";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { login } from "../../../../redux/slices/authenticationSlice";
 export default function SignUp(props: any) {
+  const dispatch = useDispatch();
   const onSubmit = async (payload: any) => {
-    await AuthenticationService.signUp(payload);
-    
+    const response = await AuthenticationService.signUp(payload);
+    if (checkResponseStatus(response)) {
+      dispatch(login(response?.data!));
+    }
   };
-  const regexHint = "The password must be 6 characters long and include at least one uppercase letter (A-Z), one numeric digit (0-9), and one special character."
+  const regexHint =
+    "The password must be 6 characters long and include at least one uppercase letter (A-Z), one numeric digit (0-9), and one special character.";
   return (
     <Form
-      name="normal_login"
+      name="signUpForm"
       className="login-form"
       initialValues={{ remember: true }}
       onFinish={onSubmit}
     >
-       <Form.Item
+      <Form.Item
         name="username"
-        rules={[
-          { required: true, message: "Please input your user name" },
-        ]}
+        rules={[{ required: true, message: "Please input your user name" }]}
       >
         <Input placeholder="Username" />
       </Form.Item>
@@ -28,7 +36,7 @@ export default function SignUp(props: any) {
         name="email"
         hasFeedback
         rules={[
-          { required: true, message: "Please input your email" },
+          { required: true, message: "Please enter your email" },
           {
             validator: validateEmail,
           },
@@ -38,30 +46,36 @@ export default function SignUp(props: any) {
       </Form.Item>
       <Form.Item
         name="password"
-        rules={[{ required: true, message: "Please input your password" },
-        { validator: validatePassword},
-      ]}
+        rules={[
+          { required: true, message: "Please enter your password" },
+          { validator: validatePassword },
+        ]}
         hasFeedback
       >
-        <Input type="password" placeholder="Password" 
-        suffix={
-          <Tooltip title={regexHint}>
-            <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-          </Tooltip>
-        }/>
+        <Input
+          type="password"
+          placeholder="Password"
+          suffix={
+            <Tooltip title={regexHint}>
+              <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+            </Tooltip>
+          }
+        />
       </Form.Item>
       <Form.Item
         name="confirmPassword"
         hasFeedback
         rules={[
-          { required: true, message: "Please input your confirm password" },
-          { validator: validatePassword},
+          { required: true, message: "Please enter your confirm password" },
+          { validator: validatePassword },
           ({ getFieldValue }) => ({
             validator(_, value) {
-              if (!value || getFieldValue('password') === value) {
+              if (!value || getFieldValue("password") === value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error());
+              return Promise.reject(
+                new Error("The new password that you entered do not match")
+              );
             },
           }),
         ]}

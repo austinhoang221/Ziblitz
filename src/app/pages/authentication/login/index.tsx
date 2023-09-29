@@ -1,23 +1,31 @@
 import { Button, Checkbox, Form, Input } from "antd";
+import { AxiosResponse } from "axios";
 import React from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { login } from "../../../../redux/slices/authenticationSlice";
 import { AuthenticationService } from "../../../../services/authentication";
-import { validateEmail } from "../../../helpers";
+import { checkResponseStatus, validateEmail } from "../../../helpers";
+import { IAuthentication } from "../../../models/IAuthentication";
+import { IUser } from "../../../models/IUser";
 
 export default function Login(props: any) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const onSubmit = async (payload: any) => {
-    return await AuthenticationService.logIn(payload);
+    const response = await AuthenticationService.logIn(payload);
+    if (checkResponseStatus(response)) {
+      dispatch(login(response?.data!));
+      navigate("");
+    }
   };
 
   return (
-    <Form
-      name="normal_login"
-      className="login-form"
-      onFinish={onSubmit}
-    >
+    <Form name="loginForm" className="login-form" onFinish={onSubmit}>
       <Form.Item
         name="email"
         rules={[
-          { required: true, message: "Please input your email" },
+          { required: true, message: "Please enter your email" },
           {
             validator: validateEmail,
           },
@@ -27,7 +35,7 @@ export default function Login(props: any) {
       </Form.Item>
       <Form.Item
         name="password"
-        rules={[{ required: true, message: "Please input your password" }]}
+        rules={[{ required: true, message: "Please enter your password" }]}
       >
         <Input type="password" placeholder="Password" />
       </Form.Item>

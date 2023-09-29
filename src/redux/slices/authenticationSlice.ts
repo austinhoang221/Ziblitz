@@ -2,24 +2,38 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IAuthentication } from "../../app/models/IAuthentication";
 import { RootState } from "../store";
 const initialState: IAuthentication = {
-    isLoggedIn: false,
-    token: ""
+  name: "",
+  avatarUrl: "",
+  department: "",
+  email: "",
+  jobTitle: "",
+  location: "",
+  organization: "",
+  isLoggedIn: false,
+  token: ""
 }
 export const authenticationSlice = createSlice({
     name: "authentication", 
     initialState,
     reducers: {
       login: (state: any, action: PayloadAction<IAuthentication>) => {
-        return {
-            isLoggedIn: true,
-            token: action.payload.token
-        }
+        const user: IAuthentication = {
+          name: action.payload.name,
+          avatarUrl: action.payload.avatarUrl,
+          department: action.payload.department,
+          email: action.payload.email,
+          jobTitle: action.payload.jobTitle,
+          location: action.payload.location,
+          organization: action.payload.organization,
+          isLoggedIn: true,
+          token: action.payload.token
+      }
+        localStorage.setItem("user", JSON.stringify(user));
+        return user;
       },
       logout: (state: any, action: PayloadAction<IAuthentication>) => {
-        return {
-            isLoggedIn: false,
-            token: action.payload.token
-        }
+        localStorage.setItem("user", JSON.stringify(initialState));
+        return initialState
       },
     }
   });
