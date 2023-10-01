@@ -1,11 +1,12 @@
+import { Button } from "antd";
 import React from "react";
 import "./index.scss";
 export default function ButtonIcon(props: any) {
   return (
     <>
-      <button className="c-button-icon mr-2">
+      <Button shape="circle" type="text" className="c-Button-icon ml-2">
         <i className={props.iconClass}></i>
-      </button>
+      </Button>
     </>
   );
 }

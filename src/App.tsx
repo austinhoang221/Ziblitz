@@ -4,13 +4,11 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Authentication from "./app/pages/authentication";
 import Content from "./app/pages/content";
+import Dashboard from "./app/pages/content/dashboard";
+import Project from "./app/pages/content/project";
 import { PrivateRoute } from "./app/routes/private-route";
-import { RootState } from "./redux/store";
 
 function App() {
-  const isLoggedIn: boolean = useSelector(
-    (state: RootState) => state.authentication?.isLoggedIn
-  );
   return (
     <>
       <Suspense fallback={<h1>Loading...</h1>}>
@@ -23,7 +21,12 @@ function App() {
                 <Content />
               </PrivateRoute>
             }
-          />
+          >
+            <Route>
+              <Route path="dashboard" element={<Dashboard />}></Route>
+              <Route path="project" element={<Project />}></Route>
+            </Route>
+          </Route>
         </Routes>
       </Suspense>
     </>

@@ -16,7 +16,7 @@ export default function Login(props: any) {
     const response = await AuthenticationService.logIn(payload);
     if (checkResponseStatus(response)) {
       dispatch(login(response?.data!));
-      navigate("");
+      navigate("/project");
     }
   };
 
