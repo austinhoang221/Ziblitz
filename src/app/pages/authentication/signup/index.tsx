@@ -1,5 +1,5 @@
 import { Button, Form, Input, Tooltip } from "antd";
-import { AuthenticationService } from "../../../../services/authentication";
+import { AuthenticationService } from "../../../../services/authenticationService";
 import {
   checkResponseStatus,
   validateEmail,

@@ -1,20 +1,14 @@
 import React from "react";
-import {
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Header from "../components/header";
-import Dashboard from "./dashboard";
-import Project from "./project";
-
+import "./index.scss";
 export default function Content() {
   return (
     <>
       <Header></Header>
-      <Outlet />
+      <div className="c-content">
+        <Outlet />
+      </div>
     </>
   );
 }

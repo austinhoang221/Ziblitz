@@ -4,7 +4,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../../../redux/slices/authenticationSlice";
-import { AuthenticationService } from "../../../../services/authentication";
+import { AuthenticationService } from "../../../../services/authenticationService";
 import { checkResponseStatus, validateEmail } from "../../../helpers";
 import { IAuthentication } from "../../../models/IAuthentication";
 import { IUser } from "../../../models/IUser";

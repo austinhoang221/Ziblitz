@@ -9,6 +9,7 @@ import {
 } from "antd";
 import Search from "antd/es/input/Search";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ButtonIcon from "../button-icon";
 import "./index.scss";
 import AssignToMeTask from "./partials/assign-to-me-task";
@@ -16,10 +17,15 @@ import Board from "./partials/board";
 import RecentTask from "./partials/recent-task";
 export default function Header() {
   const [defaultTabIndex, setDefaultTabIndex] = useState<string>("1");
+  const navigate = useNavigate();
+  const goToProject = () => {
+    navigate("project");
+  };
   const items: MenuProps["items"] = [
     {
       key: "1",
       label: "View all projects",
+      onClick: (e: any) => goToProject(),
     },
     {
       key: "2",
@@ -73,6 +79,9 @@ export default function Header() {
       children: <Board />,
     },
   ];
+  const fetchProject = () => {
+    const projects = UserService.get;
+  };
   return (
     <>
       <nav className="c-header">

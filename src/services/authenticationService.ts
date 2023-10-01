@@ -1,7 +1,7 @@
-import Endpoint from "../../app/api/endpoint";
+import Endpoint from "../app/api/endpoint";
 import axios, { AxiosResponse } from "axios";
-import { IAuthentication } from "../../app/models/IAuthentication";
-import { axiosInstance } from "../../app/middleware";
+import { IAuthentication } from "../app/models/IAuthentication";
+import { axiosInstance } from "../app/middleware";
 export class AuthenticationService {
     public static logIn = async (payload: any) => {
         try {
