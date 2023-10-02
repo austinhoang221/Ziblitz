@@ -1,5 +1,7 @@
 import { AxiosResponse } from "axios";
 
-export interface IResponse<T> extends AxiosResponse{
+export interface IResponse<T>{
     data: T,
+    message: string,
+    statusCode: number
 }

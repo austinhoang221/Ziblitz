@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IAuthentication } from "../../app/models/IAuthentication";
 import { RootState } from "../store";
 const initialState: IAuthentication = {
+  id: "",
   name: "",
   avatarUrl: "",
   department: "",
@@ -17,7 +18,8 @@ export const authenticationSlice = createSlice({
     initialState,
     reducers: {
       login: (state: any, action: PayloadAction<IAuthentication>) => {
-        const user: IAuthentication = {
+        const user: any = {
+          id: action.payload.id,
           name: action.payload.name,
           avatarUrl: action.payload.avatarUrl,
           department: action.payload.department,

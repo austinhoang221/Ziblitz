@@ -79,9 +79,9 @@ export default function Header() {
       children: <Board />,
     },
   ];
-  const fetchProject = () => {
-    const projects = UserService.get;
-  };
+  // const fetchProject = () => {
+  //   const projects = UserService.get;
+  // };
   return (
     <>
       <nav className="c-header">

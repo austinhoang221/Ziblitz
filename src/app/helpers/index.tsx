@@ -15,7 +15,7 @@ export const validateEmail = (rule: any, value: any, callback: any) => {
 
 export const validatePassword = (rule: any, value: any, callback: any) => {
   const passwordRegex =
-    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$%^&*-]).{8,}$/;
   if (!value || value.match(passwordRegex)) {
     // If the value is empty or matches the regex, it's valid
     callback();
@@ -26,7 +26,7 @@ export const validatePassword = (rule: any, value: any, callback: any) => {
 };
 
 export function checkResponseStatus<T>(response: IResponse<T> | undefined) {
-  if (response && response?.data && response?.status === 200) {
+  if (response && response?.data && response?.statusCode === 200) {
     return true;
   }
   return false;

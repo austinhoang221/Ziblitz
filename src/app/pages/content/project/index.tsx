@@ -2,13 +2,23 @@ import { Button } from "antd";
 import Search from "antd/es/input/Search";
 import Table, { ColumnsType } from "antd/es/table";
 import { ColumnTitleProps } from "antd/es/table/interface";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { ProjectService } from "../../../../services/projectService";
+import useProjectData from "../../../customHooks/fetchProject";
+import { checkResponseStatus } from "../../../helpers";
+import { IPagination } from "../../../models/IPagination";
 import { IProject } from "../../../models/IProject";
 import ButtonIcon from "../../components/button-icon";
 import "./index.scss";
 export default function Project() {
-  const [listOfData, setListOfData] = useState<IProject[]>([]);
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
+  const requestParam: IPagination = {
+    pageNum: 1,
+    pageSize: 20,
+  };
+  const { listOfData } = useProjectData(userId, requestParam);
+
   const columns: ColumnsType<IProject> = [
     {
       title: <i className="fa-solid fa-star"></i>,
