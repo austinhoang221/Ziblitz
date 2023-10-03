@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   Dropdown,
   Menu,
@@ -9,7 +10,9 @@ import {
 } from "antd";
 import Search from "antd/es/input/Search";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../../../redux/slices/authenticationSlice";
 import ButtonIcon from "../button-icon";
 import "./index.scss";
 import AssignToMeTask from "./partials/assign-to-me-task";
@@ -18,6 +21,8 @@ import RecentTask from "./partials/recent-task";
 export default function Header() {
   const [defaultTabIndex, setDefaultTabIndex] = useState<string>("1");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = JSON.parse(localStorage.getItem("user")!);
   const goToProject = () => {
     navigate("project");
   };
@@ -52,6 +57,7 @@ export default function Header() {
       label: "Create dashboard",
     },
   ];
+
   const teamItems: MenuProps["items"] = [
     {
       key: "1",
@@ -82,6 +88,10 @@ export default function Header() {
   // const fetchProject = () => {
   //   const projects = UserService.get;
   // };
+  const onClickLogout = () => {
+    dispatch(logout());
+    navigate("login");
+  };
   return (
     <>
       <nav className="c-header">
@@ -168,7 +178,34 @@ export default function Header() {
           <Search placeholder="Search..." style={{ width: 200 }} />
           <ButtonIcon iconClass="fa-solid fa-bell"></ButtonIcon>
           <ButtonIcon iconClass="fa-solid fa-gear"></ButtonIcon>
-          {/* <img src="" alt="" /> */}
+          <Dropdown
+            trigger={["click"]}
+            overlay={
+              <Menu title="Account">
+                <Menu.Item>
+                  <div className="d-flex align-center">
+                    <Avatar
+                      size={40}
+                      className="mr-2"
+                      src={user?.avatarUrl}
+                    ></Avatar>
+                    <div className="">
+                      <h5 className="mt-0 mb-0">{user?.name}</h5>
+                      <p className="mt-0 mb-0">{user?.email}</p>
+                    </div>
+                  </div>
+                </Menu.Item>
+                <Menu.Item onClick={onClickLogout}>
+                  <span>Log out</span>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Avatar
+              className="mr-2 ml-2 cursor-pointer"
+              src={user?.avatarUrl}
+            ></Avatar>
+          </Dropdown>
         </div>
       </nav>
     </>

@@ -9,6 +9,7 @@ interface IUserAvatarProps {
   userIds: string[];
   isMultiple: boolean;
   isShowName: boolean;
+  className?: string;
 }
 export default function UserAvatar(props: IUserAvatarProps) {
   const users: IUser[] = useSelector((state: RootState) => state.users);
@@ -38,6 +39,7 @@ export default function UserAvatar(props: IUserAvatarProps) {
     return (
       <>
         <Avatar
+          className={props.className}
           src={users.find((user) => user.id === props.userIds[0])?.avatarUrl}
         />
         {props.isShowName && (

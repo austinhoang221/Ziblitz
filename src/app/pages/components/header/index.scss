@@ -8,5 +8,8 @@
     justify-content: space-between;
     &.-dropdown-item{
         height: 100%;
+        &:focus{
+            background-color: red;
+        }
     }
 }

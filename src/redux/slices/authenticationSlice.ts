@@ -33,7 +33,7 @@ export const authenticationSlice = createSlice({
         localStorage.setItem("user", JSON.stringify(user));
         return user;
       },
-      logout: (state: any, action: PayloadAction<IAuthentication>) => {
+      logout: (state: any) => {
         localStorage.setItem("user", JSON.stringify(initialState));
         return initialState
       },
