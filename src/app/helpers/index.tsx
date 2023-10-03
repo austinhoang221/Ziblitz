@@ -26,7 +26,12 @@ export const validatePassword = (rule: any, value: any, callback: any) => {
 };
 
 export function checkResponseStatus<T>(response: IResponse<T> | undefined) {
-  if (response && response?.data && response?.statusCode === 200) {
+  if (
+    response &&
+    response?.data &&
+    response?.statusCode >= 200 &&
+    response?.statusCode < 400
+  ) {
     return true;
   }
   return false;

@@ -9,7 +9,7 @@ export default function ButtonIcon(props: any) {
         onClick={(e: any) => e.preventDefault()}
         shape={props.shape ?? "circle"}
         type="text"
-        className="c-button-icon ml-2"
+        className="c-button-icon"
       >
         <i className={props.iconClass}></i>
       </Button>

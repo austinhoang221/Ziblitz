@@ -34,7 +34,7 @@ export default function Authentication() {
             width="50px"
             height="50px"
           ></img>
-          <h1>HeadUp</h1>
+          <h1>Ziblitz</h1>
         </header>
         <div className="c-login-section">
           <h2 className="mb-4 text-center">Welcome back</h2>

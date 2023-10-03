@@ -1,4 +1,12 @@
-import { Button, Dropdown, MenuProps } from "antd";
+import {
+  Button,
+  Dropdown,
+  Form,
+  Input,
+  MenuProps,
+  Modal,
+  Pagination,
+} from "antd";
 import Search from "antd/es/input/Search";
 import Table, { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
@@ -8,12 +16,27 @@ import { IProject } from "../../../models/IProject";
 import UserAvatar from "../../components/user-avatar";
 import ButtonIcon from "../../components/button-icon";
 import "./index.scss";
+import { useState } from "react";
+import { ProjectService } from "../../../../services/projectService";
+import { checkResponseStatus } from "../../../helpers";
+import { useDispatch } from "react-redux";
+import { createProject } from "../../../../redux/slices/projectSlice";
+import TextArea from "antd/es/input/TextArea";
 export default function Project() {
-  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
-  const requestParam: IPagination = {
+  const initialRequestParam: IPagination = {
     pageNum: 1,
     pageSize: 20,
   };
+
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
+  const [requestParam, setRequestParam] =
+    useState<IPagination>(initialRequestParam);
+  const { listOfData } = useProjectData(userId, requestParam);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
+  const [modalForm] = Form.useForm();
+  const dispatch = useDispatch();
+
   const items: MenuProps["items"] = [
     {
       key: "1",
@@ -24,7 +47,6 @@ export default function Project() {
       label: "Move to trash",
     },
   ];
-  const { listOfData } = useProjectData(userId, requestParam);
 
   const columns: ColumnsType<IProject> = [
     {
@@ -92,11 +114,72 @@ export default function Project() {
       },
     },
   ];
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const onClickCancel = () => {
+    modalForm.resetFields();
+    setIsModalOpen(false);
+  };
+
+  const onSubmit = async () => {
+    setIsLoadingButtonSave(true);
+    const modalFormValue = modalForm.getFieldsValue();
+    try {
+      await modalForm.validateFields();
+      setIsLoadingButtonSave(true);
+
+      const payload: IProject = {
+        ...modalFormValue,
+        avatarUrl: "",
+        isFavorite: false,
+      };
+      const response = await ProjectService.createProject(userId, payload);
+      if (checkResponseStatus(response)) {
+        dispatch(createProject(response!.data));
+        setIsModalOpen(false);
+      }
+      setIsLoadingButtonSave(false);
+    } catch (error) {
+      console.error("Form validation error:", error);
+      setIsLoadingButtonSave(false);
+    }
+  };
+
+  const onChangePagination = (page: number, size: number) => {
+    setRequestParam({
+      pageNum: page,
+      pageSize: size,
+    });
+  };
+
+  const renderFooter = () => {
+    return (
+      <>
+        <div className="">
+          <Button type="default" onClick={onClickCancel}>
+            Cancel
+          </Button>
+          <Button
+            type="primary"
+            onClick={onSubmit}
+            htmlType="submit"
+            loading={isLoadingButtonSave}
+          >
+            Create project
+          </Button>
+        </div>
+      </>
+    );
+  };
   return (
     <>
       <div className="align-child-space-between align-center">
         <h2>Project</h2>
-        <Button type="primary">Create project</Button>
+        <Button type="primary" onClick={showModal}>
+          Create project
+        </Button>
       </div>
       <div className="d-flex align-center">
         <Search
@@ -110,7 +193,47 @@ export default function Project() {
         columns={columns}
         dataSource={listOfData}
         rowKey={(record) => record.id}
+        pagination={false}
       />
+      <Pagination
+        className="mt-2 float-right"
+        current={requestParam.pageNum}
+        pageSize={requestParam.pageSize}
+        onChange={(page, size) => onChangePagination(page, size)}
+      />
+      <Modal
+        title="Add project"
+        open={isModalOpen}
+        footer={renderFooter}
+        onCancel={onClickCancel}
+      >
+        <Form form={modalForm} className="login-form" onFinish={onSubmit}>
+          <Form.Item
+            label="Name"
+            required={true}
+            name="name"
+            rules={[
+              { required: true, message: "Please enter your project name" },
+            ]}
+          >
+            <Input placeholder="Try a team name. project goal, milestone,..." />
+          </Form.Item>
+          <Form.Item
+            label="Key"
+            tooltip="Choose a descriptive prefix for your project’s issue keys to recognize work from this project."
+            required={true}
+            name="code"
+            rules={[
+              { required: true, message: "Please enter your project key" },
+            ]}
+          >
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item label="Description" name="description">
+            <TextArea />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
 }

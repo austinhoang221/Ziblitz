@@ -20,7 +20,7 @@ export class ProjectService {
     
         public static createProject = async (id: string, payload: IProject) => {
             try {
-            const response: AxiosResponse<IProject> = await axiosInstance.post(Endpoint.createProject + '/' + id + 'projects', payload);
+            const response: IResponse<IProject> = await axiosInstance.post(Endpoint.createProject + id + '/projects', payload);
             console.log('POST response:', response.data);
               return response;
             } catch (error) {
@@ -30,7 +30,7 @@ export class ProjectService {
     
           public static updateProject = async (id: string, payload: IProject, projectId: string) => {
             try {
-            const response: AxiosResponse<IProject> = await axiosInstance.post(Endpoint.updateProject + '/' + id + 'projects/' + projectId, payload);
+            const response: IResponse<IProject> = await axiosInstance.post(Endpoint.updateProject + id + '/projects/' + projectId, payload);
             console.log('POST response:', response.data);
               return response;
             } catch (error) {
@@ -40,7 +40,7 @@ export class ProjectService {
     
           public static deleteProject = async (id: string, payload: IProject, projectId: string) => {
             try {
-            const response: AxiosResponse<IProject> = await axiosInstance.post(Endpoint.deleteProject + '/' + id + 'projects/' + projectId, payload);
+            const response: IResponse<IProject> = await axiosInstance.post(Endpoint.deleteProject + id + 'projects/' + projectId, payload);
             console.log('POST response:', response.data);
               return response;
             } catch (error) {

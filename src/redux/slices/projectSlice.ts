@@ -9,6 +9,9 @@ export const projectSlice = createSlice({
         setProjects: (state: any, action: PayloadAction<IProject[]>) => {
             return [...state, ...action.payload];
         },
+        createProject: (state: any, action: PayloadAction<IProject>) => {
+            return [...state, action.payload];
+        },
         updateProject: (state: any, action: PayloadAction<IProject>) => {
             const index = state.projects.findIndex((item: IProject) => item.id === action.payload.id);
             return state.projects.splice(index, 1, action.payload);
@@ -20,5 +23,5 @@ export const projectSlice = createSlice({
 })
 
 export const selectProject = (state: RootState) => state.projects;
-export const {setProjects} = projectSlice.actions;
+export const {setProjects, createProject} = projectSlice.actions;
 export default projectSlice.reducer;
