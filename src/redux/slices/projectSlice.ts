@@ -6,7 +6,7 @@ export const projectSlice = createSlice({
     name: "projects",
     initialState,
     reducers: {
-        getAllProject: (state: any, action: PayloadAction<IProject[]>) => {
+        setProjects: (state: any, action: PayloadAction<IProject[]>) => {
             return [...state, ...action.payload];
         },
         updateProject: (state: any, action: PayloadAction<IProject>) => {
@@ -20,5 +20,5 @@ export const projectSlice = createSlice({
 })
 
 export const selectProject = (state: RootState) => state.projects;
-export const {getAllProject} = projectSlice.actions;
+export const {setProjects} = projectSlice.actions;
 export default projectSlice.reducer;

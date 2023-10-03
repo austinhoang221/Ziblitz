@@ -1,9 +1,10 @@
 export interface IProject {
     id: string,
     name: string,
+    code: string,
     description: string,
     createDate: string,
-    leadId: string,
+    leaderId: string,
     avatarUrl: string,
     isFavorite: boolean,
 }

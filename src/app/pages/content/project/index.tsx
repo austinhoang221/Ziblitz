@@ -1,14 +1,11 @@
-import { Button } from "antd";
+import { Button, Dropdown, MenuProps } from "antd";
 import Search from "antd/es/input/Search";
 import Table, { ColumnsType } from "antd/es/table";
-import { ColumnTitleProps } from "antd/es/table/interface";
-import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ProjectService } from "../../../../services/projectService";
 import useProjectData from "../../../customHooks/fetchProject";
-import { checkResponseStatus } from "../../../helpers";
 import { IPagination } from "../../../models/IPagination";
 import { IProject } from "../../../models/IProject";
+import UserAvatar from "../../components/user-avatar";
 import ButtonIcon from "../../components/button-icon";
 import "./index.scss";
 export default function Project() {
@@ -17,6 +14,16 @@ export default function Project() {
     pageNum: 1,
     pageSize: 20,
   };
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: "Project settings",
+    },
+    {
+      key: "2",
+      label: "Move to trash",
+    },
+  ];
   const { listOfData } = useProjectData(userId, requestParam);
 
   const columns: ColumnsType<IProject> = [
@@ -26,41 +33,68 @@ export default function Project() {
       key: "star",
       width: "40px",
       align: "center",
-      render: (text: string) => (
-        <ButtonIcon iconClass="fa-solid fa-star"></ButtonIcon>
-      ),
+      render: () => <ButtonIcon iconClass="fa-regular fa-star"></ButtonIcon>,
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (record: IProject) => {
+      render: (text: string) => {
         return (
           <>
-            <img src={record.avatarUrl} alt="" />{" "}
-            <Link to="">{record.name}</Link>,
+            {/* <img src={record.avatarUrl} alt="" />{" "} */}
+            <Link to="">{text}</Link>
           </>
         );
       },
     },
     {
       title: "Key",
-      dataIndex: "key",
-      key: "key",
+      dataIndex: "code",
+      key: "code",
+      render: (text: string) => {
+        return (
+          <>
+            {/* <img src={record.avatarUrl} alt="" />{" "} */}
+            <span>{text}</span>
+          </>
+        );
+      },
     },
     {
       title: "Lead",
-      dataIndex: "lead",
-      key: "lead",
+      dataIndex: "leaderId",
+      key: "leaderId",
+      render: (text: string) => {
+        return (
+          <>
+            {/* <img src={record.avatarUrl} alt="" />{" "} */}
+            <UserAvatar
+              userIds={[text]}
+              isMultiple={false}
+              isShowName={true}
+            ></UserAvatar>
+          </>
+        );
+      },
     },
     {
       title: "",
-      key: "action",
+      width: "40px",
+      render: () => {
+        return (
+          <Dropdown menu={{ items }} trigger={["click"]}>
+            <Button type="text" onClick={(e) => e.preventDefault()}>
+              <i className="fa-solid fa-ellipsis"></i>
+            </Button>
+          </Dropdown>
+        );
+      },
     },
   ];
   return (
     <>
-      <div className="align-child-space-between  align-center">
+      <div className="align-child-space-between align-center">
         <h2>Project</h2>
         <Button type="primary">Create project</Button>
       </div>
@@ -71,7 +105,12 @@ export default function Project() {
           style={{ width: 200 }}
         />
       </div>
-      <Table className="mt-3" columns={columns} dataSource={listOfData} />
+      <Table
+        className="mt-3"
+        columns={columns}
+        dataSource={listOfData}
+        rowKey={(record) => record.id}
+      />
     </>
   );
 }

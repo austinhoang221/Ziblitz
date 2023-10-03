@@ -10,11 +10,13 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../../../redux/slices/authenticationSlice";
 export default function SignUp(props: any) {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const onSubmit = async (payload: any) => {
     const response = await AuthenticationService.signUp(payload);
     if (checkResponseStatus(response)) {
       dispatch(login(response?.data!));
+      navigate("/project");
     }
   };
   const regexHint =
