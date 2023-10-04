@@ -4,7 +4,7 @@ import { checkResponseStatus } from "../helpers";
 import { IUser } from "../models/IUser";
 
 function useUserData(userId: string) {
-    const [listOfData, setListOfData] = useState<IUser[]>([]);
+    const [listUser, setListOfData] = useState<IUser[]>([]);
   
     const fetchData = useCallback(() => {
       UserService.getAllUser(
@@ -19,7 +19,7 @@ function useUserData(userId: string) {
         fetchData();
       }, [fetchData, userId]);
     
-      return { listOfData };
+      return { listUser };
     }
   
   export default useUserData;

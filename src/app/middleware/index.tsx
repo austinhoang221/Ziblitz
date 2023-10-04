@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Endpoint from "../api/endpoint";
 
 // Create an Axios instance
@@ -22,6 +23,8 @@ axiosInstance.interceptors.response.use(
   },
   async function (error) {
     if (error?.response?.status === 401) {
+      const navigate = useNavigate();
+      navigate("/login");
     }
     return Promise.reject(error);
   }

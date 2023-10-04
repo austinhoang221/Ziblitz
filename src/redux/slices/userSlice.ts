@@ -19,6 +19,6 @@ export const userSlice = createSlice({
     }
 })
 
-export const selectProject = (state: RootState) => state.projects;
+export const selectUser = (state: RootState) => state.projects;
 export const {setUsers} = userSlice.actions;
 export default userSlice.reducer;

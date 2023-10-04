@@ -40,7 +40,7 @@ export const authenticationSlice = createSlice({
     }
   });
 
-  export const selectUsser = (state: RootState) => state.authentication;
+  export const selectAuthencation = (state: RootState) => state.authentication;
   export const {login, logout} = authenticationSlice.actions;
   export default authenticationSlice.reducer;
   

@@ -10,9 +10,11 @@ import {
 } from "antd";
 import Search from "antd/es/input/Search";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../../redux/slices/authenticationSlice";
+import { RootState } from "../../../../redux/store";
+import CreateProjectDrawer from "../../content/project/partials/create";
 import ButtonIcon from "../button-icon";
 import "./index.scss";
 import AssignToMeTask from "./partials/assign-to-me-task";
@@ -20,23 +22,12 @@ import Board from "./partials/board";
 import RecentTask from "./partials/recent-task";
 export default function Header() {
   const [defaultTabIndex, setDefaultTabIndex] = useState<string>("1");
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = JSON.parse(localStorage.getItem("user")!);
-  const goToProject = () => {
-    navigate("project");
-  };
-  const items: MenuProps["items"] = [
-    {
-      key: "1",
-      label: "View all projects",
-      onClick: (e: any) => goToProject(),
-    },
-    {
-      key: "2",
-      label: "Create projects",
-    },
-  ];
+
+  const projects = useSelector((state: RootState) => state.projects);
   const filterItems: MenuProps["items"] = [
     {
       key: "1",
@@ -85,12 +76,15 @@ export default function Header() {
       children: <Board />,
     },
   ];
-  // const fetchProject = () => {
-  //   const projects = UserService.get;
-  // };
   const onClickLogout = () => {
     dispatch(logout());
     navigate("login");
+  };
+  const goToProject = () => {
+    navigate("project");
+  };
+  const goToCreateProject = () => {
+    setIsDrawerOpen(true);
   };
   return (
     <>
@@ -129,9 +123,39 @@ export default function Header() {
               </Dropdown>
             </div>
             <div className="c-header-dropdown-item">
-              <Dropdown menu={{ items }} trigger={["click"]}>
+              <Dropdown
+                trigger={["click"]}
+                overlay={
+                  <Menu title="Recent">
+                    {projects.map((project) => {
+                      return (
+                        <Menu.Item key={project.id}>
+                          <div className="d-flex align-center">
+                            <img
+                              width="20px"
+                              height="20px"
+                              className="mr-2"
+                              src={project.avatarUrl}
+                              alt=""
+                            />
+                            <span>
+                              {project.name} ({project.code})
+                            </span>
+                          </div>
+                        </Menu.Item>
+                      );
+                    })}
+                    <Menu.Item onClick={goToProject}>
+                      <span>View all projects</span>
+                    </Menu.Item>
+                    <Menu.Item onClick={goToCreateProject}>
+                      <span>Create projects</span>
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
                 <Button type="text" onClick={(e) => e.preventDefault()}>
-                  <Space>Project</Space>
+                  <Space>Projects</Space>
                   <i className="fa-solid fa-angle-down ml-2"></i>
                 </Button>
               </Dropdown>
@@ -208,6 +232,11 @@ export default function Header() {
           </Dropdown>
         </div>
       </nav>
+
+      <CreateProjectDrawer
+        isDrawerOpen={isDrawerOpen}
+        setOpen={(isOpen: boolean) => setIsDrawerOpen(isOpen)}
+      />
     </>
   );
 }
