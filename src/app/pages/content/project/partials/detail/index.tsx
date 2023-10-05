@@ -1,37 +1,32 @@
-import { Breadcrumb, Layout, Menu, MenuProps, Tooltip } from "antd";
+import { Breadcrumb, Layout, Menu, Tooltip } from "antd";
 import { Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { ProjectService } from "../../../../../../services/projectService";
 import { checkResponseStatus } from "../../../../../helpers";
 import { IProject } from "../../../../../models/IProject";
-import {
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-} from "@ant-design/icons";
-
 import "./index.scss";
 import SubMenu from "antd/es/menu/SubMenu";
 export default function DetailProject() {
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const [project, setProject] = useState<IProject>();
-  const location = useLocation();
-  const { pathname } = location;
-  const splitPath = pathname.split("/");
-  const projectCode = splitPath[splitPath.length - 1];
+  const params = useParams();
+  const pathname = window.location.pathname;
+  const segments = pathname.split("/");
+  const lastSegment = segments[segments.length - 1];
+  const navigate = useNavigate();
   const fetchData = useCallback(() => {
-    ProjectService.getByCode(userId, projectCode).then((res) => {
+    ProjectService.getByCode(userId, params?.code!).then((res) => {
       if (checkResponseStatus(res)) {
         setProject(res?.data!);
       }
     });
-  }, [userId, projectCode]);
+  }, [userId, params?.code]);
 
   useEffect(() => {
     fetchData();
-  }, [userId, projectCode]);
+  }, [userId, params?.code]);
 
   const menuItems = [
     {
@@ -138,9 +133,17 @@ export default function DetailProject() {
           </SubMenu>
         );
       } else {
-        return <Menu.Item key={item.key}>{item.label}</Menu.Item>;
+        return (
+          <Menu.Item key={item.key} onClick={() => onNavigateItem(item.key)}>
+            {item.label}
+          </Menu.Item>
+        );
       }
     });
+  };
+
+  const onNavigateItem = (key: string) => {
+    navigate(key);
   };
   return (
     <>
@@ -165,6 +168,7 @@ export default function DetailProject() {
             <Menu
               mode="inline"
               defaultOpenKeys={["planning", "development"]}
+              selectedKeys={[lastSegment]}
               style={{ height: "100%" }}
             >
               {renderMenuItems(menuItems)}
@@ -175,11 +179,11 @@ export default function DetailProject() {
               <Link to="/project">Project</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              <Link to={project?.name!}>{project?.name!}</Link>
+              <a>{project?.name!}</a>
             </Breadcrumb.Item>
           </Breadcrumb>
-          <Content style={{ padding: "0 24px", minHeight: 280 }}>
-            Content
+          <Content>
+            <Outlet></Outlet>
           </Content>
         </Layout>
       </Content>
