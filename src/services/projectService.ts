@@ -1,10 +1,11 @@
 import Endpoint from "../app/api/endpoint";
 import { axiosInstance } from "../app/middleware";
+import { IPaginateResponse } from "../app/models/IPaginateResponse";
 import { IProject } from "../app/models/IProject";
 import { IResponse } from "../app/models/IResponse";
 
 export class ProjectService {
-    public static getAllProject = async (id: string, pageNum: number, pageSize: number, sorts: string[], code?: string, name?: string) => {
+    public static getAll = async (id: string, pageNum: number, pageSize: number, sorts: string[], code?: string, name?: string) => {
         let query: string = `?PageNum=${pageNum}&PageSize=${pageSize}`;
         query += code ? "&code=" + code : "";
         query += name ? "&name=" + name : "";
@@ -16,7 +17,17 @@ export class ProjectService {
           })
         }
         try {
-        const response: IResponse<IProject[]> = await axiosInstance.get(Endpoint.getAllProject + id + '/projects' + query);
+        const response: IPaginateResponse<IProject[]> = await axiosInstance.get(Endpoint.getAllProject + id + '/projects' + query);
+        console.log('POST response:', response.data.content);
+          return response;
+        } catch (error) {
+          console.error('Error making POST request:', error);
+        }
+      };
+
+      public static getByCode = async (id: string, code: string) => {
+        try {
+        const response: IResponse<IProject> = await axiosInstance.get(Endpoint.getProjectByCode + id + '/projects/' + code);
         console.log('POST response:', response.data);
           return response;
         } catch (error) {
@@ -24,7 +35,7 @@ export class ProjectService {
         }
       };
     
-        public static createProject = async (id: string, payload: IProject) => {
+        public static create = async (id: string, payload: IProject) => {
             try {
             const response: IResponse<IProject> = await axiosInstance.post(Endpoint.createProject + id + '/projects', payload);
             console.log('POST response:', response.data);
@@ -34,7 +45,7 @@ export class ProjectService {
             }
           };
     
-          public static updateProject = async (id: string, payload: IProject, projectId: string) => {
+          public static update = async (id: string, payload: IProject, projectId: string) => {
             try {
             const response: IResponse<IProject> = await axiosInstance.post(Endpoint.updateProject + id + '/projects/' + projectId, payload);
             console.log('POST response:', response.data);
@@ -44,7 +55,7 @@ export class ProjectService {
             }
           };
     
-          public static deleteProject = async (id: string, payload: IProject, projectId: string) => {
+          public static delete = async (id: string, payload: IProject, projectId: string) => {
             try {
             const response: IResponse<IProject> = await axiosInstance.post(Endpoint.deleteProject + id + 'projects/' + projectId, payload);
             console.log('POST response:', response.data);

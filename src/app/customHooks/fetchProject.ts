@@ -6,16 +6,17 @@ import { IProject } from "../models/IProject";
 
 function useProjectData(userId: string, requestParam: IPagination) {
     const [listProject, setListOfData] = useState<IProject[]>([]);
-  
+    const [totalCount, setTotalCount] = useState<number>(0);
     const fetchData = useCallback(() => {
-      ProjectService.getAllProject(
+      ProjectService.getAll(
         userId,
         requestParam.pageNum,
         requestParam.pageSize,
         requestParam.sort,
       ).then((res) => {
         if (checkResponseStatus(res)) {
-          setListOfData(res?.data!);
+          setListOfData(res?.data?.content!);
+          setTotalCount(res?.data?.totalCount!);
         }
       });
     }, [userId, requestParam.pageNum, requestParam.pageSize]);
@@ -24,7 +25,7 @@ function useProjectData(userId: string, requestParam: IPagination) {
         fetchData();
       }, [fetchData, userId, requestParam.pageNum, requestParam.pageSize]);
     
-      return { listProject };
+      return { listProject, totalCount };
     }
   
   export default useProjectData;

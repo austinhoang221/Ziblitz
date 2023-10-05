@@ -7,7 +7,6 @@ import useProjectData from "../../customHooks/fetchProject";
 import useUserData from "../../customHooks/fetchUser";
 import { IPagination } from "../../models/IPagination";
 import Header from "../components/header";
-import "./index.scss";
 export default function Content() {
   const initialRequestParam: IPagination = {
     pageNum: 1,
@@ -28,7 +27,7 @@ export default function Content() {
   return (
     <>
       <Header></Header>
-      <div className="c-content">
+      <div>
         <Outlet />
       </div>
     </>

@@ -2,6 +2,7 @@ import { Button, Col, Drawer, Form, Input, Row } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { createProject } from "../../../../../../redux/slices/projectSlice";
 import { ProjectService } from "../../../../../../services/projectService";
 import { checkResponseStatus } from "../../../../../helpers";
@@ -12,8 +13,9 @@ export default function CreateProjectDrawer(props: any) {
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
   const [drawerForm] = Form.useForm();
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const onClickCancel = () => {
+    drawerForm.resetFields();
     props.setOpen(false);
   };
 
@@ -29,9 +31,10 @@ export default function CreateProjectDrawer(props: any) {
         avatarUrl: "",
         isFavorite: false,
       };
-      const response = await ProjectService.createProject(userId, payload);
+      const response = await ProjectService.create(userId, payload);
       if (checkResponseStatus(response)) {
         dispatch(createProject(response!.data));
+        navigate(`/project/${response!.data.id}`);
         onClickCancel();
       }
       setIsLoadingButtonSave(false);

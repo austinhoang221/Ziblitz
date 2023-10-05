@@ -83,6 +83,9 @@ export default function Header() {
   const goToProject = () => {
     navigate("project");
   };
+  const goToDetailProject = (code: string) => {
+    navigate(`project/${code}`);
+  };
   const goToCreateProject = () => {
     setIsDrawerOpen(true);
   };
@@ -129,7 +132,10 @@ export default function Header() {
                   <Menu title="Recent">
                     {projects.map((project) => {
                       return (
-                        <Menu.Item key={project.id}>
+                        <Menu.Item
+                          key={project.id}
+                          onClick={() => goToDetailProject(project.code)}
+                        >
                           <div className="d-flex align-center">
                             <img
                               width="20px"

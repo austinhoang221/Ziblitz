@@ -10,17 +10,18 @@ import ButtonIcon from "../../components/button-icon";
 import "./index.scss";
 import { useState } from "react";
 import CreateProjectDrawer from "./partials/create";
+import { IUser } from "../../../models/IUser";
 export default function Project() {
   const initialRequestParam: IPagination = {
     pageNum: 1,
-    pageSize: 20,
+    pageSize: 3,
     sort: ["name:asc"],
   };
 
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const [requestParam, setRequestParam] =
     useState<IPagination>(initialRequestParam);
-  const { listProject } = useProjectData(userId, requestParam);
+  const { listProject, totalCount } = useProjectData(userId, requestParam);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const items: MenuProps["items"] = [
@@ -48,22 +49,23 @@ export default function Project() {
       ),
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Key",
+      dataIndex: "code",
+      key: "code",
+      width: "10%",
       render: (text: string) => {
         return (
           <>
             {/* <img src={record.avatarUrl} alt="" />{" "} */}
-            <Link to="">{text}</Link>
+            <Link to={text}>{text}</Link>
           </>
         );
       },
     },
     {
-      title: "Key",
-      dataIndex: "code",
-      key: "code",
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
       render: (text: string) => {
         return (
           <>
@@ -75,14 +77,15 @@ export default function Project() {
     },
     {
       title: "Lead",
-      dataIndex: "leaderId",
-      key: "leaderId",
-      render: (text: string) => {
+      dataIndex: "leader",
+      key: "leader",
+      width: "30%",
+      render: (leader: IUser) => {
         return (
           <>
             {/* <img src={record.avatarUrl} alt="" />{" "} */}
             <UserAvatar
-              userIds={[text]}
+              userIds={[leader.id]}
               isMultiple={false}
               isShowName={true}
             ></UserAvatar>
@@ -114,7 +117,7 @@ export default function Project() {
   };
 
   return (
-    <>
+    <div className="c-content">
       <div className="align-child-space-between align-center">
         <h2>Project</h2>
         <Button type="primary" onClick={() => setIsDrawerOpen(true)}>
@@ -139,6 +142,7 @@ export default function Project() {
         className="mt-2 float-right"
         current={requestParam.pageNum}
         pageSize={requestParam.pageSize}
+        total={totalCount}
         onChange={(page, size) => onChangePagination(page, size)}
       />
 
@@ -146,6 +150,6 @@ export default function Project() {
         isDrawerOpen={isDrawerOpen}
         setOpen={(isOpen: boolean) => setIsDrawerOpen(isOpen)}
       />
-    </>
+    </div>
   );
 }

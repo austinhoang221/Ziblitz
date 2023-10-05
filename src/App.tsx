@@ -6,6 +6,7 @@ import Authentication from "./app/pages/authentication";
 import Content from "./app/pages/content";
 import Dashboard from "./app/pages/content/dashboard";
 import Project from "./app/pages/content/project";
+import DetailProject from "./app/pages/content/project/partials/detail";
 import { PrivateRoute } from "./app/routes/private-route";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
             <Route>
               <Route path="dashboard" element={<Dashboard />}></Route>
               <Route path="project" element={<Project />}></Route>
+              <Route path="project/:code" element={<DetailProject />}></Route>
             </Route>
           </Route>
         </Routes>
