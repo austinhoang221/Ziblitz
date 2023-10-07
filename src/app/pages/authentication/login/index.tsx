@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input, message } from "antd";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -10,11 +10,21 @@ import { checkResponseStatus, validateEmail } from "../../../helpers";
 export default function Login(props: any) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const showErrorMessage = () => {
+    messageApi.open({
+      type: "error",
+      content: "Email or password incorrect",
+    });
+  };
   const onSubmit = async (payload: any) => {
     const response = await AuthenticationService.logIn(payload);
     if (checkResponseStatus(response)) {
       dispatch(login(response?.data!));
       navigate("/project");
+    } else {
+      showErrorMessage();
     }
   };
 
@@ -51,6 +61,7 @@ export default function Login(props: any) {
           Login
         </Button>
       </div>
+      {contextHolder}
     </Form>
   );
 }

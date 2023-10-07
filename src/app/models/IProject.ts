@@ -1,3 +1,5 @@
+import { IUser } from "./IUser";
+
 export interface IProject {
     id: string,
     name: string,
@@ -5,4 +7,6 @@ export interface IProject {
     description: string,
     avatarUrl: string,
     isFavorite: boolean,
+    leader: IUser,
+    member: IUser[]
 }

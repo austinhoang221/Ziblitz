@@ -1,4 +1,5 @@
 import { IResponse } from "../models/IResponse";
+import Message from "../pages/components/message";
 
 export const validateEmail = (rule: any, value: any, callback: any) => {
   // Define a custom regular expression for email validation
@@ -25,6 +26,25 @@ export const validatePassword = (rule: any, value: any, callback: any) => {
   }
 };
 
+export const convertNameToInitials = (name: string) => {
+  const words = name.split(" ");
+  const initials = words
+    .map((word: string) => word.charAt(0).toUpperCase())
+    .join("");
+  return initials;
+};
+
+export const getRandomColor = () => {
+  const r = Math.floor(Math.random() * 256); // Random value between 0 and 255 for red
+  const g = Math.floor(Math.random() * 256); // Random value between 0 and 255 for green
+  const b = Math.floor(Math.random() * 256); // Random value between 0 and 255 for blue
+
+  // Convert RGB values to a hexadecimal color code
+  const hexColor = `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
+
+  return hexColor;
+};
+
 export function checkResponseStatus<T>(response: IResponse<T> | undefined) {
   if (
     response &&
@@ -36,3 +56,7 @@ export function checkResponseStatus<T>(response: IResponse<T> | undefined) {
   }
   return false;
 }
+
+export const showMessage = (type: "success" | "error", content: string) => {
+  Message({ type: type, content: content });
+};

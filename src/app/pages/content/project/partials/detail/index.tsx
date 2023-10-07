@@ -8,6 +8,8 @@ import { checkResponseStatus } from "../../../../../helpers";
 import { IProject } from "../../../../../models/IProject";
 import "./index.scss";
 import SubMenu from "antd/es/menu/SubMenu";
+import { useDispatch } from "react-redux";
+import { setProjectDetail } from "../../../../../../redux/slices/projectDetailSlice";
 export default function DetailProject() {
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const [project, setProject] = useState<IProject>();
@@ -16,10 +18,12 @@ export default function DetailProject() {
   const segments = pathname.split("/");
   const lastSegment = segments[segments.length - 1];
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const fetchData = useCallback(() => {
     ProjectService.getByCode(userId, params?.code!).then((res) => {
       if (checkResponseStatus(res)) {
         setProject(res?.data!);
+        dispatch(setProjectDetail(res?.data!));
       }
     });
   }, [userId, params?.code]);
@@ -147,33 +151,33 @@ export default function DetailProject() {
   };
   return (
     <>
-      <Content>
-        <Layout>
-          <Sider width={200}>
-            <div
-              className="d-flex align-center p-3"
-              style={{ backgroundColor: "white" }}
-            >
-              <img
-                src={project?.avatarUrl}
-                alt=""
-                width="20px"
-                height="20px"
-                className="mr-2"
-              />
-              <Tooltip title={project?.name}>
-                <h4 className="text-truncate m-0">{project?.name}</h4>
-              </Tooltip>
-            </div>
-            <Menu
-              mode="inline"
-              defaultOpenKeys={["planning", "development"]}
-              selectedKeys={[lastSegment]}
-              style={{ height: "100%" }}
-            >
-              {renderMenuItems(menuItems)}
-            </Menu>
-          </Sider>
+      <Layout style={{ backgroundColor: "#fff" }}>
+        <Sider width={200}>
+          <div
+            className="d-flex align-center p-3"
+            style={{ backgroundColor: "white" }}
+          >
+            <img
+              src={project?.avatarUrl}
+              alt=""
+              width="20px"
+              height="20px"
+              className="mr-2"
+            />
+            <Tooltip title={project?.name}>
+              <h4 className="text-truncate m-0">{project?.name}</h4>
+            </Tooltip>
+          </div>
+          <Menu
+            mode="inline"
+            defaultOpenKeys={["planning", "development"]}
+            selectedKeys={[lastSegment]}
+            style={{ height: "100%" }}
+          >
+            {renderMenuItems(menuItems)}
+          </Menu>
+        </Sider>
+        <Content className="c-content">
           <Breadcrumb>
             <Breadcrumb.Item>
               <Link to="/project">Project</Link>
@@ -182,11 +186,9 @@ export default function DetailProject() {
               <a>{project?.name!}</a>
             </Breadcrumb.Item>
           </Breadcrumb>
-          <Content>
-            <Outlet></Outlet>
-          </Content>
-        </Layout>
-      </Content>
+          <Outlet></Outlet>
+        </Content>
+      </Layout>
     </>
   );
 }

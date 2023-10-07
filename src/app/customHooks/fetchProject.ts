@@ -21,11 +21,15 @@ function useProjectData(userId: string, requestParam: IPagination) {
       });
     }, [userId, requestParam.pageNum, requestParam.pageSize]);
   
+    const refreshData = () => {
+      fetchData();
+    };
+
     useEffect(() => {
         fetchData();
       }, [fetchData, userId, requestParam.pageNum, requestParam.pageSize]);
     
-      return { listProject, totalCount };
+      return { listProject, totalCount, refreshData };
     }
   
   export default useProjectData;

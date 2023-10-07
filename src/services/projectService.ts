@@ -45,9 +45,9 @@ export class ProjectService {
             }
           };
     
-          public static update = async (id: string, payload: IProject, projectId: string) => {
+          public static update = async (id: string, payload: any, projectId: string) => {
             try {
-            const response: IResponse<IProject> = await axiosInstance.post(Endpoint.updateProject + id + '/projects/' + projectId, payload);
+            const response: IResponse<IProject> = await axiosInstance.put(Endpoint.updateProject + id + '/projects/' + projectId, payload);
             console.log('POST response:', response.data);
               return response;
             } catch (error) {
@@ -55,9 +55,9 @@ export class ProjectService {
             }
           };
     
-          public static delete = async (id: string, payload: IProject, projectId: string) => {
+          public static delete = async (id: string, projectId: string) => {
             try {
-            const response: IResponse<IProject> = await axiosInstance.post(Endpoint.deleteProject + id + 'projects/' + projectId, payload);
+            const response: IResponse<IProject> = await axiosInstance.delete(Endpoint.deleteProject + id + '/projects/' + projectId);
             console.log('POST response:', response.data);
               return response;
             } catch (error) {

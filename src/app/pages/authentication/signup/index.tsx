@@ -29,10 +29,10 @@ export default function SignUp(props: any) {
       onFinish={onSubmit}
     >
       <Form.Item
-        name="username"
-        rules={[{ required: true, message: "Please input your user name" }]}
+        name="name"
+        rules={[{ required: true, message: "Please input your name" }]}
       >
-        <Input placeholder="Username" />
+        <Input placeholder="Name" />
       </Form.Item>
       <Form.Item
         name="email"
