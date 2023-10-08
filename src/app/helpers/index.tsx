@@ -27,11 +27,13 @@ export const validatePassword = (rule: any, value: any, callback: any) => {
 };
 
 export const convertNameToInitials = (name: string) => {
-  const words = name.split(" ");
-  const initials = words
-    .map((word: string) => word.charAt(0).toUpperCase())
-    .join("");
-  return initials;
+  if (name) {
+    const words = name.split(" ");
+    const initials = words
+      .map((word: string) => word.charAt(0).toUpperCase())
+      .join("");
+    return initials;
+  }
 };
 
 export const getRandomColor = () => {

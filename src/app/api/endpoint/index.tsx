@@ -2,6 +2,7 @@ export default class Endpoint {
   public static get baseUrl(): string {
     return `https://localhost:7271/api/`;
   }
+  public static getAllRole: string = this.baseUrl + "roles/";
   public static editUserUrl: string = this.baseUrl + "user";
   public static getAllUser: string = this.baseUrl + "users/";
   public static getAllProject: string = this.baseUrl + "users/";

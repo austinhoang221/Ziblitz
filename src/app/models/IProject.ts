@@ -8,5 +8,5 @@ export interface IProject {
     avatarUrl: string,
     isFavorite: boolean,
     leader: IUser,
-    member: IUser[]
+    members: IUser[]
 }

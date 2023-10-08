@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import { UserService } from "../../services/userService";
+import { RoleService } from "../../services/roleService";
 import { checkResponseStatus } from "../helpers";
-import { IUser } from "../models/IUser";
+import { IRole } from "../models/IRole";
 
-function useUserData(userId: string, name?: string) {
-    const [listUser, setListOfData] = useState<IUser[]>([]);
+function useRoleData() {
+    const [listRole, setListOfData] = useState<IRole[]>([]);
   
     const fetchData = useCallback(() => {
-      UserService.getAllUser(name
+      RoleService.getAll(
       ).then((res) => {
         if (checkResponseStatus(res)) {
           setListOfData(res?.data!);
         }
       });
-    }, [userId, name]);
+    }, []);
 
     const refreshData = () => {
       fetchData();
@@ -21,9 +21,9 @@ function useUserData(userId: string, name?: string) {
   
     useEffect(() => {
         fetchData();
-      }, [fetchData, userId, name]);
+      }, [fetchData]);
     
-      return { listUser, refreshData };
+      return { listRole, refreshData };
     }
   
-  export default useUserData;
+  export default useRoleData;

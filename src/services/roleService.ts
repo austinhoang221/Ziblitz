@@ -4,11 +4,10 @@ import { axiosInstance } from "../app/middleware";
 import { IResponse } from "../app/models/IResponse";
 import { IUser } from "../app/models/IUser";
 
-export class UserService {
-    public static getAllUser = async (name?: string) => {
-      const query = name ? "?Name=" + name : "";
+export class RoleService {
+    public static getAll = async () => {
         try {
-        const response: IResponse<IUser[]> = await axiosInstance.get(Endpoint.getAllUser + query);
+        const response: IResponse<IUser[]> = await axiosInstance.get(Endpoint.getAllRole);
         console.log('POST response:', response.data);
           return response;
         } catch (error) {

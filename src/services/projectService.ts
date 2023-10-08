@@ -64,4 +64,14 @@ export class ProjectService {
               console.error('Error making POST request:', error);
             }
           };
+
+          public static addMember = async (id: string, payload: any) => {
+            try {
+            const response: IResponse<IProject> = await axiosInstance.post(Endpoint.deleteProject + id + '/projects/members:add', payload);
+            console.log('POST response:', response.data);
+              return response;
+            } catch (error) {
+              console.error('Error making POST request:', error);
+            }
+          };
 }
