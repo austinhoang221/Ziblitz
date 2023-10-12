@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IProject } from "../../app/models/IProject";
+import { IDetailProject } from "../../app/models/IDetailProject";
 interface IProjectDetail {
-  project: IProject | null; // Store the detailed project or null if none is selected
+  project: IDetailProject | null; // Store the detailed project or null if none is selected
 }
 const initialProjectDetailState: IProjectDetail = {
   project: null,
@@ -11,7 +11,7 @@ export const projectDetailSlice = createSlice({
     name: 'projectDetail',
     initialState: initialProjectDetailState,
     reducers: {
-      setProjectDetail: (state, action: PayloadAction<IProject | null>) => {
+      setProjectDetail: (state, action: PayloadAction<IDetailProject | null>) => {
         console.log(state.project)
         return {project: action.payload};
       },

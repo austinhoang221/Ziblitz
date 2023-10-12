@@ -2,8 +2,9 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
 import { setProjects } from "../../../redux/slices/projectSlice";
-import { setRoles } from "../../../redux/slices/roleSlice";
+import { getAllRole } from "../../../redux/slices/roleSlice";
 import { setUsers } from "../../../redux/slices/userSlice";
+import { useAppDispatch } from "../../customHooks/dispatch";
 import useProjectData from "../../customHooks/fetchProject";
 import useRoleData from "../../customHooks/fetchRole";
 import useUserData from "../../customHooks/fetchUser";
@@ -16,12 +17,12 @@ export default function Content() {
     sort: ["modificationtime:asc"],
   };
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
-  const dispatch = useDispatch();
-  const { listRole } = useRoleData();
+  const dispatch = useAppDispatch();
+  // const { listRole } = useRoleData();
   const { listUser } = useUserData(userId);
   const { listProject } = useProjectData(userId, initialRequestParam);
   useEffect(() => {
-    dispatch(setRoles(listRole));
+    dispatch(getAllRole());
   }, []);
   useEffect(() => {
     dispatch(setUsers(listUser));

@@ -1,5 +1,6 @@
 import Endpoint from "../app/api/endpoint";
 import { axiosInstance } from "../app/middleware";
+import { IDetailProject } from "../app/models/IDetailProject";
 import { IPaginateResponse } from "../app/models/IPaginateResponse";
 import { IProject } from "../app/models/IProject";
 import { IResponse } from "../app/models/IResponse";
@@ -27,7 +28,7 @@ export class ProjectService {
 
       public static getByCode = async (id: string, code: string) => {
         try {
-        const response: IResponse<IProject> = await axiosInstance.get(Endpoint.getProjectByCode + id + '/projects/' + code);
+        const response: IResponse<IDetailProject> = await axiosInstance.get(Endpoint.getProjectByCode + id + '/projects/' + code);
         console.log('POST response:', response.data);
           return response;
         } catch (error) {
@@ -47,7 +48,7 @@ export class ProjectService {
     
           public static update = async (id: string, payload: any, projectId: string) => {
             try {
-            const response: IResponse<IProject> = await axiosInstance.put(Endpoint.updateProject + id + '/projects/' + projectId, payload);
+            const response: IResponse<IDetailProject> = await axiosInstance.put(Endpoint.updateProject + id + '/projects/' + projectId, payload);
             console.log('POST response:', response.data);
               return response;
             } catch (error) {
@@ -57,7 +58,7 @@ export class ProjectService {
     
           public static delete = async (id: string, projectId: string) => {
             try {
-            const response: IResponse<IProject> = await axiosInstance.delete(Endpoint.deleteProject + id + '/projects/' + projectId);
+            const response: IResponse<IDetailProject> = await axiosInstance.delete(Endpoint.deleteProject + id + '/projects/' + projectId);
             console.log('POST response:', response.data);
               return response;
             } catch (error) {
@@ -67,7 +68,7 @@ export class ProjectService {
 
           public static addMember = async (id: string, payload: any) => {
             try {
-            const response: IResponse<IProject> = await axiosInstance.post(Endpoint.deleteProject + id + '/projects/members:add', payload);
+            const response: IResponse<IDetailProject> = await axiosInstance.post(Endpoint.deleteProject + id + '/projects/members:add', payload);
             console.log('POST response:', response.data);
               return response;
             } catch (error) {
