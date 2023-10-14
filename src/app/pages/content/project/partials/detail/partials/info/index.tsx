@@ -14,7 +14,10 @@ import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setProjectDetail } from "../../../../../../../../redux/slices/projectDetailSlice";
+import {
+  setBacklogIssues,
+  setProjectDetail,
+} from "../../../../../../../../redux/slices/projectDetailSlice";
 import { updateProject } from "../../../../../../../../redux/slices/projectSlice";
 import { RootState } from "../../../../../../../../redux/store";
 import { ProjectService } from "../../../../../../../../services/projectService";
@@ -66,6 +69,7 @@ export default function InfoProject() {
       if (checkResponseStatus(res)) {
         setIsFormDirty(false);
         dispatch(setProjectDetail(res?.data!));
+        dispatch(setBacklogIssues(res?.data.backlog.issues!));
         dispatch(updateProject(res?.data!));
         showSuccessMessage();
       }
@@ -97,6 +101,7 @@ export default function InfoProject() {
       if (checkResponseStatus(res)) {
         navigate("/project");
         dispatch(setProjectDetail(null));
+        dispatch(setBacklogIssues([]));
       }
     });
   };

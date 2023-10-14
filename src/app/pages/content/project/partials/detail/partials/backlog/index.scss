@@ -1,6 +1,25 @@
-.c-backlog-no-content{
-    border: 2px dashed var(--ds-border,#dfe1e6);
-    border-radius: 3px;
-    padding: 10px;
-    text-align: center;
+.c-backlog-no-content {
+  border: 2px dashed var(--ds-border, #dfe1e6);
+  border-radius: 3px;
+  padding: 10px;
+  text-align: center;
+}
+
+.c-backlog {
+  overflow: hidden scroll;
+  max-height: 58vh;
+  .c-backlog-item {
+    cursor: pointer;
+    &:hover .c-backlog-action,
+    &:hover .c-backlog-edit {
+      opacity: 1;
+    }
+
+    .c-backlog-edit {
+      opacity: 0;
+    }
+    .c-backlog-action {
+      opacity: 0;
+    }
+  }
 }

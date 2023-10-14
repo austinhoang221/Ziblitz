@@ -22,7 +22,6 @@ import { IUser } from "../../../models/IUser";
 import { ProjectService } from "../../../../services/projectService";
 import { checkResponseStatus } from "../../../helpers";
 import { useDispatch } from "react-redux";
-import { setProjectDetail } from "../../../../redux/slices/projectDetailSlice";
 import { deleteProject } from "../../../../redux/slices/projectSlice";
 export default function Project() {
   const initialRequestParam: IPagination = {
@@ -42,13 +41,13 @@ export default function Project() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
       content: "Successfully",
     });
   };
+
   const columns: ColumnsType<IProject> = [
     {
       title: <i className="fa-solid fa-star"></i>,

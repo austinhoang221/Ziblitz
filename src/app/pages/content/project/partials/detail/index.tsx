@@ -9,7 +9,10 @@ import { IProject } from "../../../../../models/IProject";
 import "./index.scss";
 import SubMenu from "antd/es/menu/SubMenu";
 import { useDispatch } from "react-redux";
-import { setProjectDetail } from "../../../../../../redux/slices/projectDetailSlice";
+import {
+  setBacklogIssues,
+  setProjectDetail,
+} from "../../../../../../redux/slices/projectDetailSlice";
 export default function DetailProject() {
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const [project, setProject] = useState<IProject>();
@@ -24,6 +27,7 @@ export default function DetailProject() {
       if (checkResponseStatus(res)) {
         setProject(res?.data!);
         dispatch(setProjectDetail(res?.data!));
+        dispatch(setBacklogIssues(res?.data.backlog.issues!));
       }
     });
   }, [userId, params?.code]);

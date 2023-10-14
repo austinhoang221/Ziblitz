@@ -12,7 +12,10 @@ import {
 import Search from "antd/es/input/Search";
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setProjectDetail } from "../../../../../../../../redux/slices/projectDetailSlice";
+import {
+  setBacklogIssues,
+  setProjectDetail,
+} from "../../../../../../../../redux/slices/projectDetailSlice";
 import { updateProject } from "../../../../../../../../redux/slices/projectSlice";
 import { RootState } from "../../../../../../../../redux/store";
 import { ProjectService } from "../../../../../../../../services/projectService";
@@ -67,6 +70,7 @@ export default function HeaderProject(props: any) {
       if (checkResponseStatus(res)) {
         dispatch(setProjectDetail(res?.data!));
         dispatch(updateProject(res?.data!));
+        dispatch(setBacklogIssues(res?.data.backlog.issues!));
       }
     });
   };

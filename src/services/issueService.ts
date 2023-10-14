@@ -23,5 +23,25 @@ export class IssueService {
           console.error('Error making POST request:', error);
         }
       };
+
+      public static editBacklogIssue = async (sprintId: string,  id: string, payload: any,) => {
+        try {
+        const response: IResponse<IIssue> = await axiosInstance.patch(Endpoint.editBacklogIssue + sprintId + '/issues/' + id, payload);
+        console.log('POST response:', response.data);
+          return response;
+        } catch (error) {
+          console.error('Error making POST request:', error);
+        }
+      };
+
+      public static editSprintIssue = async (backlogId: string, id: string, payload: any,) => {
+        try {
+        const response: IResponse<IIssue> = await axiosInstance.patch(Endpoint.editSprintIssue + backlogId + '/issues/' + id, payload);
+        console.log('POST response:', response.data);
+          return response;
+        } catch (error) {
+          console.error('Error making POST request:', error);
+        }
+      };
     }
     

@@ -15,4 +15,5 @@ export interface IIssue {
   voted: string,
   startDate: string,
   dueDate: string,
+  assigneeId: string,
 }

@@ -5,13 +5,15 @@ import { IUser } from "../models/IUser";
 
 function useUserData(userId: string, name?: string) {
     const [listUser, setListOfData] = useState<IUser[]>([]);
-  
-    const fetchData = useCallback(() => {
-      UserService.getAllUser(name
+    const [loading, setLoading] = useState(true);
+    const fetchData = useCallback( async () => {
+      setLoading(true);
+      await UserService.getAllUser(name
       ).then((res) => {
         if (checkResponseStatus(res)) {
           setListOfData(res?.data!);
         }
+      setLoading(false);
       });
     }, [userId, name]);
 
@@ -23,7 +25,7 @@ function useUserData(userId: string, name?: string) {
         fetchData();
       }, [fetchData, userId, name]);
     
-      return { listUser, refreshData };
+      return { listUser, loading, refreshData };
     }
   
   export default useUserData;

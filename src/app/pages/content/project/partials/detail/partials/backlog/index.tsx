@@ -1,4 +1,13 @@
-import { Button, Collapse, CollapseProps, Dropdown, List, Menu } from "antd";
+import {
+  Button,
+  Collapse,
+  CollapseProps,
+  Dropdown,
+  Input,
+  List,
+  Menu,
+  message,
+} from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../../../redux/store";
 import "./index.scss";
@@ -6,27 +15,61 @@ import HeaderProject from "../header";
 import { useState } from "react";
 import CreateIssueInput from "../../../../../../components/create-issue-input";
 import IssueType from "../../../../../../components/issue-type";
+import SubMenu from "antd/es/menu/SubMenu";
+import UserAvatar from "../../../../../../components/user-avatar";
+import SelectUser from "../../../../../../components/select-user";
+import InlineEdit from "../../../../../../components/edit-issue-input";
+import EditIssueInput from "../../../../../../components/edit-issue-input";
 const App: React.FC = () => {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isCreateIssue, setIsCreateIssue] = useState<boolean>(false);
+  const backlogIssues = useSelector(
+    (state: RootState) => state.projectDetail.backlogIssues
+  );
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const showSuccessMessage = () => {
+    messageApi.open({
+      type: "success",
+      content: "Successfully",
+    });
+  };
   const onClickCreateSprint = (e: any) => {
     e.stopPropagation();
   };
   const onClickCreateIssue = () => {
     setIsCreateIssue(true);
   };
+
+  const onEditIssue = () => {
+    setIsEditing(true);
+  };
   const onSaveIssue = () => {
     setIsCreateIssue(false);
+    showSuccessMessage();
   };
+
+  const onDeleteIssue = (id: string) => {};
+  const onChangeAssignUser = () => {};
   const backlogs: CollapseProps["items"] = [
     {
       key: "backlog",
-      label: <span className="font-weight-bold">Backlog</span>,
+      label: (
+        <div>
+          <span className="font-weight-bold">
+            Backlog{" "}
+            <span className="font-weight-normal">
+              ({backlogIssues?.length}) issues
+            </span>
+          </span>
+        </div>
+      ),
       children: (
         <>
-          {project?.backlog?.issues?.length === 0 ? (
+          {backlogIssues?.length === 0 ? (
             <>
               <div className="c-backlog-no-content">
                 <span className="text-center ">
@@ -38,34 +81,62 @@ const App: React.FC = () => {
             <List
               className="demo-loadmore-list"
               itemLayout="horizontal"
-              dataSource={project?.backlog?.issues}
+              dataSource={backlogIssues!}
               renderItem={(issue) => (
-                <List.Item>
+                <List.Item className="c-backlog-item">
                   <div className="align-child-space-between align-center w-100">
-                    <div className="">
-                      <Button type="text">
-                        <IssueType issueTypeKey="Bug"></IssueType>
+                    <div className="d-flex align-center">
+                      <Button type="text" className="mr-2">
+                        <IssueType
+                          issueTypeKey={
+                            project?.issueTypes.find(
+                              (type) => type.id === issue.issueTypeId
+                            )?.name
+                          }
+                        ></IssueType>
                       </Button>
-                      <span className="mr-2">{issue.name}</span>
-                      <Button type="text">
-                        <i className="fa-solid fa-pencil"></i>
-                      </Button>
+                      {isEditing ? (
+                        <Input placeholder="What need to be done?"></Input>
+                      ) : (
+                        <>
+                          <EditIssueInput
+                            initialValue={issue.name}
+                            identifier={issue.id}
+                          ></EditIssueInput>
+                        </>
+                      )}
                     </div>
-                    <Dropdown
-                      overlay={
-                        <Menu>
-                          <Menu.Item>Copy issue link</Menu.Item>
-                          <Menu.Item>Copy issue key</Menu.Item>
-                          <Menu.Item>Assignee</Menu.Item>
-                          <Menu.Item>Delete</Menu.Item>
-                        </Menu>
-                      }
-                      trigger={["click"]}
-                    >
-                      <Button type="text" onClick={(e) => e.preventDefault()}>
-                        <i className="fa-solid fa-ellipsis"></i>
-                      </Button>
-                    </Dropdown>
+                    <div>
+                      <UserAvatar
+                        userIds={[issue?.assigneeId]}
+                        isMultiple={false}
+                        isShowName={true}
+                      ></UserAvatar>
+                      <Dropdown
+                        className="c-backlog-action"
+                        overlay={
+                          <Menu>
+                            <Menu.Item>Copy issue link</Menu.Item>
+                            <Menu.Item>Copy issue key</Menu.Item>
+                            <SubMenu title={"Assignee"}>
+                              <Menu.Item>
+                                <SelectUser
+                                  onChangeAssignUser={onChangeAssignUser}
+                                ></SelectUser>
+                              </Menu.Item>
+                            </SubMenu>
+                            <Menu.Item onClick={() => onDeleteIssue(issue.id)}>
+                              Delete
+                            </Menu.Item>
+                          </Menu>
+                        }
+                        trigger={["click"]}
+                      >
+                        <Button type="text" onClick={(e) => e.preventDefault()}>
+                          <i className="fa-solid fa-ellipsis"></i>
+                        </Button>
+                      </Dropdown>
+                    </div>
                   </div>
                 </List.Item>
               )}
@@ -85,6 +156,7 @@ const App: React.FC = () => {
               <CreateIssueInput
                 periodId={project?.backlog?.id}
                 onSaveIssue={onSaveIssue}
+                onBlurCreateIssue={onSaveIssue}
               ></CreateIssueInput>
             </div>
           )}
@@ -99,8 +171,9 @@ const App: React.FC = () => {
   ];
   return (
     <>
+      {contextHolder}
       <HeaderProject></HeaderProject>
-      <div className="mt-4">
+      <div className="mt-4 c-backlog">
         <Collapse items={backlogs}></Collapse>
       </div>
     </>
