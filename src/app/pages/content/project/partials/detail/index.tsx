@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import {
   setBacklogIssues,
   setProjectDetail,
+  setSprints,
 } from "../../../../../../redux/slices/projectDetailSlice";
 export default function DetailProject() {
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
@@ -28,6 +29,7 @@ export default function DetailProject() {
         setProject(res?.data!);
         dispatch(setProjectDetail(res?.data!));
         dispatch(setBacklogIssues(res?.data.backlog.issues!));
+        dispatch(setSprints(res?.data.sprints!));
       }
     });
   }, [userId, params?.code]);

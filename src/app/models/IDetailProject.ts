@@ -1,5 +1,6 @@
 import { IBacklog } from "./IBacklog";
 import { IIssueType } from "./IIssueType";
+import { ISprint } from "./ISprint";
 import { IUser } from "./IUser";
 
 export interface IDetailProject {
@@ -12,5 +13,6 @@ export interface IDetailProject {
     leader: IUser,
     members: IUser[],
     backlog: IBacklog,
+    sprints: ISprint[],
     issueTypes: IIssueType[]
 }

@@ -71,6 +71,7 @@ export default function HeaderProject(props: any) {
         dispatch(setProjectDetail(res?.data!));
         dispatch(updateProject(res?.data!));
         dispatch(setBacklogIssues(res?.data.backlog.issues!));
+        // dispatch(setSprint(res?.data.sprint!));
       }
     });
   };

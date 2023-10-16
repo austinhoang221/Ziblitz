@@ -33,6 +33,7 @@ const EditIssueInput = (props: any) => {
             (item: IIssue) => item.id === res?.data.id
           );
           tempBacklogIssues.splice(index, 1, res?.data!);
+          props.onSaveIssue();
           dispatch(setBacklogIssues(tempBacklogIssues!));
         }
       });
