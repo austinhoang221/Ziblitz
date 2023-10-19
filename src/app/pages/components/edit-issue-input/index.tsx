@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Typography, Input, Button, InputRef } from "antd";
 import { IssueService } from "../../../../services/issueService";
 import { checkResponseStatus } from "../../../helpers";
@@ -17,8 +17,14 @@ const EditIssueInput = (props: any) => {
   const backlogIssues = useSelector(
     (state: RootState) => state.projectDetail.backlogIssues
   );
+
+  useEffect(() => {
+    if (isEditing) {
+      ref.current?.focus();
+    }
+  }, [isEditing]);
+
   const onEditIssue = () => {
-    ref.current?.focus();
     setIsEditing(true);
   };
 

@@ -2,12 +2,16 @@ import {
   Button,
   Collapse,
   CollapseProps,
+  DatePicker,
   Dropdown,
+  Form,
   Input,
   List,
   Menu,
   message,
+  Modal,
   Popconfirm,
+  Select,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../../../../../redux/store";
@@ -20,19 +24,19 @@ import SubMenu from "antd/es/menu/SubMenu";
 import UserAvatar from "../../../../../../components/user-avatar";
 import SelectUser from "../../../../../../components/select-user";
 import EditIssueInput from "../../../../../../components/edit-issue-input";
-import { ProjectService } from "../../../../../../../../services/projectService";
 import { ISprint } from "../../../../../../../models/ISprint";
 import { IIssue } from "../../../../../../../models/IIssue";
 import { SprintService } from "../../../../../../../../services/sprintService";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import { setSprints } from "../../../../../../../../redux/slices/projectDetailSlice";
-import { IssueService } from "../../../../../../../../services/issueService";
-const App: React.FC = () => {
+import TextArea from "antd/es/input/TextArea";
+import dayjs from "dayjs";
+import { IResponse } from "../../../../../../../models/IResponse";
+const Backlog: React.FC = () => {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [isCreateIssue, setIsCreateIssue] = useState<boolean>(false);
+  const [isEditSprint, setIsEditSprint] = useState<boolean>(false);
   const backlogIssues = useSelector(
     (state: RootState) => state.projectDetail.backlogIssues
   );
@@ -41,6 +45,29 @@ const App: React.FC = () => {
   );
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useDispatch();
+  const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
+  const [datePickerType, setDatePickerType] = useState<string>("custom");
+  const [editSprintForm] = Form.useForm();
+  const { RangePicker } = DatePicker;
+  const [editSprintId, setEditSprintId] = useState<string>("");
+  const datePickerTypes = [
+    {
+      label: "Custom",
+      value: "custom",
+    },
+    {
+      label: "Week",
+      value: "week",
+    },
+    {
+      label: "Month",
+      value: "month",
+    },
+    {
+      label: "Quater",
+      value: "quater",
+    },
+  ];
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
@@ -58,21 +85,80 @@ const App: React.FC = () => {
       }
     });
   };
-  const onClickCreateIssue = () => {
-    setIsCreateIssue(true);
+
+  const onSaveIssue = () => {
+    showSuccessMessage();
   };
 
-  const onEditIssue = () => {
-    setIsEditing(true);
+  const handleFormChange = () => {
+    if (!isFormDirty) {
+      setIsFormDirty(true); // Mark the form as dirty when changes occur
+    }
   };
-  const onSaveIssue = () => {
-    setIsCreateIssue(false);
-    showSuccessMessage();
+
+  const onClickEditSprint = (e: any, sprint: ISprint) => {
+    e.stopPropagation();
+    editSprintForm.resetFields();
+    editSprintForm.setFieldsValue(sprint);
+    if (sprint.startDate && sprint.endDate) {
+      const time = [dayjs(sprint.startDate), dayjs(sprint.endDate)];
+      editSprintForm.setFieldValue("time", time);
+    }
+    setEditSprintId(sprint.id);
+    setIsEditSprint(true);
+  };
+
+  const onEditSprint = async () => {
+    const formValue = editSprintForm.getFieldsValue();
+    const payload = {
+      name: formValue.name,
+      startDate: formValue.time?.[0]
+        ? dayjs(formValue.time?.[0]).toISOString()
+        : null,
+      endDate: formValue.time?.[1]
+        ? dayjs(formValue.time?.[1]).toISOString()
+        : null,
+      goal: formValue.goal,
+      projectId: project?.id,
+    };
+    await SprintService.updateSprint(project?.id!, editSprintId, payload).then(
+      (res) => {
+        if (checkResponseStatus(res)) {
+          const tempSprints = [...sprints!];
+          const index = tempSprints.findIndex(
+            (item: ISprint) => item.id === res?.data.id
+          );
+          tempSprints.splice(index, 1, res?.data!);
+          dispatch(setSprints(tempSprints));
+          showSuccessMessage();
+          setIsEditSprint(false);
+        }
+      }
+    );
+  };
+
+  const onClickCancelEdit = (e: any) => {
+    setIsEditSprint(false);
+    e.stopPropagation();
   };
 
   const onDeleteIssue = (id: string) => {
     // IssueService.de
   };
+
+  const onDeleteSprint = async (e: any, id: string) => {
+    e.stopPropagation();
+    await SprintService.deleteSprint(project?.id!, id).then((res) => {
+      if (checkResponseStatus(res)) {
+        const tempSprints = [...sprints!];
+        const index = tempSprints.findIndex((item: ISprint) => item.id === id);
+        tempSprints.splice(index, 1);
+        dispatch(setSprints(tempSprints));
+        showSuccessMessage();
+      }
+    });
+  };
+
   const onChangeAssignUser = () => {};
   const onRenderListIssue = (issues: IIssue[]) => {
     return (
@@ -93,18 +179,13 @@ const App: React.FC = () => {
                     }
                   ></IssueType>
                 </Button>
-                {isEditing ? (
-                  <Input placeholder="What need to be done?"></Input>
-                ) : (
-                  <>
-                    <EditIssueInput
-                      initialValue={issue.name}
-                      identifier={issue.id}
-                      onSaveIssue={onSaveIssue}
-                      onBlurCreateIssue={onSaveIssue}
-                    ></EditIssueInput>
-                  </>
-                )}
+                <>
+                  <EditIssueInput
+                    initialValue={issue.name}
+                    identifier={issue.id}
+                    onSaveIssue={onSaveIssue}
+                  ></EditIssueInput>
+                </>
               </div>
               <div>
                 <UserAvatar
@@ -118,14 +199,17 @@ const App: React.FC = () => {
                     <Menu>
                       <Menu.Item>Copy issue link</Menu.Item>
                       <Menu.Item>Copy issue key</Menu.Item>
-                      <SubMenu title={"Assignee"}>
+                      <SubMenu title={"Assignee"} key={issue.id}>
                         <Menu.Item>
                           <SelectUser
                             onChangeAssignUser={onChangeAssignUser}
                           ></SelectUser>
                         </Menu.Item>
                       </SubMenu>
-                      <Menu.Item onClick={() => onDeleteIssue(issue.id)}>
+                      <Menu.Item
+                        onClick={() => onDeleteIssue(issue.id)}
+                        key={issue.id}
+                      >
                         <Popconfirm
                           title="Delete"
                           description="Are you sure to delete this project?"
@@ -167,30 +251,35 @@ const App: React.FC = () => {
       ) : (
         onRenderListIssue(backlogIssues!)
       )}
-      {!isCreateIssue ? (
-        <Button
-          type="text"
-          className="w-100 mt-1 text-left"
-          onClick={onClickCreateIssue}
-        >
-          <i className="fa-solid fa-plus mr-2"></i>
-          <span className="font-weight-bold">Add upcoming work here</span>
-        </Button>
-      ) : (
-        <div className="mt-1">
-          <CreateIssueInput
-            periodId={project?.backlog?.id}
-            onSaveIssue={onSaveIssue}
-            onBlurCreateIssue={onSaveIssue}
-          ></CreateIssueInput>
-        </div>
-      )}
+      <CreateIssueInput
+        periodId={project?.backlog?.id}
+        onSaveIssue={onSaveIssue}
+      ></CreateIssueInput>
     </>
   );
 
+  const onRenderTimePicker = () => {
+    switch (datePickerType) {
+      case "custom":
+        return <RangePicker className="w-100" />;
+      case "week":
+        return (
+          <RangePicker format="DD/MM/YYYY" picker="week" className="w-100" />
+        );
+      case "month":
+        return (
+          <RangePicker format="DD/MM/YYYY" picker="month" className="w-100" />
+        );
+      case "quater":
+        return (
+          <RangePicker format="DD/MM/YYYY" picker="quarter" className="w-100" />
+        );
+    }
+  };
+
   const onRenderSprintContent = (sprint: ISprint): ReactNode => (
     <>
-      {sprint?.issues?.length === 0 ? (
+      {!sprint?.issues || sprint?.issues?.length === 0 ? (
         <>
           <div className="c-backlog-no-content">
             <span className="text-center ">
@@ -200,26 +289,12 @@ const App: React.FC = () => {
           </div>
         </>
       ) : (
-        sprint?.issues && onRenderListIssue(sprint?.issues!)
+        sprint?.issues && onRenderListIssue(sprint.issues)
       )}
-      {!isCreateIssue ? (
-        <Button
-          type="text"
-          className="w-100 mt-1 text-left"
-          onClick={onClickCreateIssue}
-        >
-          <i className="fa-solid fa-plus mr-2"></i>
-          <span className="font-weight-bold">Add upcoming work here</span>
-        </Button>
-      ) : (
-        <div className="mt-1">
-          <CreateIssueInput
-            periodId={project?.backlog?.id}
-            onSaveIssue={onSaveIssue}
-            onBlurCreateIssue={onSaveIssue}
-          ></CreateIssueInput>
-        </div>
-      )}
+      <CreateIssueInput
+        periodId={sprint?.id}
+        onSaveIssue={onSaveIssue}
+      ></CreateIssueInput>
     </>
   );
 
@@ -227,16 +302,15 @@ const App: React.FC = () => {
     <>
       <HeaderProject></HeaderProject>
       <div className="mt-4 c-backlog">
-        <Collapse>
+        <Collapse ghost={true}>
           {sprints?.map((sprint) => {
             return (
               <Collapse.Panel
-                className="mb-2"
                 key={sprint.id}
                 header={
                   <div>
                     <span className="font-weight-bold">
-                      {sprint.name}
+                      {sprint.name}&nbsp;
                       <span className="font-weight-normal">
                         ({sprint?.issues?.length ?? 0}) issues
                       </span>
@@ -244,12 +318,45 @@ const App: React.FC = () => {
                   </div>
                 }
                 extra={
-                  <Button
-                    onClick={(e: any) => onClickCreateSprint(e)}
-                    type="default"
-                  >
-                    Complete sprint
-                  </Button>
+                  <>
+                    <Button
+                      onClick={(e: any) => onClickCreateSprint(e)}
+                      type="default"
+                      className="mr-2"
+                    >
+                      Complete sprint
+                    </Button>
+                    <Dropdown
+                      className="c-backlog-action"
+                      overlay={
+                        <Menu key={sprint.id}>
+                          <Menu.Item key="edit">
+                            <div onClick={(e) => onClickEditSprint(e, sprint)}>
+                              Edit
+                            </div>
+                          </Menu.Item>
+                          <Menu.Item key="delete">
+                            <Popconfirm
+                              title="Delete"
+                              description="Are you sure to delete this sprint?"
+                              okText="Yes"
+                              cancelText="Cancel"
+                              onConfirm={(e) => onDeleteSprint(e, sprint?.id)}
+                            >
+                              <div onClick={(e) => e.stopPropagation()}>
+                                Move to trash
+                              </div>
+                            </Popconfirm>
+                          </Menu.Item>
+                        </Menu>
+                      }
+                      trigger={["click"]}
+                    >
+                      <Button type="text" onClick={(e) => e.stopPropagation()}>
+                        <i className="fa-solid fa-ellipsis"></i>
+                      </Button>
+                    </Dropdown>
+                  </>
                 }
               >
                 {onRenderSprintContent(sprint)}
@@ -281,10 +388,64 @@ const App: React.FC = () => {
             {onRenderBacklogContent}
           </Collapse.Panel>
         </Collapse>
+        <Modal
+          title="Edit sprint"
+          open={isEditSprint}
+          onOk={onEditSprint}
+          onCancel={(e) => onClickCancelEdit(e)}
+        >
+          <Form
+            onClick={(e) => e.stopPropagation()}
+            form={editSprintForm}
+            onValuesChange={handleFormChange}
+          >
+            <Form.Item
+              label="Sprint name"
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter your sprint name",
+                },
+              ]}
+            >
+              <Input type="text" placeholder="Name" />
+            </Form.Item>
+            <Form.Item
+              label="Duration"
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+            >
+              <Select
+                defaultValue="custom"
+                onChange={(e) => setDatePickerType(e)}
+                options={datePickerTypes}
+              ></Select>
+            </Form.Item>
+            <Form.Item
+              label="Time"
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+              name="time"
+            >
+              {onRenderTimePicker()}
+            </Form.Item>
+            <Form.Item
+              label="Goal"
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+              name="goal"
+            >
+              <TextArea></TextArea>
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
       {contextHolder}
     </>
   );
 };
 
-export default App;
+export default Backlog;
