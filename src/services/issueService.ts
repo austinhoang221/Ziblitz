@@ -4,54 +4,81 @@ import { IIssue } from "../app/models/IIssue";
 import { IResponse } from "../app/models/IResponse";
 
 export class IssueService {
-    public static createBacklogIssueByName = async (backlogId: string, payload: any) => {
-        try {
-        const response: IResponse<IIssue> = await axiosInstance.post(Endpoint.createBacklogIssue + backlogId + '/issues:name', payload);
-        console.log('POST response:', response.data);
-          return response;
-        } catch (error) {
-          console.error('Error making POST request:', error);
-        }
-      };
-
-      public static createSprintIssueByName = async (sprintId: string, payload: any) => {
-        try {
-        const response: IResponse<IIssue> = await axiosInstance.post(Endpoint.createSprintIssue + sprintId + '/issues:name', payload);
-        console.log('POST response:', response.data);
-          return response;
-        } catch (error) {
-          console.error('Error making POST request:', error);
-        }
-      };
-
-      public static editBacklogIssue = async (sprintId: string,  id: string, payload: any,) => {
-        try {
-        const response: IResponse<IIssue> = await axiosInstance.patch(Endpoint.editBacklogIssue + sprintId + '/issues/' + id, payload);
-        console.log('POST response:', response.data);
-          return response;
-        } catch (error) {
-          console.error('Error making POST request:', error);
-        }
-      };
-
-      public static editSprintIssue = async (backlogId: string, id: string, payload: any,) => {
-        try {
-        const response: IResponse<IIssue> = await axiosInstance.patch(Endpoint.editSprintIssue + backlogId + '/issues/' + id, payload);
-        console.log('POST response:', response.data);
-          return response;
-        } catch (error) {
-          console.error('Error making POST request:', error);
-        }
-      };
-
-      public static deleteIssue = async (backlogId: string, id: string, payload: any,) => {
-        try {
-        const response: IResponse<IIssue> = await axiosInstance.patch(Endpoint.editSprintIssue + backlogId + '/issues/' + id, payload);
-        console.log('POST response:', response.data);
-          return response;
-        } catch (error) {
-          console.error('Error making POST request:', error);
-        }
-      };
+  public static createBacklogIssueByName = async (
+    backlogId: string,
+    payload: any
+  ) => {
+    try {
+      const response: IResponse<IIssue> = await axiosInstance.post(
+        Endpoint.createBacklogIssue + backlogId + "/issues/:name",
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
     }
-    
+  };
+
+  public static createSprintIssueByName = async (
+    sprintId: string,
+    payload: any
+  ) => {
+    try {
+      const response: IResponse<IIssue> = await axiosInstance.post(
+        Endpoint.createSprintIssue + sprintId + "/issues/:name",
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static editBacklogIssue = async (
+    sprintId: string,
+    id: string,
+    payload: any
+  ) => {
+    try {
+      const response: IResponse<IIssue> = await axiosInstance.patch(
+        Endpoint.editBacklogIssue + sprintId + "/issues/" + id,
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static editSprintIssue = async (
+    backlogId: string,
+    id: string,
+    payload: any
+  ) => {
+    try {
+      const response: IResponse<IIssue> = await axiosInstance.patch(
+        Endpoint.editSprintIssue + backlogId + "/issues/" + id,
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static deleteIssue = async (backlogId: string, id: string) => {
+    try {
+      const response: IResponse<IIssue> = await axiosInstance.delete(
+        Endpoint.editSprintIssue + backlogId + "/issues/" + id
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+}

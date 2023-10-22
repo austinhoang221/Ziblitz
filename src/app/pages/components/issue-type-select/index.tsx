@@ -19,13 +19,36 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
       className="mr-2"
       overlay={
         <Menu onClick={(e) => props.onChangeIssueType(e)}>
-          {project?.issueTypes.map((type) => {
-            return <Menu.Item key={type.id}>{type.name}</Menu.Item>;
-          })}
+          {project?.issueTypes
+            .filter((item) => item.name !== "Epic" && item.name !== "Subtask")
+            .map((type) => {
+              return (
+                <Menu.Item
+                  key={type.id}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    {type.name}
+                  </div>
+                </Menu.Item>
+              );
+            })}
         </Menu>
       }
     >
-      <Button type="text">
+      <Button
+        type="text"
+        onMouseDown={(e) => {
+          e.preventDefault();
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
         {!props.issueTypeKey ? (
           <i className="fa-solid fa-angle-down"></i>
         ) : (

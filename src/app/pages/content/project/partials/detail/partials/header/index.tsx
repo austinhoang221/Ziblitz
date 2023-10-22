@@ -5,20 +5,18 @@ import {
   Form,
   Mentions,
   Menu,
+  message,
   Modal,
   Select,
   Tooltip,
 } from "antd";
 import Search from "antd/es/input/Search";
 import React, { useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setBacklogIssues,
-  setProjectDetail,
-} from "../../../../../../../../redux/slices/projectDetailSlice";
-import { updateProject } from "../../../../../../../../redux/slices/projectSlice";
+import { useSelector } from "react-redux";
+import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
 import { ProjectService } from "../../../../../../../../services/projectService";
+import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
 import useRoleData from "../../../../../../../customHooks/fetchRole";
 import useUserData from "../../../../../../../customHooks/fetchUser";
 import {
@@ -43,10 +41,17 @@ export default function HeaderProject(props: any) {
   const { listUser, refreshData } = useUserData(userId, requestUserParam.name);
   const { listRole } = useRoleData();
   const ref = useRef<string>();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [isLoadingMention, setIsLoadingMention] = useState<boolean>(false);
   const [addMemberForm] = Form.useForm();
   const { getMentions } = Mentions;
+  const [messageApi, contextHolder] = message.useMessage();
+  const showSuccessMessage = () => {
+    messageApi.open({
+      type: "success",
+      content: "Successfully",
+    });
+  };
   const onClickCancel = () => {
     setIsModalOpen(false);
   };
@@ -68,10 +73,9 @@ export default function HeaderProject(props: any) {
     };
     ProjectService.addMember(userId, payload).then((res) => {
       if (checkResponseStatus(res)) {
-        dispatch(setProjectDetail(res?.data!));
-        dispatch(updateProject(res?.data!));
-        dispatch(setBacklogIssues(res?.data.backlog.issues!));
-        // dispatch(setSprint(res?.data.sprint!));
+        dispatch(getProjectByCode(project?.code!));
+        setIsModalOpen(false);
+        showSuccessMessage();
       }
     });
   };
@@ -101,6 +105,7 @@ export default function HeaderProject(props: any) {
   );
   return (
     <>
+      {contextHolder}
       <div className="align-child-space-between align-center">
         <h1 className="mb-0">Backlog</h1>
         <Dropdown

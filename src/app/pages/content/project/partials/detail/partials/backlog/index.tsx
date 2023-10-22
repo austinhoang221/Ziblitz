@@ -13,7 +13,7 @@ import {
   Popconfirm,
   Select,
 } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../../../redux/store";
 import "./index.scss";
 import HeaderProject from "../header";
@@ -28,15 +28,20 @@ import { ISprint } from "../../../../../../../models/ISprint";
 import { IIssue } from "../../../../../../../models/IIssue";
 import { SprintService } from "../../../../../../../../services/sprintService";
 import { checkResponseStatus } from "../../../../../../../helpers";
-import { setSprints } from "../../../../../../../../redux/slices/projectDetailSlice";
+import {
+  getProjectByCode,
+  setSprints,
+} from "../../../../../../../../redux/slices/projectDetailSlice";
 import TextArea from "antd/es/input/TextArea";
 import dayjs from "dayjs";
-import { IResponse } from "../../../../../../../models/IResponse";
+import { IssueService } from "../../../../../../../../services/issueService";
+import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
+import IssueStatusSelect from "../../../../../../components/issue-status-select";
 const Backlog: React.FC = () => {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
-  const [isEditSprint, setIsEditSprint] = useState<boolean>(false);
+  const [isChangeSprint, setIsChangeSprint] = useState<boolean>(false);
   const backlogIssues = useSelector(
     (state: RootState) => state.projectDetail.backlogIssues
   );
@@ -44,9 +49,11 @@ const Backlog: React.FC = () => {
     (state: RootState) => state.projectDetail.sprints
   );
   const [messageApi, contextHolder] = message.useMessage();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
+  const [isStartSprint, setIsStartSprint] = useState<boolean>(false);
   const [datePickerType, setDatePickerType] = useState<string>("custom");
+  const [startingSprint, setStartingSprint] = useState<ISprint | null>(null);
   const [editSprintForm] = Form.useForm();
   const { RangePicker } = DatePicker;
   const [editSprintId, setEditSprintId] = useState<string>("");
@@ -76,6 +83,7 @@ const Backlog: React.FC = () => {
   };
   const onClickCreateSprint = (e: any) => {
     e.stopPropagation();
+    setIsStartSprint(false);
     SprintService.createSprint(project?.id!).then((res) => {
       if (checkResponseStatus(res)) {
         const tempSprint = [...sprints!];
@@ -84,6 +92,23 @@ const Backlog: React.FC = () => {
         showSuccessMessage();
       }
     });
+  };
+
+  const onClickStartSprint = (e: any, sprint: ISprint) => {
+    e.stopPropagation();
+    setIsStartSprint(true);
+    editSprintForm.resetFields();
+    setStartingSprint(sprint);
+    editSprintForm.setFieldsValue(sprint);
+    const currentDate = new Date();
+    const oneWeekLater = new Date(currentDate);
+    const time = [
+      dayjs(currentDate),
+      dayjs(oneWeekLater.setDate(currentDate.getDate() + 7)),
+    ];
+    editSprintForm.setFieldValue("time", time);
+    setEditSprintId(sprint.id);
+    setIsChangeSprint(true);
   };
 
   const onSaveIssue = () => {
@@ -105,10 +130,10 @@ const Backlog: React.FC = () => {
       editSprintForm.setFieldValue("time", time);
     }
     setEditSprintId(sprint.id);
-    setIsEditSprint(true);
+    setIsChangeSprint(true);
   };
 
-  const onEditSprint = async () => {
+  const onChangeSprint = async () => {
     const formValue = editSprintForm.getFieldsValue();
     const payload = {
       name: formValue.name,
@@ -121,29 +146,43 @@ const Backlog: React.FC = () => {
       goal: formValue.goal,
       projectId: project?.id,
     };
-    await SprintService.updateSprint(project?.id!, editSprintId, payload).then(
-      (res) => {
+    if (!isChangeSprint) {
+      await SprintService.updateSprint(
+        project?.id!,
+        editSprintId,
+        payload
+      ).then((res) => {
         if (checkResponseStatus(res)) {
-          const tempSprints = [...sprints!];
-          const index = tempSprints.findIndex(
-            (item: ISprint) => item.id === res?.data.id
-          );
-          tempSprints.splice(index, 1, res?.data!);
-          dispatch(setSprints(tempSprints));
+          dispatch(getProjectByCode(project?.code!));
           showSuccessMessage();
-          setIsEditSprint(false);
+          setIsChangeSprint(false);
         }
-      }
-    );
+      });
+    } else {
+      await SprintService.startSprint(project?.id!, editSprintId, payload).then(
+        (res) => {
+          if (checkResponseStatus(res)) {
+            dispatch(getProjectByCode(project?.code!));
+            showSuccessMessage();
+            setIsChangeSprint(false);
+          }
+        }
+      );
+    }
   };
 
   const onClickCancelEdit = (e: any) => {
-    setIsEditSprint(false);
+    setIsChangeSprint(false);
     e.stopPropagation();
   };
 
-  const onDeleteIssue = (id: string) => {
-    // IssueService.de
+  const onDeleteIssue = async (parentId: string, id: string) => {
+    await IssueService.deleteIssue(parentId, id).then((res) => {
+      if (checkResponseStatus(res)) {
+        showSuccessMessage();
+        dispatch(getProjectByCode(project?.code!));
+      }
+    });
   };
 
   const onDeleteSprint = async (e: any, id: string) => {
@@ -159,8 +198,13 @@ const Backlog: React.FC = () => {
     });
   };
 
-  const onChangeAssignUser = () => {};
-  const onRenderListIssue = (issues: IIssue[]) => {
+  const onChangeAssignUser = (e: any) => {};
+
+  const onRenderListIssue = (
+    parentId: string,
+    type: string,
+    issues: IIssue[]
+  ) => {
     return (
       <List
         className="demo-loadmore-list"
@@ -188,8 +232,14 @@ const Backlog: React.FC = () => {
                 </>
               </div>
               <div>
+                <IssueStatusSelect
+                  type={type}
+                  periodId={parentId}
+                  onSaveIssue={onSaveIssue}
+                  currentId={issue?.statusId}
+                ></IssueStatusSelect>
                 <UserAvatar
-                  userIds={[issue?.assigneeId]}
+                  userIds={[issue?.issueDetail.assigneeId]}
                   isMultiple={false}
                   isShowName={true}
                 ></UserAvatar>
@@ -202,20 +252,20 @@ const Backlog: React.FC = () => {
                       <SubMenu title={"Assignee"} key={issue.id}>
                         <Menu.Item>
                           <SelectUser
-                            onChangeAssignUser={onChangeAssignUser}
+                            type={type}
+                            periodId={parentId}
+                            onSaveIssue={onSaveIssue}
+                            currentId={issue.issueDetail.assigneeId}
                           ></SelectUser>
                         </Menu.Item>
                       </SubMenu>
-                      <Menu.Item
-                        onClick={() => onDeleteIssue(issue.id)}
-                        key={issue.id}
-                      >
+                      <Menu.Item>
                         <Popconfirm
                           title="Delete"
-                          description="Are you sure to delete this project?"
+                          description="Are you sure to delete this issue?"
                           okText="Yes"
                           cancelText="Cancel"
-                          onConfirm={() => onDeleteIssue(issue?.id)}
+                          onConfirm={() => onDeleteIssue(parentId, issue?.id)}
                         >
                           <div onClick={(e) => e.stopPropagation()}>
                             Move to trash
@@ -249,9 +299,10 @@ const Backlog: React.FC = () => {
           </div>
         </>
       ) : (
-        onRenderListIssue(backlogIssues!)
+        onRenderListIssue(project?.backlog?.id!, "backlog", backlogIssues!)
       )}
       <CreateIssueInput
+        type="backlog"
         periodId={project?.backlog?.id}
         onSaveIssue={onSaveIssue}
       ></CreateIssueInput>
@@ -261,18 +312,33 @@ const Backlog: React.FC = () => {
   const onRenderTimePicker = () => {
     switch (datePickerType) {
       case "custom":
-        return <RangePicker className="w-100" />;
+        return <RangePicker className="w-100" allowClear={false} />;
       case "week":
         return (
-          <RangePicker format="DD/MM/YYYY" picker="week" className="w-100" />
+          <RangePicker
+            format="DD/MM/YYYY"
+            picker="week"
+            className="w-100"
+            allowClear={false}
+          />
         );
       case "month":
         return (
-          <RangePicker format="DD/MM/YYYY" picker="month" className="w-100" />
+          <RangePicker
+            format="DD/MM/YYYY"
+            picker="month"
+            className="w-100"
+            allowClear={false}
+          />
         );
       case "quater":
         return (
-          <RangePicker format="DD/MM/YYYY" picker="quarter" className="w-100" />
+          <RangePicker
+            format="DD/MM/YYYY"
+            picker="quarter"
+            className="w-100"
+            allowClear={false}
+          />
         );
     }
   };
@@ -289,9 +355,10 @@ const Backlog: React.FC = () => {
           </div>
         </>
       ) : (
-        sprint?.issues && onRenderListIssue(sprint.issues)
+        sprint?.issues && onRenderListIssue(sprint.id, "sprint", sprint.issues)
       )}
       <CreateIssueInput
+        type="sprint"
         periodId={sprint?.id}
         onSaveIssue={onSaveIssue}
       ></CreateIssueInput>
@@ -319,13 +386,24 @@ const Backlog: React.FC = () => {
                 }
                 extra={
                   <>
-                    <Button
-                      onClick={(e: any) => onClickCreateSprint(e)}
-                      type="default"
-                      className="mr-2"
-                    >
-                      Complete sprint
-                    </Button>
+                    {sprint.issues?.length > 0 ? (
+                      <Button
+                        onClick={(e: any) => onClickCreateSprint(e)}
+                        type="default"
+                        className="mr-2"
+                      >
+                        Complete sprint
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={(e: any) => onClickStartSprint(e, sprint)}
+                        type="default"
+                        className="mr-2"
+                      >
+                        Start sprint
+                      </Button>
+                    )}
+
                     <Dropdown
                       className="c-backlog-action"
                       overlay={
@@ -389,11 +467,17 @@ const Backlog: React.FC = () => {
           </Collapse.Panel>
         </Collapse>
         <Modal
-          title="Edit sprint"
-          open={isEditSprint}
-          onOk={onEditSprint}
+          title={isStartSprint ? "Start another sprint" : "Edit sprint"}
+          open={isChangeSprint}
+          onOk={onChangeSprint}
           onCancel={(e) => onClickCancelEdit(e)}
         >
+          {isStartSprint && (
+            <span>
+              {startingSprint?.issues.length} issue will be included in this
+              sprint.{" "}
+            </span>
+          )}
           <Form
             onClick={(e) => e.stopPropagation()}
             form={editSprintForm}
@@ -429,6 +513,12 @@ const Backlog: React.FC = () => {
               labelCol={{ span: 24 }}
               wrapperCol={{ span: 24 }}
               name="time"
+              rules={[
+                {
+                  required: isStartSprint,
+                  message: "Please input sprint time",
+                },
+              ]}
             >
               {onRenderTimePicker()}
             </Form.Item>

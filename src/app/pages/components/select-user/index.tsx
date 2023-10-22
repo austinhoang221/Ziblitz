@@ -1,10 +1,19 @@
 import { Avatar, Select } from "antd";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
+import { RootState } from "../../../../redux/store";
+import { IssueService } from "../../../../services/issueService";
+import { useAppDispatch } from "../../../customHooks/dispatch";
 import useUserData from "../../../customHooks/fetchUser";
-import { convertNameToInitials, getRandomColor } from "../../../helpers";
+import {
+  checkResponseStatus,
+  convertNameToInitials,
+  getRandomColor,
+} from "../../../helpers";
+import { IIssueComponentProps } from "../../../models/IIssueComponent";
 import { IUser } from "../../../models/IUser";
-
-export default function SelectUser(props: any) {
+export default function SelectUser(props: IIssueComponentProps) {
   const initialRequestUserParam = {
     name: "",
   };
@@ -13,7 +22,10 @@ export default function SelectUser(props: any) {
   );
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const { listUser, loading } = useUserData(userId, requestUserParam.name);
-
+  const dispatch = useAppDispatch();
+  const project = useSelector(
+    (state: RootState) => state.projectDetail.project
+  );
   const getOptionLabel = (user: IUser) => (
     <>
       <Avatar
@@ -33,19 +45,42 @@ export default function SelectUser(props: any) {
     setRequestUserParam({ name: value! });
   };
 
+  const onChangeAssignUser = async (e: any) => {
+    if (props.type === "backlog") {
+      await IssueService.editBacklogIssue(props.periodId, e, {
+        assigneeId: e,
+      }).then((res) => {
+        if (checkResponseStatus(res)) {
+          dispatch(getProjectByCode(project?.code!));
+          props.onSaveIssue();
+        }
+      });
+    } else {
+      await IssueService.editSprintIssue(props.periodId, e, {
+        assigneeId: e,
+      }).then((res) => {
+        if (checkResponseStatus(res)) {
+          dispatch(getProjectByCode(project?.code!));
+          props.onSaveIssue();
+        }
+      });
+    }
+  };
+
   return (
     <Select
       style={{ width: "200px" }}
       showSearch
       onSearch={(e) => onSearch(e)}
       loading={loading}
+      defaultValue={props.currentId}
       options={listUser.map((user) => {
         return {
           label: getOptionLabel(user),
           value: user.id,
         };
       })}
-      onChange={props.onChangeAssignUser}
+      onChange={(e) => onChangeAssignUser(e)}
       onFocus={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     ></Select>

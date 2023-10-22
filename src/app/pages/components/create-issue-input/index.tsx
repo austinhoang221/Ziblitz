@@ -1,9 +1,10 @@
-import { Button, Dropdown, Input, InputRef, Menu, message } from "antd";
+import { Button, Input, InputRef } from "antd";
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setBacklogIssues } from "../../../../redux/slices/projectDetailSlice";
+import { useSelector } from "react-redux";
+import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
 import { IssueService } from "../../../../services/issueService";
+import { useAppDispatch } from "../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../helpers";
 import IssueTypeSelect from "../issue-type-select";
 export default function CreateIssueInput(props: any, identifier: string) {
@@ -15,12 +16,10 @@ export default function CreateIssueInput(props: any, identifier: string) {
     (state: RootState) => state.projectDetail.project
   );
   const [issueTypeKey, setIssueTypeKey] = useState<string>(
-    project?.issueTypes?.[0].id!
+    project?.issueTypes.find((type) => type.name === "Bug")?.id!
   );
-  const backlogIssue = useSelector(
-    (state: RootState) => state.projectDetail.backlogIssues
-  );
-  const dispatch = useDispatch();
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isCreate) {
@@ -40,18 +39,18 @@ export default function CreateIssueInput(props: any, identifier: string) {
   };
 
   const onSaveIssue = (e: any) => {
-    if (e) {
-      if (props.type === "sprint") {
+    if (e?.target.value) {
+      if (props.type === "backlog") {
         IssueService.createBacklogIssueByName(props.periodId, {
           name: e.target.value,
           issueTypeId: issueTypeKey,
           creatorUserId: userId,
+          projectId: project?.id,
         }).then((res) => {
           if (checkResponseStatus(res)) {
             props.onSaveIssue();
-            const newBacklogIssues = [...backlogIssue!];
-            newBacklogIssues.push(res?.data!);
-            dispatch(setBacklogIssues(newBacklogIssues!));
+            dispatch(getProjectByCode(project?.code!));
+            setIsCreate(false);
           }
         });
       } else {
@@ -59,12 +58,12 @@ export default function CreateIssueInput(props: any, identifier: string) {
           name: e.target.value,
           issueTypeId: issueTypeKey,
           creatorUserId: userId,
+          projectId: project?.id,
         }).then((res) => {
           if (checkResponseStatus(res)) {
             props.onSaveIssue();
-            // const newBacklogIssues = [...backlogIssue!];
-            // newBacklogIssues.push(res?.data!);
-            // dispatch(setBacklogIssues(newBacklogIssues!));
+            dispatch(getProjectByCode(project?.code!));
+            setIsCreate(false);
           }
         });
       }
@@ -84,15 +83,20 @@ export default function CreateIssueInput(props: any, identifier: string) {
       ) : (
         <div className="mt-1">
           <div className="w-100 d-flex">
-            <IssueTypeSelect
-              issueTypeKey={issueTypeName}
-              onChangeIssueType={onChangeIssueType}
-            ></IssueTypeSelect>
             <Input
+              prefix={
+                <IssueTypeSelect
+                  issueTypeKey={issueTypeName}
+                  onChangeIssueType={onChangeIssueType}
+                ></IssueTypeSelect>
+              }
               ref={ref}
               placeholder="What need to be done?"
               onPressEnter={(e) => onSaveIssue(e)}
-              onBlur={() => setIsCreate(false)}
+              // onBlur={(e) => setIsCreate(false)}
+              onKeyDownCapture={(e) => {
+                if (e.key === "Escape") setIsCreate(false);
+              }}
             ></Input>
           </div>
         </div>

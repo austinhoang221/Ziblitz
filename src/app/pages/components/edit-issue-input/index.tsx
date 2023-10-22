@@ -2,20 +2,20 @@ import React, { useEffect, useRef, useState } from "react";
 import { Typography, Input, Button, InputRef } from "antd";
 import { IssueService } from "../../../../services/issueService";
 import { checkResponseStatus } from "../../../helpers";
-import { useDispatch, useSelector } from "react-redux";
-import { setBacklogIssues } from "../../../../redux/slices/projectDetailSlice";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "../../../customHooks/dispatch";
+import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
-import { IIssue } from "../../../models/IIssue";
 
 const { Text } = Typography;
 
 const EditIssueInput = (props: any) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(props.initialValue);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const ref = useRef<InputRef>(null);
-  const backlogIssues = useSelector(
-    (state: RootState) => state.projectDetail.backlogIssues
+  const project = useSelector(
+    (state: RootState) => state.projectDetail.project
   );
 
   useEffect(() => {
@@ -29,20 +29,26 @@ const EditIssueInput = (props: any) => {
   };
 
   const onSaveIssue = (e: any) => {
-    if (e) {
-      IssueService.editBacklogIssue(props.periodId, props.identifier, {
-        name: e.target.value,
-      }).then((res) => {
-        if (checkResponseStatus(res)) {
-          const tempBacklogIssues: IIssue[] = [...backlogIssues!];
-          const index = tempBacklogIssues.findIndex(
-            (item: IIssue) => item.id === res?.data.id
-          );
-          tempBacklogIssues.splice(index, 1, res?.data!);
-          props.onSaveIssue();
-          dispatch(setBacklogIssues(tempBacklogIssues!));
-        }
-      });
+    if (e?.target.value) {
+      if (props.type === "backlog") {
+        IssueService.editBacklogIssue(props.periodId, props.identifier, {
+          name: e.target.value,
+        }).then((res) => {
+          if (checkResponseStatus(res)) {
+            dispatch(getProjectByCode(project?.code!));
+            props.onSaveIssue();
+          }
+        });
+      } else {
+        IssueService.editSprintIssue(props.periodId, props.identifier, {
+          name: e.target.value,
+        }).then((res) => {
+          if (checkResponseStatus(res)) {
+            dispatch(getProjectByCode(project?.code!));
+            props.onSaveIssue();
+          }
+        });
+      }
     }
   };
 
@@ -54,7 +60,16 @@ const EditIssueInput = (props: any) => {
             ref={ref}
             className="w-100"
             value={editedValue}
-            onBlur={() => setIsEditing(false)}
+            // onBlur={() => {
+            //   setEditedValue(props.initialValue);
+            //   setIsEditing(false);
+            // }}
+            onKeyDownCapture={(e) => {
+              if (e.key === "Escape") {
+                setEditedValue(props.initialValue);
+                setIsEditing(false);
+              }
+            }}
             onChange={(e) => setEditedValue(e.target.value)}
             onPressEnter={(e) => onSaveIssue(e)}
           />

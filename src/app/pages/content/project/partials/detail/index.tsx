@@ -1,42 +1,29 @@
 import { Breadcrumb, Layout, Menu, Tooltip } from "antd";
 import { Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
-import { ProjectService } from "../../../../../../services/projectService";
-import { checkResponseStatus } from "../../../../../helpers";
-import { IProject } from "../../../../../models/IProject";
 import "./index.scss";
 import SubMenu from "antd/es/menu/SubMenu";
-import { useDispatch } from "react-redux";
-import {
-  setBacklogIssues,
-  setProjectDetail,
-  setSprints,
-} from "../../../../../../redux/slices/projectDetailSlice";
+import { getProjectByCode } from "../../../../../../redux/slices/projectDetailSlice";
+import { useAppDispatch } from "../../../../../customHooks/dispatch";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../../../redux/store";
 export default function DetailProject() {
-  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
-  const [project, setProject] = useState<IProject>();
   const params = useParams();
   const pathname = window.location.pathname;
   const segments = pathname.split("/");
   const lastSegment = segments[segments.length - 1];
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const fetchData = useCallback(() => {
-    ProjectService.getByCode(userId, params?.code!).then((res) => {
-      if (checkResponseStatus(res)) {
-        setProject(res?.data!);
-        dispatch(setProjectDetail(res?.data!));
-        dispatch(setBacklogIssues(res?.data.backlog.issues!));
-        dispatch(setSprints(res?.data.sprints!));
-      }
-    });
-  }, [userId, params?.code]);
+  const dispatch = useAppDispatch();
+
+  const project = useSelector(
+    (state: RootState) => state.projectDetail.project
+  );
 
   useEffect(() => {
-    fetchData();
-  }, [userId, params?.code]);
+    dispatch(getProjectByCode(params?.code!));
+  }, [dispatch, params?.code]);
 
   const menuItems = [
     {
