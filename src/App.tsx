@@ -35,8 +35,15 @@ function App() {
               <Route path="dashboard" element={<Dashboard />}></Route>
               <Route path="project" element={<Project />}></Route>
               <Route path="project/:code" element={<DetailProject />}>
-                <Route path="timeline" element={<TimelineProject />} />
-                <Route path="backlog" element={<BacklogProject />} />
+                <Route path="timeline" element={<TimelineProject />}>
+                  <Route
+                    path="timeline/:issueId"
+                    element={<TimelineProject />}
+                  ></Route>
+                </Route>
+                <Route path="backlog" element={<BacklogProject />}>
+                  <Route path=":issueId"></Route>
+                </Route>
                 <Route path="board" element={<BoardProject />} />
                 <Route path="details" element={<InfoProject />} />
                 <Route path="notifications" element={<NotificationProject />} />

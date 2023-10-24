@@ -4,6 +4,7 @@ import { IUser } from "./IUser";
 
 export interface IIssue {
   id: string;
+  code: string;
   parentId: string | null;
   sprintId: string | null;
   issueTypeId: string;

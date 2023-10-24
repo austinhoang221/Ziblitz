@@ -1,19 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Typography, Input, Button, InputRef } from "antd";
+import { Input, Button, InputRef, Tooltip } from "antd";
 import { IssueService } from "../../../../services/issueService";
 import { checkResponseStatus } from "../../../helpers";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../../customHooks/dispatch";
 import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
-
-const { Text } = Typography;
-
-const EditIssueInput = (props: any) => {
+import "./index.scss";
+import { useNavigate } from "react-router-dom";
+interface IEditIssueInput {
+  periodId: string;
+  initialValue: string;
+  currentId: string;
+  type: string;
+  onSaveIssue: () => void;
+}
+const EditIssueInput = (props: IEditIssueInput) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(props.initialValue);
   const dispatch = useAppDispatch();
   const ref = useRef<InputRef>(null);
+  const navigate = useNavigate();
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
@@ -31,7 +38,7 @@ const EditIssueInput = (props: any) => {
   const onSaveIssue = (e: any) => {
     if (e?.target.value) {
       if (props.type === "backlog") {
-        IssueService.editBacklogIssue(props.periodId, props.identifier, {
+        IssueService.editBacklogIssue(props.periodId, props.currentId, {
           name: e.target.value,
         }).then((res) => {
           if (checkResponseStatus(res)) {
@@ -40,7 +47,7 @@ const EditIssueInput = (props: any) => {
           }
         });
       } else {
-        IssueService.editSprintIssue(props.periodId, props.identifier, {
+        IssueService.editSprintIssue(props.periodId, props.currentId, {
           name: e.target.value,
         }).then((res) => {
           if (checkResponseStatus(res)) {
@@ -50,6 +57,10 @@ const EditIssueInput = (props: any) => {
         });
       }
     }
+  };
+
+  const onNavigateIssue = () => {
+    navigate(props.currentId);
   };
 
   return (
@@ -76,7 +87,11 @@ const EditIssueInput = (props: any) => {
         </div>
       ) : (
         <div>
-          <Text>{editedValue}</Text>
+          <Tooltip title={editedValue}>
+            <span className="edit-issue-name" onClick={onNavigateIssue}>
+              {editedValue}
+            </span>
+          </Tooltip>
           <Button
             type="text"
             className="c-backlog-edit ml-2"

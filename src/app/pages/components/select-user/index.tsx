@@ -47,7 +47,7 @@ export default function SelectUser(props: IIssueComponentProps) {
 
   const onChangeAssignUser = async (e: any) => {
     if (props.type === "backlog") {
-      await IssueService.editBacklogIssue(props.periodId, e, {
+      await IssueService.editBacklogIssue(props.periodId, props.currentId, {
         assigneeId: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
@@ -56,7 +56,7 @@ export default function SelectUser(props: IIssueComponentProps) {
         }
       });
     } else {
-      await IssueService.editSprintIssue(props.periodId, e, {
+      await IssueService.editSprintIssue(props.periodId, props.currentId, {
         assigneeId: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
@@ -73,7 +73,7 @@ export default function SelectUser(props: IIssueComponentProps) {
       showSearch
       onSearch={(e) => onSearch(e)}
       loading={loading}
-      defaultValue={props.currentId}
+      defaultValue={props.selectedId}
       options={listUser.map((user) => {
         return {
           label: getOptionLabel(user),

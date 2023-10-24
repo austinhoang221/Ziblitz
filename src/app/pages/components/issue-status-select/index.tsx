@@ -22,7 +22,7 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
 
   const onChangeIssueStatus = async (e: any) => {
     if (props.type === "backlog") {
-      await IssueService.editBacklogIssue(props.periodId, e, {
+      await IssueService.editBacklogIssue(props.periodId, props.currentId, {
         statusId: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
@@ -31,7 +31,7 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
         }
       });
     } else {
-      await IssueService.editSprintIssue(props.periodId, e, {
+      await IssueService.editSprintIssue(props.periodId, props.currentId, {
         statusId: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
@@ -52,8 +52,8 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
     <>
       <Select
         className="mr-2"
-        style={{ maxWidth: "100px" }}
-        defaultValue={props.currentId}
+        style={{ minWidth: "100px" }}
+        defaultValue={props.selectedId}
         onChange={(e) => onChangeIssueStatus(e)}
         options={listStatus.map((status) => {
           return {

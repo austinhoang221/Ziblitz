@@ -23,17 +23,8 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
             .filter((item) => item.name !== "Epic" && item.name !== "Subtask")
             .map((type) => {
               return (
-                <Menu.Item
-                  key={type.id}
-                  onMouseDown={(e) => e.stopPropagation()}
-                >
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    {type.name}
-                  </div>
+                <Menu.Item key={type.id}>
+                  <div>{type.name}</div>
                 </Menu.Item>
               );
             })}
@@ -42,9 +33,7 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
     >
       <Button
         type="text"
-        onMouseDown={(e) => {
-          e.preventDefault();
-        }}
+        size="small"
         onClick={(e) => {
           e.stopPropagation();
         }}

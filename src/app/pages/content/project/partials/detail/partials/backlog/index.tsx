@@ -37,6 +37,8 @@ import dayjs from "dayjs";
 import { IssueService } from "../../../../../../../../services/issueService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
 import IssueStatusSelect from "../../../../../../components/issue-status-select";
+import { Outlet } from "react-router-dom";
+import IssueModal from "../../../../../../components/issue-modal";
 const Backlog: React.FC = () => {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
@@ -198,8 +200,6 @@ const Backlog: React.FC = () => {
     });
   };
 
-  const onChangeAssignUser = (e: any) => {};
-
   const onRenderListIssue = (
     parentId: string,
     type: string,
@@ -226,7 +226,9 @@ const Backlog: React.FC = () => {
                 <>
                   <EditIssueInput
                     initialValue={issue.name}
-                    identifier={issue.id}
+                    currentId={issue.id}
+                    periodId={parentId}
+                    type={type}
                     onSaveIssue={onSaveIssue}
                   ></EditIssueInput>
                 </>
@@ -236,7 +238,8 @@ const Backlog: React.FC = () => {
                   type={type}
                   periodId={parentId}
                   onSaveIssue={onSaveIssue}
-                  currentId={issue?.statusId}
+                  currentId={issue?.id}
+                  selectedId={issue?.statusId}
                 ></IssueStatusSelect>
                 <UserAvatar
                   userIds={[issue?.issueDetail.assigneeId]}
@@ -255,7 +258,8 @@ const Backlog: React.FC = () => {
                             type={type}
                             periodId={parentId}
                             onSaveIssue={onSaveIssue}
-                            currentId={issue.issueDetail.assigneeId}
+                            currentId={issue?.id}
+                            selectedId={issue?.issueDetail?.assigneeId}
                           ></SelectUser>
                         </Menu.Item>
                       </SubMenu>
@@ -534,6 +538,8 @@ const Backlog: React.FC = () => {
         </Modal>
       </div>
       {contextHolder}
+      <IssueModal></IssueModal>
+      <Outlet></Outlet>
     </>
   );
 };

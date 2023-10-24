@@ -20,6 +20,18 @@ export class IssueService {
     }
   };
 
+  public static getById = async (id: string) => {
+    try {
+      const response: IResponse<IIssue> = await axiosInstance.get(
+        Endpoint.getIssue + id
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
   public static createSprintIssueByName = async (
     sprintId: string,
     payload: any
