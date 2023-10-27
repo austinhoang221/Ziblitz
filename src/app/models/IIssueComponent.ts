@@ -1,7 +1,9 @@
 export interface IIssueComponentProps {
   type: string;
   periodId: string;
-  currentId: string;
+  issueId: string;
   selectedId: string;
+  className?: string;
   onSaveIssue: () => void;
+  onBlur?: () => void;
 }

@@ -1,16 +1,40 @@
-import { Input, InputRef } from "antd";
-import TextArea from "antd/es/input/TextArea";
+import { Avatar, Button, Input, InputNumber } from "antd";
 import React, { useEffect, useRef, useState } from "react";
+import ReactQuill from "react-quill";
+import { useSelector } from "react-redux";
+import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
+import { RootState } from "../../../../redux/store";
+import { IssueService } from "../../../../services/issueService";
+import { useAppDispatch } from "../../../customHooks/dispatch";
+import {
+  checkResponseStatus,
+  convertNameToInitials,
+  getRandomColor,
+} from "../../../helpers";
+import SelectUser from "../select-user";
+import SprintSelect from "../sprint-select";
+import "react-quill/dist/quill.snow.css";
+
 import "./index.scss";
 interface IInlineEditProps {
   type: string;
-  initialValue: string;
-  onSave: (value: any) => void;
+  periodType: string;
+  initialValue: string | null;
+  issueId: string;
+  periodId: string;
+  fieldName: string;
+  onSaveIssue: () => void;
 }
 export default function InlineEdit(props: IInlineEditProps) {
+  const project = useSelector(
+    (state: RootState) => state.projectDetail.project
+  );
+  const users = useSelector((state: RootState) => state.users);
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(props.initialValue);
-  const ref = useRef<InputRef>(null);
+  const dispatch = useAppDispatch();
+  const ref = useRef<any>(null);
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   useEffect(() => {
     if (isEditing) {
       ref.current?.focus();
@@ -19,6 +43,38 @@ export default function InlineEdit(props: IInlineEditProps) {
   const onEdit = () => {
     setIsEditing(true);
   };
+
+  const onSave = () => {
+    if (
+      editedValue !== null &&
+      editedValue !== "" &&
+      editedValue !== props.initialValue
+    ) {
+      if (props.type === "backlog") {
+        IssueService.editBacklogIssue(props.periodId, props.issueId, {
+          [props.fieldName]: editedValue,
+        }).then((res) => {
+          if (checkResponseStatus(res)) {
+            dispatch(getProjectByCode(project?.code!));
+            setIsEditing(false);
+            props.onSaveIssue();
+          }
+        });
+      } else {
+        IssueService.editSprintIssue(props.periodId, props.issueId, {
+          [props.fieldName]: editedValue,
+        }).then((res) => {
+          if (checkResponseStatus(res)) {
+            dispatch(getProjectByCode(project?.code!));
+            setIsEditing(false);
+            props.onSaveIssue();
+          }
+        });
+      }
+    } else {
+      setIsEditing(false);
+    }
+  };
   const onRenderInput = () => {
     switch (props.type) {
       case "input":
@@ -26,11 +82,7 @@ export default function InlineEdit(props: IInlineEditProps) {
           <Input
             ref={ref}
             className="w-100"
-            value={editedValue}
-            onBlur={() => {
-              setEditedValue(props.initialValue);
-              setIsEditing(false);
-            }}
+            value={editedValue!}
             onKeyDownCapture={(e) => {
               if (e.key === "Escape") {
                 setEditedValue(props.initialValue);
@@ -38,29 +90,147 @@ export default function InlineEdit(props: IInlineEditProps) {
               }
             }}
             onChange={(e) => setEditedValue(e.target.value)}
-            onPressEnter={(e) => props.onSave(e)}
+            onBlur={onSave}
+            onPressEnter={onSave}
           />
         );
 
       case "textarea":
         return (
-          <TextArea
-            ref={ref}
-            className="w-100"
-            value={editedValue}
-            onBlur={() => {
-              setEditedValue(props.initialValue);
-              setIsEditing(false);
-            }}
-            onKeyDownCapture={(e) => {
-              if (e.key === "Escape") {
-                setEditedValue(props.initialValue);
-                setIsEditing(false);
-              }
-            }}
-            onChange={(e) => setEditedValue(e.target.value)}
-            onPressEnter={(e) => props.onSave(e)}
-          />
+          <>
+            <ReactQuill
+              ref={ref}
+              className="mt-2"
+              theme="snow"
+              value={editedValue ?? ""}
+              onChange={setEditedValue}
+            />
+            <Button type="primary" onClick={onSave}>
+              Save
+            </Button>
+            <Button
+              type="default"
+              className="ml-2 mt-2 mb-2"
+              onClick={() => setIsEditing(false)}
+            >
+              Cancel
+            </Button>
+          </>
+        );
+      case "assigneeSelect":
+      case "reporterSelect":
+        return (
+          <>
+            <SelectUser
+              type={props.type}
+              periodId={props.periodId}
+              onSaveIssue={props.onSaveIssue}
+              issueId={props.issueId}
+              selectedId={props.initialValue!}
+              onBlur={() => setIsEditing(false)}
+            ></SelectUser>
+          </>
+        );
+      case "sprintSelect":
+        return (
+          <>
+            <SprintSelect
+              className="w-100"
+              type={props.type}
+              periodId={props.periodId}
+              onSaveIssue={props.onSaveIssue}
+              issueId={props.issueId}
+              selectedId={props.initialValue!}
+              onBlur={() => setIsEditing(false)}
+            ></SprintSelect>
+          </>
+        );
+      case "storyPointEstimate":
+        return (
+          <>
+            <InputNumber
+              className="w-100"
+              min={"0"}
+              max={"10"}
+              ref={ref}
+              value={props.initialValue ?? "0"}
+              onChange={(e) => setEditedValue(e)}
+              onPressEnter={onSave}
+              onBlur={onSave}
+            ></InputNumber>
+          </>
+        );
+    }
+  };
+
+  const onRenderContent = () => {
+    switch (props.type) {
+      case "assigneeSelect":
+      case "reporterSelect":
+        return (
+          <>
+            {editedValue && (
+              <div
+                className={
+                  "edit-content" +
+                  (props.fieldName === "name"
+                    ? " font-sz24 font-weight-medium"
+                    : "")
+                }
+                onClick={onEdit}
+              >
+                <Avatar
+                  style={{
+                    backgroundColor: getRandomColor(),
+                    verticalAlign: "middle",
+                  }}
+                  size={28}
+                  className="mr-2"
+                  alt=""
+                  src={users.find((user) => user.id === editedValue)?.avatarUrl}
+                >
+                  {convertNameToInitials(
+                    users.find((user) => user.id === editedValue)?.name ?? ""
+                  )}
+                </Avatar>
+                <span>
+                  {users.find((user) => user.id === editedValue)?.name}
+                </span>
+              </div>
+            )}
+          </>
+        );
+      case "textarea":
+        return (
+          <div
+            className={
+              "edit-content" +
+              (props.fieldName === "name"
+                ? " font-sz24 font-weight-medium"
+                : "")
+            }
+            onClick={onEdit}
+          >
+            <span className="ml-2">
+              <div dangerouslySetInnerHTML={{ __html: editedValue ?? "" }} />
+            </span>
+          </div>
+        );
+      default:
+        return (
+          <div
+            className={
+              "edit-content" +
+              (props.fieldName === "name"
+                ? " font-sz24 font-weight-medium"
+                : "")
+            }
+            onClick={onEdit}
+          >
+            <span className="ml-2" style={{ width: "200px" }}>
+              {editedValue ?? "None"}
+            </span>
+          </div>
         );
     }
   };
@@ -69,9 +239,22 @@ export default function InlineEdit(props: IInlineEditProps) {
       {isEditing ? (
         <div>{onRenderInput()}</div>
       ) : (
-        <div className="edit-content" onClick={onEdit}>
-          {editedValue}
-        </div>
+        <>
+          {onRenderContent()}
+
+          {props.type === "assigneeSelect" && userId !== editedValue && (
+            <Button
+              type="link"
+              style={{ paddingLeft: "11px" }}
+              onClick={() => {
+                setEditedValue(userId);
+                onSave();
+              }}
+            >
+              Assign to me
+            </Button>
+          )}
+        </>
       )}
     </div>
   );

@@ -5,12 +5,10 @@ import {
   Form,
   Input,
   Menu,
-  MenuProps,
   message,
   Popconfirm,
   Select,
 } from "antd";
-import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -25,9 +23,7 @@ import {
   checkResponseStatus,
   convertNameToInitials,
   getRandomColor,
-  showMessage,
 } from "../../../../../../../helpers";
-import { IProject } from "../../../../../../../models/IProject";
 import { IUser } from "../../../../../../../models/IUser";
 import "./index.scss";
 export default function InfoProject() {

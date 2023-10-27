@@ -1,7 +1,4 @@
-import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-import { RootState } from "../../../redux/store";
-import { IAuthentication } from "../../models/IAuthentication";
 
 export const PrivateRoute = (props: {
   children: React.ReactNode;

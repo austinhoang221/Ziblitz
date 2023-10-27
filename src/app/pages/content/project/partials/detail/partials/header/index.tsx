@@ -38,7 +38,7 @@ export default function HeaderProject(props: any) {
     initialRequestUserParam
   );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const { listUser, refreshData } = useUserData(userId, requestUserParam.name);
+  const { listUser } = useUserData(userId, requestUserParam.name);
   const { listRole } = useRoleData();
   const ref = useRef<string>();
   const dispatch = useAppDispatch();

@@ -7,6 +7,7 @@ export interface IIssue {
   code: string;
   parentId: string | null;
   sprintId: string | null;
+  backlogId: string | null;
   issueTypeId: string;
   name: string;
   description: string;

@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 interface IEditIssueInput {
   periodId: string;
   initialValue: string;
-  currentId: string;
+  issueId: string;
   type: string;
   onSaveIssue: () => void;
 }
@@ -38,7 +38,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
   const onSaveIssue = (e: any) => {
     if (e?.target.value) {
       if (props.type === "backlog") {
-        IssueService.editBacklogIssue(props.periodId, props.currentId, {
+        IssueService.editBacklogIssue(props.periodId, props.issueId, {
           name: e.target.value,
         }).then((res) => {
           if (checkResponseStatus(res)) {
@@ -47,7 +47,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
           }
         });
       } else {
-        IssueService.editSprintIssue(props.periodId, props.currentId, {
+        IssueService.editSprintIssue(props.periodId, props.issueId, {
           name: e.target.value,
         }).then((res) => {
           if (checkResponseStatus(res)) {
@@ -60,7 +60,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
   };
 
   const onNavigateIssue = () => {
-    navigate(props.currentId);
+    navigate(props.issueId);
   };
 
   return (

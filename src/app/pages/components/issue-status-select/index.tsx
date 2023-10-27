@@ -1,5 +1,6 @@
-import { Select } from "antd";
-import { useEffect, useState } from "react";
+import { blue, geekblue, gray, green } from "@ant-design/colors";
+import { Button, Dropdown, Menu } from "antd";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
@@ -7,23 +8,17 @@ import { IssueService } from "../../../../services/issueService";
 import { useAppDispatch } from "../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../helpers";
 import { IIssueComponentProps } from "../../../models/IIssueComponent";
-import { IStatus } from "../../../models/IStatus";
-
+import "./index.scss";
 export default function IssueStatusSelect(props: IIssueComponentProps) {
-  const [listStatus, setListStatus] = useState<IStatus[]>([]);
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    getStatusOptions();
-  }, []);
-
   const onChangeIssueStatus = async (e: any) => {
     if (props.type === "backlog") {
-      await IssueService.editBacklogIssue(props.periodId, props.currentId, {
-        statusId: e,
+      await IssueService.editBacklogIssue(props.periodId, props.issueId, {
+        statusId: e.key,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
@@ -31,8 +26,8 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
         }
       });
     } else {
-      await IssueService.editSprintIssue(props.periodId, props.currentId, {
-        statusId: e,
+      await IssueService.editSprintIssue(props.periodId, props.issueId, {
+        statusId: e.key,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
@@ -42,27 +37,97 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
     }
   };
 
-  const getStatusOptions: () => void = () => {
-    setListStatus(
-      project?.statuses.filter((status) => status.id !== props.currentId)!
-    );
+  const onRenderContent = () => {
+    const statusName = project?.statuses.find(
+      (status) => status.id === props.selectedId
+    )?.name;
+    switch (statusName) {
+      case "DONE":
+        return (
+          <div>
+            <Button
+              style={{
+                backgroundColor: green.primary,
+                color: "#ffff",
+                fontSize: "12px",
+              }}
+            >
+              Done
+              <i className="fa-solid fa-angle-down ml-2"></i>
+            </Button>
+          </div>
+        );
+      case "IN PROGRESS":
+        return (
+          <div>
+            <Button
+              style={{
+                backgroundColor: geekblue.primary,
+                color: "#ffff",
+                fontSize: "12px",
+              }}
+            >
+              Inprogress
+              <i className="fa-solid fa-angle-down ml-2"></i>
+            </Button>
+          </div>
+        );
+      case "TO DO":
+        return (
+          <div>
+            <Button
+              style={{
+                backgroundColor: gray.primary,
+                color: "#ffff",
+                fontSize: "12px",
+              }}
+            >
+              Ready
+              <i className="fa-solid fa-angle-down ml-2"></i>
+            </Button>
+          </div>
+        );
+      default:
+        return (
+          <div>
+            <Button
+              style={{
+                backgroundColor: blue.primary,
+                color: "#ffff",
+                fontSize: "12px",
+              }}
+            >
+              #<i className="fa-solid fa-angle-down ml-2"></i>
+            </Button>
+          </div>
+        );
+    }
   };
 
   return (
     <>
-      <Select
-        className="mr-2"
-        style={{ minWidth: "100px" }}
-        defaultValue={props.selectedId}
-        onChange={(e) => onChangeIssueStatus(e)}
-        options={listStatus.map((status) => {
-          return {
-            label: status.name,
-            key: status.id,
-            value: status.id,
-          };
-        })}
-      />
+      <Dropdown
+        trigger={["click"]}
+        overlayStyle={{
+          margin: "20px",
+          inset: "35px auto auto 62px",
+        }}
+        overlay={
+          <Menu onClick={(e) => onChangeIssueStatus(e)}>
+            {project?.statuses
+              .filter((status) => status.id !== props.issueId)
+              .map((type) => {
+                return (
+                  <Menu.Item key={type.id}>
+                    <div className="font-sz12">{type.name}</div>
+                  </Menu.Item>
+                );
+              })}
+          </Menu>
+        }
+      >
+        {onRenderContent()}
+      </Dropdown>
     </>
   );
 }

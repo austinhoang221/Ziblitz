@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Endpoint from "../../app/api/endpoint";
-import { useAppDispatch } from "../../app/customHooks/dispatch";
 import { checkResponseStatus } from "../../app/helpers";
 import { IDetailProject } from "../../app/models/IDetailProject";
 import { IIssue } from "../../app/models/IIssue";

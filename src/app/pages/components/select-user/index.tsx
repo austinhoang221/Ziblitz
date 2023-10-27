@@ -1,18 +1,16 @@
-import { Avatar, Select } from "antd";
-import React, { useState } from "react";
+import { Select } from "antd";
+import { BaseSelectRef } from "rc-select";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
 import { IssueService } from "../../../../services/issueService";
 import { useAppDispatch } from "../../../customHooks/dispatch";
 import useUserData from "../../../customHooks/fetchUser";
-import {
-  checkResponseStatus,
-  convertNameToInitials,
-  getRandomColor,
-} from "../../../helpers";
+import { checkResponseStatus } from "../../../helpers";
 import { IIssueComponentProps } from "../../../models/IIssueComponent";
 import { IUser } from "../../../models/IUser";
+
 export default function SelectUser(props: IIssueComponentProps) {
   const initialRequestUserParam = {
     name: "",
@@ -26,9 +24,14 @@ export default function SelectUser(props: IIssueComponentProps) {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
+
+  const ref = useRef<BaseSelectRef>(null);
+  useEffect(() => {
+    ref?.current?.focus();
+  });
   const getOptionLabel = (user: IUser) => (
     <>
-      <Avatar
+      {/* <Avatar
         style={{ backgroundColor: getRandomColor(), verticalAlign: "middle" }}
         size={28}
         className="mr-2"
@@ -36,7 +39,7 @@ export default function SelectUser(props: IIssueComponentProps) {
         src={user.avatarUrl}
       >
         {convertNameToInitials(user.name)}
-      </Avatar>
+      </Avatar> */}
       <span>{user.name}</span>
     </>
   );
@@ -47,7 +50,7 @@ export default function SelectUser(props: IIssueComponentProps) {
 
   const onChangeAssignUser = async (e: any) => {
     if (props.type === "backlog") {
-      await IssueService.editBacklogIssue(props.periodId, props.currentId, {
+      await IssueService.editBacklogIssue(props.periodId, props.issueId, {
         assigneeId: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
@@ -56,7 +59,7 @@ export default function SelectUser(props: IIssueComponentProps) {
         }
       });
     } else {
-      await IssueService.editSprintIssue(props.periodId, props.currentId, {
+      await IssueService.editSprintIssue(props.periodId, props.issueId, {
         assigneeId: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
@@ -68,21 +71,25 @@ export default function SelectUser(props: IIssueComponentProps) {
   };
 
   return (
-    <Select
-      style={{ width: "200px" }}
-      showSearch
-      onSearch={(e) => onSearch(e)}
-      loading={loading}
-      defaultValue={props.selectedId}
-      options={listUser.map((user) => {
-        return {
-          label: getOptionLabel(user),
-          value: user.id,
-        };
-      })}
-      onChange={(e) => onChangeAssignUser(e)}
-      onFocus={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-    ></Select>
+    <>
+      <Select
+        style={{ width: "150px" }}
+        showSearch
+        ref={ref}
+        onSearch={(e) => onSearch(e)}
+        loading={loading}
+        defaultValue={props.selectedId}
+        options={listUser.map((user) => {
+          return {
+            label: getOptionLabel(user),
+            value: user.id,
+          };
+        })}
+        onChange={(e) => onChangeAssignUser(e)}
+        onFocus={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        onBlur={props.onBlur}
+      ></Select>
+    </>
   );
 }

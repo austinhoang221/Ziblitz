@@ -43,7 +43,7 @@ export default function UserAvatar(props: IUserAvatarProps) {
           src={users.find((user) => user.id === props.userIds[0])?.avatarUrl}
         />
         {props.isShowName && (
-          <Link to="" className="ml-2">
+          <Link to="" className="ml-1">
             {users.find((user) => user.id === props.userIds[0])?.name}
           </Link>
         )}

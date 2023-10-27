@@ -226,25 +226,26 @@ const Backlog: React.FC = () => {
                 <>
                   <EditIssueInput
                     initialValue={issue.name}
-                    currentId={issue.id}
+                    issueId={issue.id}
                     periodId={parentId}
                     type={type}
                     onSaveIssue={onSaveIssue}
                   ></EditIssueInput>
                 </>
               </div>
-              <div>
+              <div className="align-child-space-between align-center">
                 <IssueStatusSelect
                   type={type}
                   periodId={parentId}
                   onSaveIssue={onSaveIssue}
-                  currentId={issue?.id}
+                  issueId={issue?.id}
                   selectedId={issue?.statusId}
                 ></IssueStatusSelect>
                 <UserAvatar
+                  className="mr-2 ml-2"
                   userIds={[issue?.issueDetail.assigneeId]}
                   isMultiple={false}
-                  isShowName={true}
+                  isShowName={false}
                 ></UserAvatar>
                 <Dropdown
                   className="c-backlog-action"
@@ -258,7 +259,7 @@ const Backlog: React.FC = () => {
                             type={type}
                             periodId={parentId}
                             onSaveIssue={onSaveIssue}
-                            currentId={issue?.id}
+                            issueId={issue?.id}
                             selectedId={issue?.issueDetail?.assigneeId}
                           ></SelectUser>
                         </Menu.Item>
