@@ -18,6 +18,7 @@ export default class Endpoint {
   public static createSprintIssue: string = this.baseUrl + "sprints/";
   public static getSprintIssue: string = this.baseUrl + "sprints/";
   public static getIssue: string = this.baseUrl + "issues/";
+  public static getIssueHistories: string = this.baseUrl + "issues/";
   public static deleteIssue: string = this.baseUrl + "sprints/";
   public static editSprintIssue: string = this.baseUrl + "sprints/";
   public static editBacklogIssue: string = this.baseUrl + "backlogs/";

@@ -3,4 +3,5 @@ export interface IIssueHistory {
   content: string;
   creatorUserId: string;
   creationTime: string;
+  name: string;
 }

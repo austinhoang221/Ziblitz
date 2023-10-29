@@ -111,6 +111,7 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
         overlayStyle={{
           margin: "20px",
           inset: "35px auto auto 62px",
+          ...props.style,
         }}
         overlay={
           <Menu onClick={(e) => onChangeIssueStatus(e)}>

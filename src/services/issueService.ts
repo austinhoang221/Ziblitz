@@ -1,6 +1,7 @@
 import Endpoint from "../app/api/endpoint";
 import { axiosInstance } from "../app/middleware";
 import { IIssue } from "../app/models/IIssue";
+import { IIssueHistory } from "../app/models/IIssueHistory";
 import { IResponse } from "../app/models/IResponse";
 
 export class IssueService {
@@ -24,6 +25,18 @@ export class IssueService {
     try {
       const response: IResponse<IIssue> = await axiosInstance.get(
         Endpoint.getIssue + id
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static getHistories = async (id: string) => {
+    try {
+      const response: IResponse<IIssueHistory[]> = await axiosInstance.get(
+        Endpoint.getIssueHistories + id + "/issuehistories"
       );
       console.log("POST response:", response.data);
       return response;

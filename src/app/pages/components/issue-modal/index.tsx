@@ -16,11 +16,14 @@ import dayjs from "dayjs";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
 import { IssueService } from "../../../../services/issueService";
+import { useAppDispatch } from "../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../helpers";
 import { IIssue } from "../../../models/IIssue";
 import InlineEdit from "../inline-edit";
+import IssueComment from "../issue-comment";
 import IssueHistory from "../issue-history";
 import IssueStatusSelect from "../issue-status-select";
 import IssueTypeSelect from "../issue-type-select";
@@ -48,16 +51,26 @@ export default function IssueModal(props: any) {
     }
   }, [params.issueId]);
 
+  const dispatch = useAppDispatch();
+
   const items: TabsProps["items"] = [
     {
       key: "1",
       label: "Comment",
-      children: <></>,
+      children: (
+        <IssueComment
+          initialValue={issue?.name!}
+          onSaveIssue={showSuccessMessage}
+          periodType={issue?.backlogId ? "backlog" : "sprint"}
+          periodId={issue?.sprintId ?? issue?.backlogId!}
+          issue={issue!}
+        ></IssueComment>
+      ),
     },
     {
       key: "2",
       label: "History",
-      children: <IssueHistory />,
+      children: <IssueHistory issueId={issue?.id} />,
     },
   ];
 
@@ -74,12 +87,27 @@ export default function IssueModal(props: any) {
     const model: any = {};
     if (e) {
       switch (type) {
-        case "issueType":
+        case "issueTypeId":
           model.issueTypeId = e;
           break;
-        case "storyPoint":
-          model.storyPointEstimate = e;
       }
+    }
+    if (props.type === "backlog") {
+      IssueService.editBacklogIssue(issue?.backlogId!, issue?.id!, {
+        [type]: e,
+      }).then((res) => {
+        if (checkResponseStatus(res)) {
+          fetchData();
+        }
+      });
+    } else {
+      IssueService.editSprintIssue(issue?.backlogId!, issue?.id!, {
+        [type]: e,
+      }).then((res) => {
+        if (checkResponseStatus(res)) {
+          fetchData();
+        }
+      });
     }
   };
   const onCancel = () => {
@@ -99,7 +127,7 @@ export default function IssueModal(props: any) {
             Add Epic
           </Button>
           <IssueTypeSelect
-            onChangeIssueType={(e) => onChangeField("issueType", e)}
+            onChangeIssueType={(e) => onChangeField("issueTypeId", e.key)}
             issueTypeKey={
               project?.issueTypes.find(
                 (type) => type.id === issue?.issueTypeId!
@@ -108,6 +136,16 @@ export default function IssueModal(props: any) {
           ></IssueTypeSelect>
           <Tooltip title={issue?.code + ": " + issue?.name}>
             <span>{issue?.code}</span>
+          </Tooltip>
+          <Tooltip title="Copy link to issue">
+            <span
+              className="ml-2 font-sz12 cursor-pointer"
+              onClick={() =>
+                navigator.clipboard.writeText(window.location.href)
+              }
+            >
+              <i className="fa-solid fa-link"></i>
+            </span>
           </Tooltip>
         </div>
         <div>
@@ -164,7 +202,13 @@ export default function IssueModal(props: any) {
         width="70rem"
       >
         <Row gutter={24}>
-          <Col span={16}>
+          <Col
+            span={16}
+            style={{
+              maxHeight: "60vh",
+              overflow: "hidden scroll",
+            }}
+          >
             <InlineEdit
               initialValue={issue?.name!}
               type="input"
@@ -177,14 +221,14 @@ export default function IssueModal(props: any) {
             <div className="mt-2 mb-4">
               <Button
                 type="text"
-                className="ml-2 mr-2"
+                className=" mr-2"
                 style={{ backgroundColor: "#f1f2f4" }}
               >
                 <i className="fa-solid fa-paperclip mr-2"></i>
                 Attach
               </Button>
               <Button type="text" style={{ backgroundColor: "#f1f2f4" }}>
-                <i className="fa-solid fa-paperclip mr-2"></i>
+                <i className="fa-solid fa-network-wired mr-2"></i>
                 Add a child issue
               </Button>
             </div>
@@ -199,7 +243,11 @@ export default function IssueModal(props: any) {
               onSaveIssue={showSuccessMessage}
             ></InlineEdit>
             <span className="font-weight-bold ml-2 mt-4">Activity</span>
-            <Tabs items={items} />
+            <Tabs
+              className="ml-2"
+              items={items}
+              destroyInactiveTabPane={true}
+            />
           </Col>
           <Col span={8}>
             <IssueStatusSelect
@@ -207,6 +255,7 @@ export default function IssueModal(props: any) {
               selectedId={issue?.statusId!}
               periodId={issue?.sprintId ?? issue?.backlogId!}
               issueId={issue?.id!}
+              style={{ width: "120px" }}
               onSaveIssue={() => {
                 showSuccessMessage();
                 fetchData();
