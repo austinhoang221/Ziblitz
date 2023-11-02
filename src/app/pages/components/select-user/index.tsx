@@ -11,7 +11,10 @@ import { checkResponseStatus } from "../../../helpers";
 import { IIssueComponentProps } from "../../../models/IIssueComponent";
 import { IUser } from "../../../models/IUser";
 
-export default function SelectUser(props: IIssueComponentProps) {
+interface ISelectUserProps extends IIssueComponentProps {
+  fieldName: string;
+}
+export default function SelectUser(props: ISelectUserProps) {
   const initialRequestUserParam = {
     name: "",
   };
@@ -51,20 +54,20 @@ export default function SelectUser(props: IIssueComponentProps) {
   const onChangeAssignUser = async (e: any) => {
     if (props.type === "backlog") {
       await IssueService.editBacklogIssue(props.periodId, props.issueId, {
-        assigneeId: e,
+        [props.fieldName]: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
-          props.onSaveIssue();
+          props.onSaveIssue(res?.data);
         }
       });
     } else {
       await IssueService.editSprintIssue(props.periodId, props.issueId, {
-        assigneeId: e,
+        [props.fieldName]: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
-          props.onSaveIssue();
+          props.onSaveIssue(res?.data);
         }
       });
     }

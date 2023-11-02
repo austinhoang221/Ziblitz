@@ -61,6 +61,36 @@ export class IssueService {
     }
   };
 
+  public static createEpic = async (projectId: string, payload: any) => {
+    try {
+      const response: IResponse<IIssue> = await axiosInstance.post(
+        Endpoint.createEpic + projectId + "/epics",
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static updateEpic = async (
+    projectId: string,
+    epicId: string,
+    payload: any
+  ) => {
+    try {
+      const response: IResponse<IIssue> = await axiosInstance.put(
+        Endpoint.updateEpic + projectId + "/epics/" + epicId,
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
   public static editBacklogIssue = async (
     sprintId: string,
     id: string,

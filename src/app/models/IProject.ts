@@ -1,3 +1,4 @@
+import { IIssue } from "./IIssue";
 import { IIssueType } from "./IIssueType";
 import { IUser } from "./IUser";
 
@@ -10,5 +11,6 @@ export interface IProject {
   isFavorite: boolean;
   leader: IUser;
   members: IUser[];
+  epics: IIssue[];
   issueTypes: IIssueType[];
 }

@@ -1,0 +1,20 @@
+.epic {
+    background-color: #f7f8f9;
+    border-radius: 6px;
+
+    .header {
+        padding: 12px;
+    }
+
+    .ant-collapse-header {
+        border-radius: 3px;
+        background-color: #ffff;
+        outline-width: medium;
+    }
+
+    .ant-collapse-content-box {
+        padding-top: 0;
+        padding-bottom: 0;
+        background-color: #ffff;
+    }
+}

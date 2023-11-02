@@ -1,4 +1,4 @@
-import { Avatar, Button, Input, InputNumber } from "antd";
+import { Avatar, Button, DatePicker, Input, InputNumber } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import { useSelector } from "react-redux";
@@ -16,14 +16,17 @@ import SprintSelect from "../sprint-select";
 import "react-quill/dist/quill.snow.css";
 
 import "./index.scss";
+import dayjs from "dayjs";
+import { IIssue } from "../../../models/IIssue";
 interface IInlineEditProps {
   type: string;
   periodType: string;
-  initialValue: string | null;
+  initialValue: any;
   issueId: string;
   periodId: string;
   fieldName: string;
-  onSaveIssue: () => void;
+  disabledDate?: any;
+  onSaveIssue: (issue?: IIssue) => void;
 }
 export default function InlineEdit(props: IInlineEditProps) {
   const project = useSelector(
@@ -31,7 +34,7 @@ export default function InlineEdit(props: IInlineEditProps) {
   );
   const users = useSelector((state: RootState) => state.users);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedValue, setEditedValue] = useState(props.initialValue);
+  const [editedValue, setEditedValue] = useState<any>(props.initialValue);
   const dispatch = useAppDispatch();
   const ref = useRef<any>(null);
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
@@ -40,6 +43,10 @@ export default function InlineEdit(props: IInlineEditProps) {
       ref.current?.focus();
     }
   }, [isEditing]);
+
+  useEffect(() => {
+    setEditedValue(props.initialValue);
+  }, [props.initialValue]);
   const onEdit = () => {
     setIsEditing(true);
   };
@@ -57,17 +64,27 @@ export default function InlineEdit(props: IInlineEditProps) {
           if (checkResponseStatus(res)) {
             dispatch(getProjectByCode(project?.code!));
             setIsEditing(false);
-            props.onSaveIssue();
+            props.onSaveIssue(res?.data);
           }
         });
-      } else {
+      } else if (props.type === "sprint") {
         IssueService.editSprintIssue(props.periodId, props.issueId, {
           [props.fieldName]: editedValue,
         }).then((res) => {
           if (checkResponseStatus(res)) {
             dispatch(getProjectByCode(project?.code!));
             setIsEditing(false);
-            props.onSaveIssue();
+            props.onSaveIssue(res?.data);
+          }
+        });
+      } else {
+        IssueService.updateEpic(project?.id!, props.issueId, {
+          [props.fieldName]: editedValue,
+        }).then((res) => {
+          if (checkResponseStatus(res)) {
+            dispatch(getProjectByCode(project?.code!));
+            setIsEditing(false);
+            props.onSaveIssue(res?.data);
           }
         });
       }
@@ -82,7 +99,7 @@ export default function InlineEdit(props: IInlineEditProps) {
           <Input
             ref={ref}
             className="w-100"
-            value={editedValue!}
+            value={editedValue}
             onKeyDownCapture={(e) => {
               if (e.key === "Escape") {
                 setEditedValue(props.initialValue);
@@ -122,9 +139,10 @@ export default function InlineEdit(props: IInlineEditProps) {
         return (
           <>
             <SelectUser
+              fieldName={props.fieldName}
               type={props.type}
               periodId={props.periodId}
-              onSaveIssue={props.onSaveIssue}
+              onSaveIssue={(e) => props.onSaveIssue(e)}
               issueId={props.issueId}
               selectedId={props.initialValue!}
               onBlur={() => setIsEditing(false)}
@@ -159,6 +177,23 @@ export default function InlineEdit(props: IInlineEditProps) {
               onBlur={onSave}
             ></InputNumber>
           </>
+        );
+      case "date":
+        const currentDate = new Date();
+        return (
+          <DatePicker
+            className="w-100"
+            ref={ref}
+            defaultValue={
+              props.initialValue
+                ? dayjs(props.initialValue)
+                : dayjs(currentDate)
+            }
+            value={editedValue ? dayjs(editedValue) : null}
+            onChange={(e, string) => setEditedValue(string)}
+            onBlur={onSave}
+            disabledDate={props.disabledDate}
+          />
         );
     }
   };
@@ -200,6 +235,22 @@ export default function InlineEdit(props: IInlineEditProps) {
             )}
           </>
         );
+      case "date":
+        return (
+          <div
+            className={
+              "edit-content" +
+              (props.fieldName === "name"
+                ? " font-sz24 font-weight-medium"
+                : "")
+            }
+            onClick={onEdit}
+          >
+            <span className="ml-2" style={{ width: "200px" }}>
+              {editedValue ? dayjs(editedValue).format("MMM D, YYYY") : "None"}
+            </span>
+          </div>
+        );
       case "textarea":
         return (
           <div
@@ -216,6 +267,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             </span>
           </div>
         );
+      case "input":
       default:
         return (
           <div

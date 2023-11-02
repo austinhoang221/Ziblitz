@@ -56,7 +56,13 @@ export default function IssueComment(props: IInlineEditProps) {
   return (
     <>
       <InlineEdit
-        periodType={props.issue?.backlogId ? "backlog" : "sprint"}
+        periodType={
+          props.issue?.backlogId
+            ? "backlog"
+            : props.issue?.sprintId
+            ? "sprint"
+            : "epic"
+        }
         periodId={props.issue?.sprintId ?? props.issue?.backlogId!}
         initialValue={props.issue?.description ?? "Add a description..."}
         type="textarea"

@@ -8,8 +8,10 @@
 .c-backlog {
   overflow: hidden scroll;
   max-height: 58vh;
+
   .c-backlog-item {
     cursor: pointer;
+
     &:hover .c-backlog-action,
     &:hover .c-backlog-edit {
       opacity: 1;
@@ -18,8 +20,11 @@
     .c-backlog-edit {
       opacity: 0;
     }
+
     .c-backlog-action {
       opacity: 0;
     }
+
+
   }
 }

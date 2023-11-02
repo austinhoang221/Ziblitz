@@ -1,4 +1,5 @@
 import { IBacklog } from "./IBacklog";
+import { IIssue } from "./IIssue";
 import { IIssueType } from "./IIssueType";
 import { ISprint } from "./ISprint";
 import { IStatus } from "./IStatus";
@@ -13,6 +14,7 @@ export interface IDetailProject {
   isFavorite: boolean;
   leader: IUser;
   members: IUser[];
+  epics: IIssue[];
   backlog: IBacklog;
   sprints: ISprint[];
   issueTypes: IIssueType[];

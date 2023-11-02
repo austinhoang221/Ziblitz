@@ -1,5 +1,6 @@
 import { PriorityEnum } from "../enums/PriorityEnum";
 import { IIssueDetail } from "./IIssueDetail";
+import { IIssueType } from "./IIssueType";
 import { IUser } from "./IUser";
 
 export interface IIssue {
@@ -20,4 +21,5 @@ export interface IIssue {
   dueDate: string;
   statusId: string;
   issueDetail: IIssueDetail;
+  issueType: IIssueType;
 }

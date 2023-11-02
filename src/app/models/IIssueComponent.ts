@@ -1,4 +1,5 @@
 import { DropdownProps } from "antd";
+import { IIssue } from "./IIssue";
 
 export interface IIssueComponentProps {
   type: string;
@@ -7,6 +8,6 @@ export interface IIssueComponentProps {
   selectedId: string;
   className?: string;
   style?: DropdownProps["overlayStyle"];
-  onSaveIssue: () => void;
+  onSaveIssue: (issue?: IIssue) => void;
   onBlur?: () => void;
 }

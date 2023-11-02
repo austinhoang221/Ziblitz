@@ -1,6 +1,7 @@
 import {
   Avatar,
   Button,
+  Divider,
   Dropdown,
   Form,
   Mentions,
@@ -8,12 +9,16 @@ import {
   message,
   Modal,
   Select,
+  Switch,
   Tooltip,
 } from "antd";
 import Search from "antd/es/input/Search";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
+import {
+  getProjectByCode,
+  setIsShowEpic,
+} from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
 import { ProjectService } from "../../../../../../../../services/projectService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
@@ -46,6 +51,9 @@ export default function HeaderProject(props: any) {
   const [addMemberForm] = Form.useForm();
   const { getMentions } = Mentions;
   const [messageApi, contextHolder] = message.useMessage();
+  const isShowEpic = useSelector(
+    (state: RootState) => state.projectDetail.isShowEpic
+  );
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
@@ -103,6 +111,10 @@ export default function HeaderProject(props: any) {
       <span>{user.email}</span>
     </>
   );
+
+  const onChangeToggleEpic = (e: any) => {
+    dispatch(setIsShowEpic(e));
+  };
   return (
     <>
       {contextHolder}
@@ -168,6 +180,44 @@ export default function HeaderProject(props: any) {
           onClick={onClickOpenModal}
           icon={<i className="fa-solid fa-user-plus"></i>}
         />
+
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    style={{ width: "250px" }}
+                    placeholder="Please select"
+                    // onChange={handleChange}
+                    options={project?.epics.map((epic) => {
+                      return {
+                        label: <span>{epic.name}</span>,
+                        value: epic.id,
+                      };
+                    })}
+                  />
+                  <Divider className="mt-2 mb-2"></Divider>
+                  <div className="d-flex">
+                    <Switch
+                      checked={isShowEpic}
+                      onChange={(e) => onChangeToggleEpic(e)}
+                    />
+                    <span className="ml-2">Epic</span>
+                  </div>
+                </div>
+              </Menu.Item>
+            </Menu>
+          }
+          trigger={["click"]}
+        >
+          <Button type="text" className="ml-2">
+            <span>Epic</span> <i className="fa-solid fa-chevron-down ml-2"></i>
+          </Button>
+        </Dropdown>
+
         <Modal
           title="Add member"
           open={isModalOpen}

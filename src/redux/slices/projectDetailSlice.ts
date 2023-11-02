@@ -9,11 +9,13 @@ interface IProjectDetail {
   project: IDetailProject | null; // Store the detailed project or null if none is selected
   backlogIssues: IIssue[] | null;
   sprints: ISprint[] | null;
+  isShowEpic: boolean;
 }
 const initialProjectDetailState: IProjectDetail = {
   project: null,
   backlogIssues: [],
   sprints: [],
+  isShowEpic: false,
 };
 
 const userId = JSON.parse(localStorage.getItem("user")!)?.id;
@@ -44,6 +46,9 @@ export const projectDetailSlice = createSlice({
     setSprints: (state, action: PayloadAction<ISprint[] | null>) => {
       return { ...state, sprints: action.payload };
     },
+    setIsShowEpic: (state, action: PayloadAction<boolean>) => {
+      return { ...state, isShowEpic: action.payload };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(
@@ -65,6 +70,6 @@ export const projectDetailSlice = createSlice({
   },
 });
 
-export const { setProjectDetail, setBacklogIssues, setSprints } =
+export const { setProjectDetail, setBacklogIssues, setSprints, setIsShowEpic } =
   projectDetailSlice.actions;
 export default projectDetailSlice.reducer;

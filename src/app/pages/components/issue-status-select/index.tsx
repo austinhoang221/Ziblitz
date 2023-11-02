@@ -22,7 +22,7 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
-          props.onSaveIssue();
+          props.onSaveIssue(res?.data);
         }
       });
     } else {
@@ -31,7 +31,7 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
-          props.onSaveIssue();
+          props.onSaveIssue(res?.data);
         }
       });
     }

@@ -31,6 +31,10 @@ const EditIssueInput = (props: IEditIssueInput) => {
     }
   }, [isEditing]);
 
+  useEffect(() => {
+    setEditedValue(props.initialValue);
+  }, [props.initialValue]);
+
   const onEditIssue = () => {
     setIsEditing(true);
   };
