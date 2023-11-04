@@ -4,6 +4,7 @@ import {
   Card,
   Col,
   DatePickerProps,
+  Divider,
   Dropdown,
   Menu,
   message,
@@ -23,6 +24,7 @@ import { IssueService } from "../../../../services/issueService";
 import { checkResponseStatus } from "../../../helpers";
 import { IIssue } from "../../../models/IIssue";
 import InlineEdit from "../inline-edit";
+import IssueAddParent from "../issue-add-parent";
 import IssueComment from "../issue-comment";
 import IssueHistory from "../issue-history";
 import IssueStatusSelect from "../issue-status-select";
@@ -91,6 +93,8 @@ export default function IssueModal(props: any) {
         case "issueTypeId":
           model.issueTypeId = e;
           break;
+        case "parentId":
+          model.parentId = e;
       }
     }
     if (props.type === "backlog") {
@@ -99,6 +103,7 @@ export default function IssueModal(props: any) {
       }).then((res) => {
         if (checkResponseStatus(res)) {
           setIssue(res?.data!);
+          showSuccessMessage();
         }
       });
     } else if (props.type === "sprint") {
@@ -107,14 +112,16 @@ export default function IssueModal(props: any) {
       }).then((res) => {
         if (checkResponseStatus(res)) {
           setIssue(res?.data!);
+          showSuccessMessage();
         }
       });
     } else {
-      IssueService.updateEpic(project?.id!, props.issueId, {
+      IssueService.updateEpic(project?.id!, issue?.id!, {
         [type]: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           setIssue(res?.data!);
+          showSuccessMessage();
         }
       });
     }
@@ -150,14 +157,19 @@ export default function IssueModal(props: any) {
             </Button>
           ) : (
             <>
-              {!issue?.parentId ? (
-                <Button type="text">
-                  <i className="fa-solid fa-pencil mr-2"></i>
-                  Add Epic
-                </Button>
-              ) : (
-                <Link to="/project">Project /</Link>
-              )}
+              <IssueAddParent
+                type={
+                  issue?.backlogId
+                    ? "backlog"
+                    : issue?.sprintId
+                    ? "sprint"
+                    : "epic"
+                }
+                periodId={issue?.sprintId ?? issue?.backlogId!}
+                issue={issue!}
+                onSaveIssue={showSuccessMessage}
+              ></IssueAddParent>
+
               <IssueTypeSelect
                 onChangeIssueType={(e) => onChangeField("issueTypeId", e.key)}
                 issueTypeKey={issue?.issueType.name!}

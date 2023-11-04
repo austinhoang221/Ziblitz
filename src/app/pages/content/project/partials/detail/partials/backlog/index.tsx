@@ -13,6 +13,7 @@ import {
   Popconfirm,
   Row,
   Select,
+  Tooltip,
 } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../../../redux/store";
@@ -41,6 +42,8 @@ import IssueStatusSelect from "../../../../../../components/issue-status-select"
 import { Outlet } from "react-router-dom";
 import IssueModal from "../../../../../../components/issue-modal";
 import Epic from "../../../../../../components/epic";
+import IssueAddParent from "../../../../../../components/issue-add-parent";
+
 const Backlog: React.FC = () => {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
@@ -237,6 +240,19 @@ const Backlog: React.FC = () => {
                 ></EditIssueInput>
               </div>
               <div className="align-child-space-between align-center">
+                <IssueAddParent
+                  issue={issue}
+                  periodId={issue.backlogId ?? issue.sprintId!}
+                  type={
+                    issue?.backlogId
+                      ? "backlog"
+                      : issue?.sprintId
+                      ? "sprint"
+                      : "epic"
+                  }
+                  onSaveIssue={showSuccessMessage}
+                ></IssueAddParent>
+
                 <IssueStatusSelect
                   type={type}
                   periodId={parentId}

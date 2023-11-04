@@ -5,7 +5,10 @@ import React, { useEffect } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import "./index.scss";
 import SubMenu from "antd/es/menu/SubMenu";
-import { getProjectByCode } from "../../../../../../redux/slices/projectDetailSlice";
+import {
+  getProjectByCode,
+  getProjectPriorities,
+} from "../../../../../../redux/slices/projectDetailSlice";
 import { useAppDispatch } from "../../../../../customHooks/dispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../redux/store";

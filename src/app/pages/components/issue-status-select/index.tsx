@@ -105,30 +105,31 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
   };
 
   return (
-    <>
-      <Dropdown
-        trigger={["click"]}
-        overlayStyle={{
-          margin: "20px",
-          inset: "35px auto auto 62px",
-          ...props.style,
-        }}
-        overlay={
-          <Menu onClick={(e) => onChangeIssueStatus(e)}>
-            {project?.statuses
-              .filter((status) => status.id !== props.issueId)
-              .map((type) => {
-                return (
-                  <Menu.Item key={type.id}>
-                    <div className="font-sz12">{type.name}</div>
-                  </Menu.Item>
-                );
-              })}
-          </Menu>
-        }
-      >
-        {onRenderContent()}
-      </Dropdown>
-    </>
+    <Dropdown
+      trigger={["click"]}
+      overlayStyle={{
+        margin: "20px",
+        inset: "35px auto auto 62px",
+        ...props.style,
+      }}
+      overlay={
+        <Menu
+          onClick={(e) => onChangeIssueStatus(e)}
+          selectedKeys={[props.selectedId ?? ""]}
+        >
+          {project?.statuses
+            .filter((status) => status.id !== props.issueId)
+            .map((type) => {
+              return (
+                <Menu.Item key={type.id}>
+                  <div className="font-sz12">{type.name}</div>
+                </Menu.Item>
+              );
+            })}
+        </Menu>
+      }
+    >
+      {onRenderContent()}
+    </Dropdown>
   );
 }

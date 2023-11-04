@@ -2,6 +2,7 @@ import Endpoint from "../app/api/endpoint";
 import { axiosInstance } from "../app/middleware";
 import { IDetailProject } from "../app/models/IDetailProject";
 import { IPaginateResponse } from "../app/models/IPaginateResponse";
+import { IPriority } from "../app/models/IPriority";
 import { IProject } from "../app/models/IProject";
 import { IResponse } from "../app/models/IResponse";
 
@@ -80,7 +81,19 @@ export class ProjectService {
   public static delete = async (userId: string, projectId: string) => {
     try {
       const response: IResponse<IDetailProject> = await axiosInstance.delete(
-        Endpoint.deleteProject + userId + "/projects/" + projectId
+        Endpoint.getPriorities + userId + "/projects/" + projectId
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static getPriorities = async (projectId: string) => {
+    try {
+      const response: IResponse<IPriority[]> = await axiosInstance.get(
+        Endpoint.getPriorities + projectId + "/priorities"
       );
       console.log("POST response:", response.data);
       return response;

@@ -13,10 +13,11 @@ import {
   Tooltip,
 } from "antd";
 import Search from "antd/es/input/Search";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   getProjectByCode,
+  getProjectPriorities,
   setIsShowEpic,
 } from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
@@ -36,9 +37,6 @@ export default function HeaderProject(props: any) {
     name: "",
   };
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
-  );
   const [requestUserParam, setRequestUserParam] = useState(
     initialRequestUserParam
   );
@@ -51,8 +49,8 @@ export default function HeaderProject(props: any) {
   const [addMemberForm] = Form.useForm();
   const { getMentions } = Mentions;
   const [messageApi, contextHolder] = message.useMessage();
-  const isShowEpic = useSelector(
-    (state: RootState) => state.projectDetail.isShowEpic
+  const { isShowEpic, project } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const showSuccessMessage = () => {
     messageApi.open({
@@ -60,12 +58,19 @@ export default function HeaderProject(props: any) {
       content: "Successfully",
     });
   };
+
+  useEffect(() => {
+    if (project?.id) {
+      dispatch(getProjectPriorities(project?.id));
+    }
+  }, [project?.id, dispatch]);
   const onClickCancel = () => {
     setIsModalOpen(false);
   };
   const onClickOpenModal = () => {
     setIsModalOpen(true);
   };
+
   const onClickOk = () => {
     const mentions = getMentions(addMemberForm.getFieldValue("name"));
     const role = addMemberForm.getFieldValue("role");

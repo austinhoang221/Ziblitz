@@ -10,6 +10,7 @@ export default class Endpoint {
   public static createProject: string = this.baseUrl + "users/";
   public static updateProject: string = this.baseUrl + "users/";
   public static deleteProject: string = this.baseUrl + "users/";
+  public static getPriorities: string = this.baseUrl + "projects/";
   public static createSprint: string = this.baseUrl + "projects/";
   public static startSprint: string = this.baseUrl + "projects/";
   public static updateSprint: string = this.baseUrl + "projects/";
