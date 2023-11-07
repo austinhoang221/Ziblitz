@@ -18,7 +18,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
       width: "40px",
       align: "center",
       render: (issue: IIssue) => {
-        return <IssueType issueTypeKey={issue?.issueType.name}></IssueType>;
+        return <IssueType issueTypeKey={issue?.issueType.icon}></IssueType>;
       },
     },
     {

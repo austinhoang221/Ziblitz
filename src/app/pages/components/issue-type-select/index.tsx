@@ -18,7 +18,13 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
       trigger={["click"]}
       className="mr-2"
       overlay={
-        <Menu onClick={(e) => props.onChangeIssueType(e)}>
+        <Menu
+          onClick={(e) => props.onChangeIssueType(e)}
+          selectedKeys={[
+            project?.issueTypes.find((type) => type.icon === props.issueTypeKey)
+              ?.id ?? "",
+          ]}
+        >
           {project?.issueTypes
             .filter((item) => item.name !== "Epic" && item.name !== "Subtask")
             .map((type) => {

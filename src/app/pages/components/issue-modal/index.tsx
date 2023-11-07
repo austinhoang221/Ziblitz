@@ -18,7 +18,7 @@ import {
 import dayjs from "dayjs";
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../../../../redux/store";
 import { IssueService } from "../../../../services/issueService";
 import { checkResponseStatus } from "../../../helpers";
@@ -68,6 +68,10 @@ export default function IssueModal(props: any) {
     }
   }, [params.issueId, fetchData]);
 
+  const getPeriodType = (issue: IIssue) => {
+    return issue?.backlogId ? "backlog" : issue?.sprintId ? "sprint" : "epic";
+  };
+
   const items: TabsProps["items"] = [
     {
       key: "1",
@@ -76,9 +80,7 @@ export default function IssueModal(props: any) {
         <IssueComment
           initialValue={issue?.name!}
           onSaveIssue={showSuccessMessage}
-          periodType={
-            issue?.backlogId ? "backlog" : issue?.sprintId ? "sprint" : "epic"
-          }
+          periodType={getPeriodType(issue!)}
           periodId={issue?.sprintId ?? issue?.backlogId!}
           issue={issue!}
         ></IssueComment>
@@ -91,7 +93,7 @@ export default function IssueModal(props: any) {
     },
   ];
 
-  const onChangeField = (type: string, e: any) => {
+  const onChangeField = (type: string, periodType: string, e: any) => {
     const model: any = {};
     if (e) {
       switch (type) {
@@ -102,7 +104,7 @@ export default function IssueModal(props: any) {
           model.parentId = e;
       }
     }
-    if (props.type === "backlog") {
+    if (periodType === "backlog") {
       IssueService.editBacklogIssue(issue?.backlogId!, issue?.id!, {
         [type]: e,
       }).then((res) => {
@@ -111,7 +113,7 @@ export default function IssueModal(props: any) {
           showSuccessMessage();
         }
       });
-    } else if (props.type === "sprint") {
+    } else if (periodType === "sprint") {
       IssueService.editSprintIssue(issue?.backlogId!, issue?.id!, {
         [type]: e,
       }).then((res) => {
@@ -158,26 +160,22 @@ export default function IssueModal(props: any) {
         <div className="d-flex align-center">
           {issue?.issueType.name === "Epic" ? (
             <Button type="text">
-              <IssueType issueTypeKey={issue?.issueType.name}></IssueType>
+              <IssueType issueTypeKey={issue?.issueType.icon}></IssueType>
             </Button>
           ) : (
             <>
               <IssueAddParent
-                type={
-                  issue?.backlogId
-                    ? "backlog"
-                    : issue?.sprintId
-                    ? "sprint"
-                    : "epic"
-                }
+                type={getPeriodType(issue!)}
                 periodId={issue?.sprintId ?? issue?.backlogId!}
                 issue={issue!}
                 onSaveIssue={showSuccessMessage}
               ></IssueAddParent>
 
               <IssueTypeSelect
-                onChangeIssueType={(e) => onChangeField("issueTypeId", e.key)}
-                issueTypeKey={issue?.issueType.name!}
+                onChangeIssueType={(e) =>
+                  onChangeField("issueTypeId", getPeriodType(issue!), e.key)
+                }
+                issueTypeKey={issue?.issueType.icon!}
               ></IssueTypeSelect>
             </>
           )}
@@ -263,13 +261,7 @@ export default function IssueModal(props: any) {
                 type="input"
                 onSaveIssue={showSuccessMessage}
                 fieldName="name"
-                periodType={
-                  issue?.backlogId
-                    ? "backlog"
-                    : issue?.sprintId
-                    ? "sprint"
-                    : "epic"
-                }
+                periodType={getPeriodType(issue!)}
                 periodId={issue?.sprintId ?? issue?.backlogId!}
                 issueId={issue?.id!}
               ></InlineEdit>
@@ -291,13 +283,7 @@ export default function IssueModal(props: any) {
                 Description
               </span>
               <InlineEdit
-                periodType={
-                  issue?.backlogId
-                    ? "backlog"
-                    : issue?.sprintId
-                    ? "sprint"
-                    : "epic"
-                }
+                periodType={getPeriodType(issue!)}
                 periodId={issue?.sprintId ?? issue?.backlogId!}
                 initialValue={issue?.description ?? "Add a description..."}
                 type="textarea"
@@ -338,13 +324,7 @@ export default function IssueModal(props: any) {
                   </Col>
                   <Col span={16}>
                     <InlineEdit
-                      periodType={
-                        issue?.backlogId
-                          ? "backlog"
-                          : issue?.sprintId
-                          ? "sprint"
-                          : "epic"
-                      }
+                      periodType={getPeriodType(issue!)}
                       periodId={issue?.sprintId ?? issue?.backlogId!}
                       initialValue={issue?.issueDetail.assigneeId ?? null}
                       type="assigneeSelect"
@@ -363,13 +343,7 @@ export default function IssueModal(props: any) {
                   </Col>
                   <Col span={16}>
                     <InlineEdit
-                      periodType={
-                        issue?.backlogId
-                          ? "backlog"
-                          : issue?.sprintId
-                          ? "sprint"
-                          : "epic"
-                      }
+                      periodType={getPeriodType(issue!)}
                       periodId={issue?.sprintId ?? issue?.backlogId!}
                       initialValue={issue?.sprintId ?? null}
                       type="sprintSelect"
@@ -385,13 +359,7 @@ export default function IssueModal(props: any) {
                   </Col>
                   <Col span={16}>
                     <InlineEdit
-                      periodType={
-                        issue?.backlogId
-                          ? "backlog"
-                          : issue?.sprintId
-                          ? "sprint"
-                          : "epic"
-                      }
+                      periodType={getPeriodType(issue!)}
                       periodId={issue?.sprintId ?? issue?.backlogId!}
                       initialValue={issue?.sprintId ?? null}
                       type="sprintSelect"
@@ -408,13 +376,7 @@ export default function IssueModal(props: any) {
                     </Col>
                     <Col span={16}>
                       <InlineEdit
-                        periodType={
-                          issue?.backlogId
-                            ? "backlog"
-                            : issue?.sprintId
-                            ? "sprint"
-                            : "epic"
-                        }
+                        periodType={getPeriodType(issue!)}
                         periodId={issue?.sprintId ?? issue?.backlogId!}
                         initialValue={
                           issue?.issueDetail.storyPointEstimate ?? null
@@ -434,13 +396,7 @@ export default function IssueModal(props: any) {
                       </Col>
                       <Col span={16}>
                         <InlineEdit
-                          periodType={
-                            issue?.backlogId
-                              ? "backlog"
-                              : issue?.sprintId
-                              ? "sprint"
-                              : "epic"
-                          }
+                          periodType={getPeriodType(issue!)}
                           periodId={issue?.sprintId ?? issue?.backlogId!}
                           initialValue={issue?.startDate ?? null}
                           type="date"
@@ -457,13 +413,7 @@ export default function IssueModal(props: any) {
                       </Col>
                       <Col span={16}>
                         <InlineEdit
-                          periodType={
-                            issue?.backlogId
-                              ? "backlog"
-                              : issue?.sprintId
-                              ? "sprint"
-                              : "epic"
-                          }
+                          periodType={getPeriodType(issue!)}
                           periodId={issue?.sprintId ?? issue?.backlogId!}
                           initialValue={issue?.dueDate ?? null}
                           type="date"
@@ -483,13 +433,7 @@ export default function IssueModal(props: any) {
                   </Col>
                   <Col span={16}>
                     <InlineEdit
-                      periodType={
-                        issue?.backlogId
-                          ? "backlog"
-                          : issue?.sprintId
-                          ? "sprint"
-                          : "epic"
-                      }
+                      periodType={getPeriodType(issue!)}
                       periodId={issue?.sprintId ?? issue?.backlogId!}
                       initialValue={issue?.issueDetail.reporterId ?? null}
                       type="reporterSelect"

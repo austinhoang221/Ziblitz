@@ -93,11 +93,7 @@ export default function IssueTypes() {
       key: "icon",
       width: "40px",
       render: (issueType: IIssueType) => {
-        return (
-          <IssueType
-            issueTypeKey={issueType.icon ? issueType.icon : issueType.name}
-          ></IssueType>
-        );
+        return <IssueType issueTypeKey={issueType.icon}></IssueType>;
       },
     },
     {

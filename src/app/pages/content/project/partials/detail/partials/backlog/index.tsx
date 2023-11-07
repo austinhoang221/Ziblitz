@@ -212,7 +212,7 @@ const Backlog: React.FC = () => {
                     issueTypeKey={
                       project?.issueTypes.find(
                         (type) => type.id === issue.issueTypeId
-                      )?.name
+                      )?.icon
                     }
                   ></IssueType>
                 </Button>
