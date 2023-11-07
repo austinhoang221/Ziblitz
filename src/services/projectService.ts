@@ -8,7 +8,7 @@ import { IResponse } from "../app/models/IResponse";
 
 export class ProjectService {
   public static getAll = async (
-    id: string,
+    projectId: string,
     pageNum: number,
     pageSize: number,
     sorts: string[],
@@ -27,7 +27,7 @@ export class ProjectService {
     }
     try {
       const response: IPaginateResponse<IProject[]> = await axiosInstance.get(
-        Endpoint.getAllProject + id + "/projects" + query
+        Endpoint.getAllProject + projectId + "/projects" + query
       );
       console.log("POST response:", response.data.content);
       return response;
@@ -81,7 +81,7 @@ export class ProjectService {
   public static delete = async (userId: string, projectId: string) => {
     try {
       const response: IResponse<IDetailProject> = await axiosInstance.delete(
-        Endpoint.getPriorities + userId + "/projects/" + projectId
+        Endpoint.deleteProject + userId + "/projects/" + projectId
       );
       console.log("POST response:", response.data);
       return response;

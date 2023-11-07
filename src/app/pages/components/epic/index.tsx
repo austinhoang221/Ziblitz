@@ -60,6 +60,7 @@ export default function Epic() {
                 header={
                   <span className="font-weight-bold">{epic.name}&nbsp;</span>
                 }
+                className="mb-2"
               >
                 <div className="mb-2">
                   <div className="font-weight-medium">Start date</div>

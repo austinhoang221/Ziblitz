@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "antd";
 import Search from "antd/es/input/Search";
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   getProjectByCode,
@@ -31,8 +31,12 @@ import {
   getRandomColor,
 } from "../../../../../../../helpers";
 import { IUser } from "../../../../../../../models/IUser";
-
-export default function HeaderProject(props: any) {
+interface IHeaderProject {
+  title: string;
+  type: string;
+  actionContent: ReactNode;
+}
+export default function HeaderProject(props: IHeaderProject) {
   const initialRequestUserParam = {
     name: "",
   };
@@ -124,23 +128,8 @@ export default function HeaderProject(props: any) {
     <>
       {contextHolder}
       <div className="align-child-space-between align-center">
-        <h1 className="mb-0">Backlog</h1>
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item>
-                <div onClick={(e) => e.stopPropagation()}>
-                  Manage custom filter
-                </div>
-              </Menu.Item>
-            </Menu>
-          }
-          trigger={["click"]}
-        >
-          <Button type="text" onClick={(e) => e.preventDefault()}>
-            <i className="fa-solid fa-ellipsis"></i>
-          </Button>
-        </Dropdown>
+        <h1 className="mb-0 mt-2">{props.title}</h1>
+        {props.actionContent}
       </div>
       <div className="d-flex align-center mt-2">
         <Search
@@ -148,80 +137,89 @@ export default function HeaderProject(props: any) {
           placeholder="Search..."
           style={{ width: 200 }}
         />
-        <Avatar.Group className="mr-2">
+        {props.type === "backlog" && (
           <>
-            <Tooltip title={project?.leader.name} placement="top">
-              <Avatar
-                className="cursor-pointer"
-                src={project?.leader.avatarUrl}
-                style={{
-                  backgroundColor: getRandomColor(),
-                  verticalAlign: "middle",
-                }}
-              >
-                {convertNameToInitials(project?.leader.name!)}
-              </Avatar>
-            </Tooltip>
-            {project?.members?.map((member) => {
-              return (
-                <Tooltip title={member?.name} placement="top" key={member.id}>
+            <Avatar.Group className="mr-2">
+              <>
+                <Tooltip title={project?.leader.name} placement="top">
                   <Avatar
                     className="cursor-pointer"
-                    src={member?.avatarUrl}
+                    src={project?.leader.avatarUrl}
                     style={{
                       backgroundColor: getRandomColor(),
                       verticalAlign: "middle",
                     }}
                   >
-                    {convertNameToInitials(member.name)}
+                    {convertNameToInitials(project?.leader.name!)}
                   </Avatar>
                 </Tooltip>
-              );
-            })}
-          </>
-        </Avatar.Group>
-        <Button
-          shape="circle"
-          onClick={onClickOpenModal}
-          icon={<i className="fa-solid fa-user-plus"></i>}
-        />
+                {project?.members?.map((member) => {
+                  return (
+                    <Tooltip
+                      title={member?.name}
+                      placement="top"
+                      key={member.id}
+                    >
+                      <Avatar
+                        className="cursor-pointer"
+                        src={member?.avatarUrl}
+                        style={{
+                          backgroundColor: getRandomColor(),
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        {convertNameToInitials(member.name)}
+                      </Avatar>
+                    </Tooltip>
+                  );
+                })}
+              </>
+            </Avatar.Group>
+            <Button
+              shape="circle"
+              onClick={onClickOpenModal}
+              icon={<i className="fa-solid fa-user-plus"></i>}
+            />
 
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item>
-                <div onClick={(e) => e.stopPropagation()}>
-                  <Select
-                    mode="multiple"
-                    allowClear
-                    style={{ width: "250px" }}
-                    placeholder="Please select"
-                    // onChange={handleChange}
-                    options={project?.epics.map((epic) => {
-                      return {
-                        label: <span>{epic.name}</span>,
-                        value: epic.id,
-                      };
-                    })}
-                  />
-                  <Divider className="mt-2 mb-2"></Divider>
-                  <div className="d-flex">
-                    <Switch
-                      checked={isShowEpic}
-                      onChange={(e) => onChangeToggleEpic(e)}
-                    />
-                    <span className="ml-2">Epic</span>
-                  </div>
-                </div>
-              </Menu.Item>
-            </Menu>
-          }
-          trigger={["click"]}
-        >
-          <Button type="text" className="ml-2">
-            <span>Epic</span> <i className="fa-solid fa-chevron-down ml-2"></i>
-          </Button>
-        </Dropdown>
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <Select
+                        mode="multiple"
+                        allowClear
+                        style={{ width: "250px" }}
+                        placeholder="Please select"
+                        // onChange={handleChange}
+                        options={project?.epics.map((epic) => {
+                          return {
+                            label: <span>{epic.name}</span>,
+                            value: epic.id,
+                          };
+                        })}
+                      />
+                      <Divider className="mt-2 mb-2"></Divider>
+                      <div className="d-flex">
+                        <Switch
+                          checked={isShowEpic}
+                          onChange={(e) => onChangeToggleEpic(e)}
+                        />
+                        <span className="ml-2">Epic</span>
+                      </div>
+                    </div>
+                  </Menu.Item>
+                </Menu>
+              }
+              trigger={["click"]}
+            >
+              <Button type="text" className="ml-2">
+                <span>Epic</span>{" "}
+                <i className="fa-solid fa-chevron-down ml-2"></i>
+              </Button>
+            </Dropdown>
+          </>
+        )}
 
         <Modal
           title="Add member"

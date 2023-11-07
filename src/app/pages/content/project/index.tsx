@@ -1,12 +1,4 @@
-import {
-  Button,
-  Dropdown,
-  Menu,
-  MenuProps,
-  message,
-  Pagination,
-  Popconfirm,
-} from "antd";
+import { Button, Dropdown, Menu, message, Pagination, Popconfirm } from "antd";
 import Search from "antd/es/input/Search";
 import Table, { ColumnsType } from "antd/es/table";
 import { Link, useNavigate } from "react-router-dom";

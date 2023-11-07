@@ -47,6 +47,15 @@ export default function IssueType(props: any) {
             alt="Story"
           ></img>
         );
+      default:
+        return (
+          <img
+            src={require(`../../../assets/images/issue-types/${props.issueTypeKey}.png`)}
+            width="100%"
+            height="100%"
+            alt="Story"
+          ></img>
+        );
     }
   };
   return <>{onRenderIssueType()}</>;

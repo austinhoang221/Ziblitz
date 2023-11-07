@@ -32,6 +32,7 @@ import { SprintService } from "../../../../../../../../services/sprintService";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import {
   getProjectByCode,
+  setProjectDetail,
   setSprints,
 } from "../../../../../../../../redux/slices/projectDetailSlice";
 import TextArea from "antd/es/input/TextArea";
@@ -96,9 +97,7 @@ const Backlog: React.FC = () => {
     setIsStartSprint(false);
     SprintService.createSprint(project?.id!).then((res) => {
       if (checkResponseStatus(res)) {
-        const tempSprint = [...sprints!];
-        tempSprint.push(res?.data!);
-        dispatch(setSprints(tempSprint));
+        dispatch(getProjectByCode(project?.code!));
         showSuccessMessage();
       }
     });
@@ -156,29 +155,15 @@ const Backlog: React.FC = () => {
       goal: formValue.goal,
       projectId: project?.id,
     };
-    if (!isChangeSprint) {
-      await SprintService.updateSprint(
-        project?.id!,
-        editSprintId,
-        payload
-      ).then((res) => {
+    await SprintService.updateSprint(project?.id!, editSprintId, payload).then(
+      (res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
           showSuccessMessage();
           setIsChangeSprint(false);
         }
-      });
-    } else {
-      await SprintService.startSprint(project?.id!, editSprintId, payload).then(
-        (res) => {
-          if (checkResponseStatus(res)) {
-            dispatch(getProjectByCode(project?.code!));
-            showSuccessMessage();
-            setIsChangeSprint(false);
-          }
-        }
-      );
-    }
+      }
+    );
   };
 
   const onClickCancelEdit = (e: any) => {
@@ -388,7 +373,28 @@ const Backlog: React.FC = () => {
 
   return (
     <>
-      <HeaderProject></HeaderProject>
+      <HeaderProject
+        title="Backlog"
+        type="backlog"
+        actionContent={
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    Manage custom filter
+                  </div>
+                </Menu.Item>
+              </Menu>
+            }
+            trigger={["click"]}
+          >
+            <Button type="text" onClick={(e) => e.preventDefault()}>
+              <i className="fa-solid fa-ellipsis"></i>
+            </Button>
+          </Dropdown>
+        }
+      ></HeaderProject>
       <Row gutter={isShowEpic ? 24 : 0}>
         {isShowEpic && (
           <Col span={6} className="mt-4">
@@ -406,7 +412,14 @@ const Backlog: React.FC = () => {
                       <div>
                         <span className="font-weight-bold">
                           {sprint.name}&nbsp;
-                          <span className="font-weight-normal">
+                          {sprint.startDate && (
+                            <span className="font-weight-normal text-muted">
+                              {dayjs(sprint.startDate).format("MMM D, YYYY")} -{" "}
+                              {dayjs(sprint.endDate).format("MMM D, YYYY")}
+                              &nbsp;
+                            </span>
+                          )}
+                          <span className="font-weight-normal text-muted">
                             ({sprint?.issues?.length ?? 0}) issues
                           </span>
                         </span>

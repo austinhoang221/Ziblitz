@@ -75,10 +75,10 @@ const EditIssueInput = (props: IEditIssueInput) => {
             ref={ref}
             className="w-100"
             value={editedValue}
-            // onBlur={() => {
-            //   setEditedValue(props.initialValue);
-            //   setIsEditing(false);
-            // }}
+            onBlur={() => {
+              setEditedValue(props.initialValue);
+              setIsEditing(false);
+            }}
             onKeyDownCapture={(e) => {
               if (e.key === "Escape") {
                 setEditedValue(props.initialValue);

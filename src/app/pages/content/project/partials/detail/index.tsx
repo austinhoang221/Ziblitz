@@ -98,6 +98,22 @@ export default function DetailProject() {
           ),
         },
         {
+          key: "issueTypes",
+          label: (
+            <span>
+              <i className="fa-solid fa-list mr-2"></i>Issue Types
+            </span>
+          ),
+        },
+        {
+          key: "priority",
+          label: (
+            <span>
+              <i className="fa-solid fa-arrow-up mr-2"></i>Priorities
+            </span>
+          ),
+        },
+        {
           key: "notifications",
           label: (
             <span>

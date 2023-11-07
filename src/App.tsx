@@ -13,6 +13,7 @@ import BoardProject from "./app/pages/content/project/partials/detail/partials/b
 import CodeProject from "./app/pages/content/project/partials/detail/partials/code";
 import FeatureProject from "./app/pages/content/project/partials/detail/partials/feature";
 import InfoProject from "./app/pages/content/project/partials/detail/partials/info";
+import IssueTypes from "./app/pages/content/project/partials/detail/partials/issue-types";
 import NotificationProject from "./app/pages/content/project/partials/detail/partials/notification";
 import TimelineProject from "./app/pages/content/project/partials/detail/partials/timeline";
 import { PrivateRoute } from "./app/routes/private-route";
@@ -46,6 +47,7 @@ function App() {
                 </Route>
                 <Route path="board" element={<BoardProject />} />
                 <Route path="details" element={<InfoProject />} />
+                <Route path="issueTypes" element={<IssueTypes />} />
                 <Route path="notifications" element={<NotificationProject />} />
                 <Route path="access" element={<AccessProject />} />
                 <Route path="features" element={<FeatureProject />} />

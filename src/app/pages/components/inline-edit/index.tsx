@@ -137,46 +137,40 @@ export default function InlineEdit(props: IInlineEditProps) {
       case "assigneeSelect":
       case "reporterSelect":
         return (
-          <>
-            <SelectUser
-              fieldName={props.fieldName}
-              type={props.type}
-              periodId={props.periodId}
-              onSaveIssue={(e) => props.onSaveIssue(e)}
-              issueId={props.issueId}
-              selectedId={props.initialValue!}
-              onBlur={() => setIsEditing(false)}
-            ></SelectUser>
-          </>
+          <SelectUser
+            fieldName={props.fieldName}
+            type={props.type}
+            periodId={props.periodId}
+            onSaveIssue={(e) => props.onSaveIssue(e)}
+            issueId={props.issueId}
+            selectedId={props.initialValue!}
+            onBlur={() => setIsEditing(false)}
+          ></SelectUser>
         );
       case "sprintSelect":
         return (
-          <>
-            <SprintSelect
-              className="w-100"
-              type={props.type}
-              periodId={props.periodId}
-              onSaveIssue={props.onSaveIssue}
-              issueId={props.issueId}
-              selectedId={props.initialValue!}
-              onBlur={() => setIsEditing(false)}
-            ></SprintSelect>
-          </>
+          <SprintSelect
+            className="w-100"
+            type={props.type}
+            periodId={props.periodId}
+            onSaveIssue={props.onSaveIssue}
+            issueId={props.issueId}
+            selectedId={props.initialValue!}
+            onBlur={() => setIsEditing(false)}
+          ></SprintSelect>
         );
       case "storyPointEstimate":
         return (
-          <>
-            <InputNumber
-              className="w-100"
-              min={"0"}
-              max={"10"}
-              ref={ref}
-              value={props.initialValue ?? "0"}
-              onChange={(e) => setEditedValue(e)}
-              onPressEnter={onSave}
-              onBlur={onSave}
-            ></InputNumber>
-          </>
+          <InputNumber
+            className="w-100"
+            min={"0"}
+            max={"10"}
+            ref={ref}
+            value={props.initialValue ?? "0"}
+            onChange={(e) => setEditedValue(e)}
+            onPressEnter={onSave}
+            onBlur={onSave}
+          ></InputNumber>
         );
       case "date":
         const currentDate = new Date();
@@ -233,6 +227,29 @@ export default function InlineEdit(props: IInlineEditProps) {
                 </span>
               </div>
             )}
+          </>
+        );
+      case "sprintSelect":
+        return (
+          <>
+            <div
+              className={
+                "edit-content" +
+                (props.fieldName === "name"
+                  ? " font-sz24 font-weight-medium"
+                  : "")
+              }
+              onClick={onEdit}
+            >
+              {editedValue && (
+                <span className="ml-2">
+                  {
+                    project?.sprints.find((sprint) => sprint.id === editedValue)
+                      ?.name
+                  }
+                </span>
+              )}
+            </div>
           </>
         );
       case "date":
