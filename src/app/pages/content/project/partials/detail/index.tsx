@@ -106,7 +106,7 @@ export default function DetailProject() {
           ),
         },
         {
-          key: "priority",
+          key: "priorities",
           label: (
             <span>
               <i className="fa-solid fa-arrow-up mr-2"></i>Priorities

@@ -245,6 +245,7 @@ export default function IssueModal(props: any) {
         onCancel={onCancel}
         onOk={onOk}
         open={isOpenIssueModal}
+        footer={null}
         width="70rem"
       >
         {!isLoading ? (

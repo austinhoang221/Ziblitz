@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
-import { useSelector } from "react-redux";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Authentication from "./app/pages/authentication";
 import Content from "./app/pages/content";
@@ -15,6 +14,7 @@ import FeatureProject from "./app/pages/content/project/partials/detail/partials
 import InfoProject from "./app/pages/content/project/partials/detail/partials/info";
 import IssueTypes from "./app/pages/content/project/partials/detail/partials/issue-types";
 import NotificationProject from "./app/pages/content/project/partials/detail/partials/notification";
+import Priorities from "./app/pages/content/project/partials/detail/partials/priorities";
 import TimelineProject from "./app/pages/content/project/partials/detail/partials/timeline";
 import { PrivateRoute } from "./app/routes/private-route";
 
@@ -48,6 +48,7 @@ function App() {
                 <Route path="board" element={<BoardProject />} />
                 <Route path="details" element={<InfoProject />} />
                 <Route path="issueTypes" element={<IssueTypes />} />
+                <Route path="priorities" element={<Priorities />} />
                 <Route path="notifications" element={<NotificationProject />} />
                 <Route path="access" element={<AccessProject />} />
                 <Route path="features" element={<FeatureProject />} />

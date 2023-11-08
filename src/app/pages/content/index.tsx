@@ -1,12 +1,10 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
 import { setProjects } from "../../../redux/slices/projectSlice";
 import { getAllRole } from "../../../redux/slices/roleSlice";
 import { setUsers } from "../../../redux/slices/userSlice";
 import { useAppDispatch } from "../../customHooks/dispatch";
 import useProjectData from "../../customHooks/fetchProject";
-import useRoleData from "../../customHooks/fetchRole";
 import useUserData from "../../customHooks/fetchUser";
 import { IPagination } from "../../models/IPagination";
 import Header from "../components/header";
@@ -23,12 +21,15 @@ export default function Content() {
   const { listProject } = useProjectData(userId, initialRequestParam);
   useEffect(() => {
     dispatch(getAllRole());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     dispatch(setUsers(listUser));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, listUser]);
   useEffect(() => {
     dispatch(setProjects(listProject));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, listProject]);
   return (
     <>

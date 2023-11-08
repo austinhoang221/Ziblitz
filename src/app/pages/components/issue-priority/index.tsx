@@ -11,7 +11,7 @@ export default function IssuePriority(props: IIssuePriority) {
     const priority = priorities?.find((item) => item.id === props.priorityId);
     return (
       <Button type="text" shape="circle" style={{ color: priority?.color }}>
-        {priority?.icon}
+        <i className={priority?.icon} style={{ color: priority?.color }}></i>
       </Button>
     );
   };

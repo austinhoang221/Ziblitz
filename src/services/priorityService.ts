@@ -57,8 +57,8 @@ export class PriorityService {
 
   public static update = async (
     projectId: string,
-    payload: any,
-    id: string
+    id: string,
+    payload: any
   ) => {
     try {
       const response: IResponse<IPriority> = await axiosInstance.put(

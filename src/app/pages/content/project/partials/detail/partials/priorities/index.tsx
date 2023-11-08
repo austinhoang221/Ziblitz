@@ -1,14 +1,12 @@
 import { red } from "@ant-design/colors";
 import {
   Button,
-  Col,
+  ColorPicker,
   Form,
   Input,
   message,
   Modal,
   Pagination,
-  Popover,
-  Row,
   Table,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -17,22 +15,23 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
-import { IssueTypeService } from "../../../../../../../../services/issueTypeService";
+import { PriorityService } from "../../../../../../../../services/priorityService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
-import useIssueTypeData from "../../../../../../../customHooks/fetchIssueTypes";
+import usePriorityData from "../../../../../../../customHooks/fetchPriority";
 import { checkResponseStatus } from "../../../../../../../helpers";
-import { IIssueType } from "../../../../../../../models/IIssueType";
+import { IPriority } from "../../../../../../../models/IPriority";
 import { IPagination } from "../../../../../../../models/IPagination";
-import IssueType from "../../../../../../components/issue-type";
+import IssuePriority from "../../../../../../components/issue-priority";
 import HeaderProject from "../header";
-import "./index.scss";
-export default function IssueTypes() {
+import { Color } from "antd/es/color-picker";
+import type { ColorPickerProps } from "antd/es/color-picker";
+export default function Priorities() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mode, setMode] = useState<string>("");
-  const [issueTypeKey, setIssueTypeKey] = useState<string>("10318");
-  const [isChangeIcon, setIsChangeIcon] = useState(false);
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
-  const [issueTypeId, setIssueTypeId] = useState<string>("");
+  const [priorityId, setPriorityId] = useState<string>("");
+  const [colorValue, setColorValue] =
+    useState<ColorPickerProps["value"]>("#1677ff");
 
   const initialRequestParam: IPagination = {
     pageNum: 1,
@@ -43,27 +42,11 @@ export default function IssueTypes() {
     (state: RootState) => state.projectDetail.project
   );
   const [drawerForm] = Form.useForm();
-  const images = [
-    "10300",
-    "10304",
-    "10306",
-    "10308",
-    "10309",
-    "10310",
-    "10311",
-    "10312",
-    "10313",
-    "10314",
-    "10318",
-    "10320",
-    "10321",
-    "10322",
-    "10323",
-  ];
+
   const [requestParam, setRequestParam] =
     useState<IPagination>(initialRequestParam);
 
-  const { listIssueType, totalCount, refreshData } = useIssueTypeData(
+  const { listPriority, totalCount, refreshData } = usePriorityData(
     project?.id!,
     requestParam
   );
@@ -76,8 +59,8 @@ export default function IssueTypes() {
     });
   };
 
-  const onDeleteIssueType = async (id: string) => {
-    await IssueTypeService.delete(project?.id!, id).then((res) => {
+  const onDeletePriority = async (id: string) => {
+    await PriorityService.delete(project?.id!, id).then((res) => {
       if (checkResponseStatus(res)) {
         refreshData();
         dispatch(getProjectByCode(project?.code!));
@@ -86,21 +69,21 @@ export default function IssueTypes() {
     });
   };
 
-  const columns: ColumnsType<IIssueType> = [
+  const columns: ColumnsType<IPriority> = [
     {
       title: "Icon",
       key: "icon",
       width: "40px",
-      render: (issueType: IIssueType) => {
-        return <IssueType issueTypeKey={issueType.icon}></IssueType>;
+      render: (priority: IPriority) => {
+        return <IssuePriority priorityId={priority.id}></IssuePriority>;
       },
     },
     {
       title: "Name",
       key: "name",
-      render: (issueType: IIssueType) => {
+      render: (priority: IPriority) => {
         return (
-          <a onClick={() => onOpenModal("edit", issueType)}>{issueType.name}</a>
+          <a onClick={() => onOpenModal("edit", priority)}>{priority.name}</a>
         );
       },
     },
@@ -123,7 +106,7 @@ export default function IssueTypes() {
           <Button
             type="text"
             shape="circle"
-            onClick={() => onDeleteIssueType(id)}
+            onClick={() => onDeletePriority(id)}
           >
             <i
               style={{ color: red.primary }}
@@ -150,17 +133,17 @@ export default function IssueTypes() {
       await drawerForm.validateFields();
       setIsLoadingButtonSave(true);
 
-      const payload: IIssueType = {
+      const payload: IPriority = {
         ...drawerFormValue,
-        icon: issueTypeKey,
+        color: colorValue,
       };
       let response;
       if (mode === "create") {
-        response = await IssueTypeService.create(project?.id!, payload);
+        response = await PriorityService.create(project?.id!, payload);
       } else {
-        response = await IssueTypeService.update(
+        response = await PriorityService.update(
           project?.id!,
-          issueTypeId,
+          priorityId,
           payload
         );
       }
@@ -176,71 +159,36 @@ export default function IssueTypes() {
     }
   };
 
-  const onChangeIcon = (img: string) => {
-    setIssueTypeKey(img);
-    setIsChangeIcon(false);
-  };
-
-  const onRenderChangeIcon = () => {
-    return (
-      <div style={{ width: "200px" }}>
-        <Row>
-          {images.map((img) => {
-            return (
-              <Col
-                key={img}
-                span={6}
-                className="text-center cursor-pointer icon-picker"
-                onClick={() => {
-                  onChangeIcon(img);
-                  setIsChangeIcon(false);
-                }}
-              >
-                <img
-                  width="30px"
-                  height="30px"
-                  alt={img}
-                  src={require(`../../../../../../../assets/images/issue-types/${img}.png`)}
-                ></img>
-              </Col>
-            );
-          })}
-        </Row>
-      </div>
-    );
-  };
-
   const onCancel = () => {
     setIsModalOpen(false);
-    setIsChangeIcon(false);
     drawerForm.resetFields();
   };
 
-  const onOpenModal = (mode: string, item?: IIssueType) => {
+  const onOpenModal = (mode: string, item?: IPriority) => {
     setIsModalOpen(true);
     setMode(mode);
     if (mode === "edit") {
       drawerForm.setFieldsValue(item);
-      setIssueTypeKey(item?.icon ? item?.icon : item?.name!);
-      setIssueTypeId(item?.id!);
+      setColorValue(item?.color);
+      setPriorityId(item?.id!);
     }
   };
 
   return (
     <div className="issue-types">
       <HeaderProject
-        title="Issue types"
-        type="issueTypes"
+        title="Priorities"
+        type="priorities"
         actionContent={
           <Button type="primary" onClick={() => onOpenModal("create")}>
-            Create issue type
+            Create priority
           </Button>
         }
       ></HeaderProject>
       <Table
         className="mt-3"
         columns={columns}
-        dataSource={listIssueType}
+        dataSource={listPriority}
         rowKey={(record) => record.id}
         pagination={false}
       />
@@ -279,33 +227,43 @@ export default function IssueTypes() {
             rules={[
               {
                 required: true,
-                message: "Please enter your issue type name",
+                message: "Please enter your priority name",
               },
             ]}
           >
             <Input placeholder="Name" />
           </Form.Item>
 
-          <Form.Item>
-            <div className="d-flex align-center">
-              <Button type="text">
-                <IssueType issueTypeKey={issueTypeKey}></IssueType>
-              </Button>
-              <Popover
-                open={isChangeIcon}
-                content={onRenderChangeIcon}
-                title="Choose an icon"
-                trigger="click"
-              >
-                <Button
-                  type="text"
-                  className="ml-2"
-                  onClick={() => setIsChangeIcon(true)}
-                >
-                  Change icon
-                </Button>
-              </Popover>
-            </div>
+          <Form.Item
+            label="Icon class"
+            required={true}
+            name="icon"
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+            rules={[
+              {
+                required: true,
+                message: "Please enter your icon class (font-awesome)",
+              },
+            ]}
+          >
+            <Input placeholder="Icon class" />
+          </Form.Item>
+
+          <Form.Item
+            label="Color"
+            required={true}
+            rules={[
+              {
+                required: true,
+                message: "Please enter your color",
+              },
+            ]}
+          >
+            <ColorPicker
+              value={colorValue}
+              onChangeComplete={(value) => setColorValue(value.toHexString())}
+            />
           </Form.Item>
 
           <Form.Item

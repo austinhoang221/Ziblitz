@@ -1,5 +1,4 @@
-import { Button, Dropdown, Menu, Tooltip } from "antd";
-import { ReactNode } from "react";
+import { Button, Dropdown, Empty, Menu, Tooltip } from "antd";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
@@ -52,26 +51,32 @@ export default function IssueAddParent(props: IIssueAddParent) {
           inset: "35px auto auto 62px",
         }}
         overlay={
-          <Menu
-            onClick={(e) => onChangeField("parentId", e.key)}
-            selectedKeys={[props.issue.parentId ?? ""]}
-          >
-            {project?.epics.map((epic) => {
-              return (
-                <Menu.Item key={epic.id}>
-                  <div className="d-flex align-center">
-                    <img
-                      className="mr-2"
-                      src={require("../../../assets/images/epic.png")}
-                      alt={epic.name}
-                    ></img>
-                    <span className="mr-2">{epic.code}</span>
-                    <span>{epic.name}</span>
-                  </div>
-                </Menu.Item>
-              );
-            })}
-          </Menu>
+          project?.epics?.length! > 0 ? (
+            <Menu
+              onClick={(e) => onChangeField("parentId", e.key)}
+              selectedKeys={[props.issue.parentId ?? ""]}
+            >
+              {project?.epics.map((epic) => {
+                return (
+                  <Menu.Item key={epic.id}>
+                    <div className="d-flex align-center">
+                      <img
+                        className="mr-2"
+                        src={require("../../../assets/images/epic.png")}
+                        alt={epic.name}
+                      ></img>
+                      <span className="mr-2">{epic.code}</span>
+                      <span>{epic.name}</span>
+                    </div>
+                  </Menu.Item>
+                );
+              })}
+            </Menu>
+          ) : (
+            <Menu>
+              <Empty></Empty>
+            </Menu>
+          )
         }
       >
         {!props.issue.parentId ? (
