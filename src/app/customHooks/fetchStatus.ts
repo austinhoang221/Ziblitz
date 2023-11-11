@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { IssueTypeService } from "../../services/issueTypeService";
+import { PriorityService } from "../../services/priorityService";
+import { StatusService } from "../../services/statusService";
 import { checkResponseStatus } from "../helpers";
-import { IIssueType } from "../models/IIssueType";
 import { IPagination } from "../models/IPagination";
+import { IStatus } from "../models/IStatus";
 
-function useIssueTypeData(projectId: string, requestParam: IPagination) {
-  const [listIssueType, setListOfData] = useState<IIssueType[]>([]);
+function useStatusData(projectId: string, requestParam: IPagination) {
+  const [listStatus, setListOfData] = useState<IStatus[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setLoading] = useState<boolean>(false);
-
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
   const fetchData = useCallback(() => {
     setLoading(true);
-    IssueTypeService.getAll(
+    StatusService.getAll(
       projectId,
       requestParam.pageNum,
       requestParam.pageSize,
@@ -43,7 +43,7 @@ function useIssueTypeData(projectId: string, requestParam: IPagination) {
     fetchData();
   }, [fetchData, project?.id, requestParam.pageNum, requestParam.pageSize]);
 
-  return { listIssueType, totalCount, refreshData, isLoading };
+  return { listStatus, totalCount, refreshData, isLoading };
 }
 
-export default useIssueTypeData;
+export default useStatusData;

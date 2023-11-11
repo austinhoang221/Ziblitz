@@ -1,37 +1,20 @@
 import { red } from "@ant-design/colors";
-import {
-  Button,
-  ColorPicker,
-  Form,
-  Input,
-  message,
-  Modal,
-  Pagination,
-  Table,
-} from "antd";
+import { Button, Form, Input, message, Modal, Pagination } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { ColumnsType } from "antd/es/table";
+import Table, { ColumnsType } from "antd/es/table";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
-import { PriorityService } from "../../../../../../../../services/priorityService";
+import { StatusService } from "../../../../../../../../services/statusService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
-import usePriorityData from "../../../../../../../customHooks/fetchPriority";
+import useStatusData from "../../../../../../../customHooks/fetchStatus";
 import { checkResponseStatus } from "../../../../../../../helpers";
-import { IPriority } from "../../../../../../../models/IPriority";
 import { IPagination } from "../../../../../../../models/IPagination";
-import IssuePriority from "../../../../../../components/issue-priority";
+import { IStatus } from "../../../../../../../models/IStatus";
 import HeaderProject from "../header";
-import type { ColorPickerProps } from "antd/es/color-picker";
-export default function Priorities() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mode, setMode] = useState<string>("");
-  const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
-  const [priorityId, setPriorityId] = useState<string>("");
-  const [colorValue, setColorValue] =
-    useState<ColorPickerProps["value"]>("#1677ff");
 
+export default function Statuses() {
   const initialRequestParam: IPagination = {
     pageNum: 1,
     pageSize: 5,
@@ -44,22 +27,25 @@ export default function Priorities() {
 
   const [requestParam, setRequestParam] =
     useState<IPagination>(initialRequestParam);
-
-  const { listPriority, totalCount, refreshData, isLoading } = usePriorityData(
-    project?.id!,
-    requestParam
-  );
   const dispatch = useAppDispatch();
   const [messageApi, contextHolder] = message.useMessage();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mode, setMode] = useState<string>("");
+  const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
+  const [statusId, setStatusId] = useState<string>("");
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
       content: "Successfully",
     });
   };
+  const { listStatus, totalCount, refreshData, isLoading } = useStatusData(
+    project?.id!,
+    requestParam
+  );
 
-  const onDeletePriority = async (id: string) => {
-    await PriorityService.delete(project?.id!, id).then((res) => {
+  const onDeleteStatus = async (id: string) => {
+    await StatusService.delete(project?.id!, id).then((res) => {
       if (checkResponseStatus(res)) {
         refreshData();
         dispatch(getProjectByCode(project?.code!));
@@ -68,22 +54,12 @@ export default function Priorities() {
     });
   };
 
-  const columns: ColumnsType<IPriority> = [
-    {
-      title: "Icon",
-      key: "icon",
-      width: "40px",
-      render: (priority: IPriority) => {
-        return <IssuePriority priorityId={priority.id}></IssuePriority>;
-      },
-    },
+  const columns: ColumnsType<IStatus> = [
     {
       title: "Name",
       key: "name",
-      render: (priority: IPriority) => {
-        return (
-          <a onClick={() => onOpenModal("edit", priority)}>{priority.name}</a>
-        );
+      render: (status: IStatus) => {
+        return <a onClick={() => onOpenModal("edit", status)}>{status.name}</a>;
       },
     },
     {
@@ -102,11 +78,7 @@ export default function Priorities() {
       width: "40px",
       render: (id: string) => {
         return (
-          <Button
-            type="text"
-            shape="circle"
-            onClick={() => onDeletePriority(id)}
-          >
+          <Button type="text" shape="circle" onClick={() => onDeleteStatus(id)}>
             <i
               style={{ color: red.primary }}
               className="fa-solid fa-trash-can"
@@ -132,20 +104,15 @@ export default function Priorities() {
       await drawerForm.validateFields();
       setIsLoadingButtonSave(true);
 
-      const payload: IPriority = {
+      const payload: IStatus = {
         ...drawerFormValue,
-        color: colorValue,
         projectId: project?.id,
       };
       let response;
       if (mode === "create") {
-        response = await PriorityService.create(project?.id!, payload);
+        response = await StatusService.create(project?.id!, payload);
       } else {
-        response = await PriorityService.update(
-          project?.id!,
-          priorityId,
-          payload
-        );
+        response = await StatusService.update(project?.id!, statusId, payload);
       }
       if (checkResponseStatus(response)) {
         refreshData();
@@ -164,31 +131,30 @@ export default function Priorities() {
     drawerForm.resetFields();
   };
 
-  const onOpenModal = (mode: string, item?: IPriority) => {
+  const onOpenModal = (mode: string, item?: IStatus) => {
     setIsModalOpen(true);
     setMode(mode);
     if (mode === "edit") {
       drawerForm.setFieldsValue(item);
-      setColorValue(item?.color);
-      setPriorityId(item?.id!);
+      setStatusId(item?.id!);
     }
   };
 
   return (
     <div className="issue-types">
       <HeaderProject
-        title="Priorities"
+        title="Statuses"
         type="priorities"
         actionContent={
           <Button type="primary" onClick={() => onOpenModal("create")}>
-            Create priority
+            Create status
           </Button>
         }
       ></HeaderProject>
       <Table
         className="mt-3"
         columns={columns}
-        dataSource={listPriority}
+        dataSource={listStatus}
         rowKey={(record) => record.id}
         pagination={false}
         loading={isLoading}
@@ -233,38 +199,6 @@ export default function Priorities() {
             ]}
           >
             <Input placeholder="Name" />
-          </Form.Item>
-
-          <Form.Item
-            label="Icon class"
-            required={true}
-            name="icon"
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-            rules={[
-              {
-                required: true,
-                message: "Please enter your icon class (font-awesome)",
-              },
-            ]}
-          >
-            <Input placeholder="Icon class" />
-          </Form.Item>
-
-          <Form.Item
-            label="Color"
-            required={true}
-            rules={[
-              {
-                required: true,
-                message: "Please enter your color",
-              },
-            ]}
-          >
-            <ColorPicker
-              value={colorValue}
-              onChangeComplete={(value) => setColorValue(value.toHexString())}
-            />
           </Form.Item>
 
           <Form.Item

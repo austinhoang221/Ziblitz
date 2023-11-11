@@ -6,6 +6,7 @@ import IssueType from "../issue-type";
 
 interface IIssueTypeSelectProps {
   issueTypeKey: string;
+  isSubtask?: boolean;
   onChangeIssueType: (e: MenuInfo) => void;
 }
 export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
@@ -13,8 +14,19 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
     (state: RootState) => state.projectDetail.project
   );
 
+  const getIssueType = () => {
+    if (props.isSubtask) {
+      return project?.issueTypes.filter((item) => item.name === "Subtask");
+    } else {
+      return project?.issueTypes.filter(
+        (item) => item.name !== "Epic" && item.name !== "Subtask"
+      );
+    }
+  };
+
   return (
     <Dropdown
+      disabled={props.isSubtask}
       trigger={["click"]}
       className="mr-2"
       overlay={
@@ -25,15 +37,13 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
               ?.id ?? "",
           ]}
         >
-          {project?.issueTypes
-            .filter((item) => item.name !== "Epic" && item.name !== "Subtask")
-            .map((type) => {
-              return (
-                <Menu.Item key={type.id}>
-                  <div>{type.name}</div>
-                </Menu.Item>
-              );
-            })}
+          {(getIssueType() ?? []).map((type) => {
+            return (
+              <Menu.Item key={type.id}>
+                <div>{type.name}</div>
+              </Menu.Item>
+            );
+          })}
         </Menu>
       }
     >

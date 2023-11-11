@@ -12,6 +12,7 @@ interface IProjectDetail {
   sprints: ISprint[] | null;
   priorities: IPriority[] | null;
   isShowEpic: boolean;
+  isLoading: boolean;
 }
 const initialProjectDetailState: IProjectDetail = {
   project: null,
@@ -19,6 +20,7 @@ const initialProjectDetailState: IProjectDetail = {
   sprints: [],
   priorities: [],
   isShowEpic: false,
+  isLoading: false,
 };
 
 const userId = JSON.parse(localStorage.getItem("user")!)?.id;
@@ -68,16 +70,28 @@ export const projectDetailSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(
+      getProjectByCode.pending,
+      (state, action: PayloadAction<any>) => {
+        let newState = { ...state };
+        newState.isLoading = true;
+        return newState;
+      }
+    );
+    builder.addCase(
       getProjectByCode.fulfilled,
       (state, action: PayloadAction<any>) => {
         let newState = { ...state };
         newState.project = action.payload;
+        newState.isLoading = false;
         if (action.payload !== null) {
           if (action.payload.backlog) {
             newState.backlogIssues = action.payload.backlog.issues || [];
           }
           if (action.payload.sprints) {
             newState.sprints = action.payload.sprints || [];
+          }
+          if (action.payload !== null) {
+            newState.priorities = action.payload.priorities || [];
           }
         }
         return newState;
@@ -88,7 +102,7 @@ export const projectDetailSlice = createSlice({
       (state, action: PayloadAction<any>) => {
         let newState = { ...state };
         if (action.payload !== null) {
-          newState.priorities = action.payload.priorities || [];
+          newState.priorities = action.payload || [];
         }
         return newState;
       }

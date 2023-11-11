@@ -23,6 +23,8 @@ import { RootState } from "../../../../redux/store";
 import { IssueService } from "../../../../services/issueService";
 import { checkResponseStatus } from "../../../helpers";
 import { IIssue } from "../../../models/IIssue";
+import ChildIssues from "../child-issues";
+import CreateIssueInput from "../create-issue-input";
 import InlineEdit from "../inline-edit";
 import IssueAddParent from "../issue-add-parent";
 import IssueComment from "../issue-comment";
@@ -38,6 +40,8 @@ export default function IssueModal(props: any) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isOpenIssueModal, setIsOpenIssueModal] = useState<boolean>(false);
   const [issue, setIssue] = useState<IIssue | null>(null);
+  const [isCreate, setIsCreate] = useState<boolean>(false);
+
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
@@ -144,14 +148,14 @@ export default function IssueModal(props: any) {
   const disabledStartDate: DatePickerProps["disabledDate"] = (current) => {
     if (issue?.dueDate) {
       return current && current > dayjs(issue?.dueDate);
-    } else return true;
+    } else return false;
   };
 
   const disabledDueDate: DatePickerProps["disabledDate"] = (current) => {
     if (issue?.startDate) {
       return current && current < dayjs(issue?.startDate);
     }
-    return true;
+    return false;
   };
 
   const onRenderModalTitle: ReactNode = (
@@ -170,7 +174,7 @@ export default function IssueModal(props: any) {
                 issue={issue!}
                 onSaveIssue={showSuccessMessage}
               ></IssueAddParent>
-
+              /
               <IssueTypeSelect
                 onChangeIssueType={(e) =>
                   onChangeField("issueTypeId", getPeriodType(issue!), e.key)
@@ -179,7 +183,6 @@ export default function IssueModal(props: any) {
               ></IssueTypeSelect>
             </>
           )}
-
           <Tooltip title={issue?.code + ": " + issue?.name}>
             <div>{issue?.code}</div>
           </Tooltip>
@@ -197,7 +200,7 @@ export default function IssueModal(props: any) {
         <div>
           <Button type="text">
             <i className="header-icon fa-solid fa-eye mr-2"></i>
-            {issue?.watcher?.length}
+            {issue?.watcher.users?.length}
           </Button>
           <Button type="text">
             <i className="header-icon fa-solid fa-share-nodes"></i>
@@ -275,23 +278,35 @@ export default function IssueModal(props: any) {
                   <i className="fa-solid fa-paperclip mr-2"></i>
                   Attach
                 </Button>
-                <Button type="text" style={{ backgroundColor: "#f1f2f4" }}>
-                  <i className="fa-solid fa-network-wired mr-2"></i>
-                  Add a child issue
-                </Button>
               </div>
               <span className="font-weight-bold ml-2 mt-4 mb-2">
                 Description
               </span>
-              <InlineEdit
-                periodType={getPeriodType(issue!)}
-                periodId={issue?.sprintId ?? issue?.backlogId!}
-                initialValue={issue?.description ?? "Add a description..."}
-                type="textarea"
-                issueId={issue?.id!}
-                fieldName="description"
-                onSaveIssue={showSuccessMessage}
-              ></InlineEdit>
+              <div className="mb-4">
+                <InlineEdit
+                  periodType={getPeriodType(issue!)}
+                  periodId={issue?.sprintId ?? issue?.backlogId!}
+                  initialValue={issue?.description ?? "Add a description..."}
+                  type="textarea"
+                  issueId={issue?.id!}
+                  fieldName="description"
+                  onSaveIssue={showSuccessMessage}
+                ></InlineEdit>
+              </div>
+              <span className="font-weight-bold ml-2 mt-4 mb-4">
+                Child issues
+              </span>
+              {issue?.issueType?.name !== "Subtask" && (
+                <>
+                  <ChildIssues data={issue?.childIssues ?? []}></ChildIssues>
+                  <CreateIssueInput
+                    isSubtask={issue?.issueType?.name !== "Epic"}
+                    type="backlog"
+                    periodId={project?.backlog?.id!}
+                    onSaveIssue={showSuccessMessage}
+                  ></CreateIssueInput>
+                </>
+              )}
               <span className="font-weight-bold ml-2 mt-4">Activity</span>
               <Tabs
                 className="ml-2"
@@ -350,26 +365,34 @@ export default function IssueModal(props: any) {
                       type="sprintSelect"
                       issueId={issue?.id!}
                       fieldName="sprintId"
-                      onSaveIssue={showSuccessMessage}
+                      onSaveIssue={(e) => {
+                        setIssue(e!);
+                        showSuccessMessage();
+                      }}
                     ></InlineEdit>
                   </Col>
                 </Row>
-                <Row gutter={24} className="align-center">
-                  <Col span={8}>
-                    <span className="text-muted">Sprint</span>
-                  </Col>
-                  <Col span={16}>
-                    <InlineEdit
-                      periodType={getPeriodType(issue!)}
-                      periodId={issue?.sprintId ?? issue?.backlogId!}
-                      initialValue={issue?.sprintId ?? null}
-                      type="sprintSelect"
-                      issueId={issue?.id!}
-                      fieldName="sprintId"
-                      onSaveIssue={showSuccessMessage}
-                    ></InlineEdit>
-                  </Col>
-                </Row>
+                {(issue?.backlogId || issue?.sprintId) && (
+                  <Row gutter={24} className="align-center">
+                    <Col span={8}>
+                      <span className="text-muted">Sprint</span>
+                    </Col>
+                    <Col span={16}>
+                      <InlineEdit
+                        periodType={getPeriodType(issue!)}
+                        periodId={issue?.sprintId ?? issue?.backlogId!}
+                        initialValue={issue?.sprintId ?? null}
+                        type="sprintSelect"
+                        issueId={issue?.id!}
+                        fieldName="sprintId"
+                        onSaveIssue={(e) => {
+                          setIssue(e!);
+                          showSuccessMessage();
+                        }}
+                      ></InlineEdit>
+                    </Col>
+                  </Row>
+                )}
                 {issue?.issueType?.name !== "Epic" ? (
                   <Row gutter={24} className="align-center">
                     <Col span={8}>
@@ -385,7 +408,10 @@ export default function IssueModal(props: any) {
                         type="storyPointEstimate"
                         issueId={issue?.id!}
                         fieldName="storyPointEstimate"
-                        onSaveIssue={showSuccessMessage}
+                        onSaveIssue={(e) => {
+                          setIssue(e!);
+                          showSuccessMessage();
+                        }}
                       ></InlineEdit>
                     </Col>
                   </Row>
@@ -404,7 +430,10 @@ export default function IssueModal(props: any) {
                           issueId={issue?.id}
                           fieldName="startDate"
                           disabledDate={disabledStartDate}
-                          onSaveIssue={showSuccessMessage}
+                          onSaveIssue={(e) => {
+                            setIssue(e!);
+                            showSuccessMessage();
+                          }}
                         ></InlineEdit>
                       </Col>
                     </Row>
@@ -421,7 +450,10 @@ export default function IssueModal(props: any) {
                           issueId={issue?.id}
                           fieldName="dueDate"
                           disabledDate={disabledDueDate}
-                          onSaveIssue={showSuccessMessage}
+                          onSaveIssue={(e) => {
+                            setIssue(e!);
+                            showSuccessMessage();
+                          }}
                         ></InlineEdit>
                       </Col>
                     </Row>

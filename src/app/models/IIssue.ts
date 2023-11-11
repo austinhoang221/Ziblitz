@@ -1,8 +1,9 @@
 import { PriorityEnum } from "../enums/PriorityEnum";
 import { IIssueDetail } from "./IIssueDetail";
 import { IIssueType } from "./IIssueType";
+import { IStatus } from "./IStatus";
 import { IUser } from "./IUser";
-
+import { IWatcher } from "./IWatcher";
 export interface IIssue {
   id: string;
   code: string;
@@ -17,11 +18,13 @@ export interface IIssue {
   creationTime: string;
   completeTime: string;
   priority: PriorityEnum;
-  watcher: IUser[];
+  watcher: IWatcher;
   voted: string;
   startDate: string;
   dueDate: string;
   statusId: string;
+  status: IStatus;
   issueDetail: IIssueDetail;
   issueType: IIssueType;
+  childIssues: IIssue[];
 }

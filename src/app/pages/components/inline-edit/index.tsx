@@ -241,13 +241,15 @@ export default function InlineEdit(props: IInlineEditProps) {
               }
               onClick={onEdit}
             >
-              {editedValue && (
+              {editedValue ? (
                 <span className="ml-2">
                   {
                     project?.sprints.find((sprint) => sprint.id === editedValue)
                       ?.name
                   }
                 </span>
+              ) : (
+                <span className="ml-2">None</span>
               )}
             </div>
           </>

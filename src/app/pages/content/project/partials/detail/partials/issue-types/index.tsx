@@ -63,10 +63,8 @@ export default function IssueTypes() {
   const [requestParam, setRequestParam] =
     useState<IPagination>(initialRequestParam);
 
-  const { listIssueType, totalCount, refreshData } = useIssueTypeData(
-    project?.id!,
-    requestParam
-  );
+  const { listIssueType, totalCount, refreshData, isLoading } =
+    useIssueTypeData(project?.id!, requestParam);
   const dispatch = useAppDispatch();
   const [messageApi, contextHolder] = message.useMessage();
   const showSuccessMessage = () => {
@@ -243,6 +241,7 @@ export default function IssueTypes() {
         dataSource={listIssueType}
         rowKey={(record) => record.id}
         pagination={false}
+        loading={isLoading}
       />
       {totalCount > 0 && (
         <Pagination

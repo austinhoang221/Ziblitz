@@ -1,11 +1,13 @@
 import { Button, Table, Tooltip } from "antd";
 import { ColumnsType } from "antd/es/table";
 import React from "react";
+import { Link } from "react-router-dom";
 import { IIssue } from "../../../models/IIssue";
 import IssuePriority from "../issue-priority";
 import IssueStatusSelect from "../issue-status-select";
 import IssueType from "../issue-type";
 import UserAvatar from "../user-avatar";
+import "./index.scss";
 interface IChildIssuesProps {
   data: IIssue[];
 }
@@ -15,21 +17,34 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "img",
-      width: "40px",
+      width: "50px",
       align: "center",
       render: (issue: IIssue) => {
-        return <IssueType issueTypeKey={issue?.issueType.icon}></IssueType>;
+        return <IssueType issueTypeKey={issue?.issueType?.icon}></IssueType>;
+      },
+    },
+    {
+      title: "",
+      key: "code",
+      width: "12%",
+      align: "left",
+      render: (issue: IIssue) => {
+        return (
+          <Link to={issue.id} className="ml-2">
+            {issue.code}
+          </Link>
+        );
       },
     },
     {
       title: "",
       key: "name",
       width: "auto",
-      align: "center",
+      align: "left",
       render: (issue: IIssue) => {
         return (
           <Tooltip title={issue.code}>
-            <span className="text-truncate">{issue.name}</span>
+            <span>{issue.name}</span>
           </Tooltip>
         );
       },
@@ -37,7 +52,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "priority",
-      width: "auto",
+      width: "8%",
       align: "center",
       render: (issue: IIssue) => {
         return <IssuePriority priorityId={issue.priorityId!}></IssuePriority>;
@@ -46,12 +61,12 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "storyPointEstimate",
-      width: "auto",
+      width: "8%",
       align: "center",
       render: (issue: IIssue) => {
         return (
           <Button type="text" shape="circle">
-            {issue?.issueDetail.storyPointEstimate ?? 0}
+            {issue?.issueDetail?.storyPointEstimate ?? 0}
           </Button>
         );
       },
@@ -59,14 +74,14 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "assigneeId",
-      width: "auto",
+      width: "10%",
       align: "center",
       render: (issue: IIssue) => {
         return (
           <UserAvatar
             isMultiple={false}
             isShowName={false}
-            userIds={[issue?.issueDetail.assigneeId]}
+            userIds={[issue?.issueDetail?.assigneeId]}
           ></UserAvatar>
         );
       },
@@ -74,7 +89,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "statusId",
-      width: "auto",
+      width: "15%",
       align: "center",
       render: (issue: IIssue) => {
         return (
@@ -82,7 +97,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
             type={
               issue?.backlogId ? "backlog" : issue?.sprintId ? "sprint" : "epic"
             }
-            selectedId={issue?.statusId!}
+            selectedId={issue?.status?.id!}
             periodId={issue?.sprintId ?? issue?.backlogId!}
             issueId={issue?.id!}
             style={{ width: "120px", minWidth: "120px" }}
@@ -92,5 +107,14 @@ export default function ChildIssues(props: IChildIssuesProps) {
       },
     },
   ];
-  return <Table columns={columns} dataSource={props.data}></Table>;
+  return (
+    <div className="child-issue">
+      <Table
+        pagination={false}
+        className="mt-2"
+        columns={columns}
+        dataSource={props.data}
+      ></Table>
+    </div>
+  );
 }

@@ -9,15 +9,13 @@ import { checkResponseStatus } from "../../../helpers";
 import IssueTypeSelect from "../issue-type-select";
 export default function CreateIssueInput(props: any, identifier: string) {
   const [isCreate, setIsCreate] = useState<boolean>(false);
-  const [issueTypeName, setIssueTypeName] = useState<string>("Bug");
+  const [issueTypeIcon, setIssueTypeIcon] = useState<string>("");
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const ref = useRef<InputRef>(null);
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
-  const [issueTypeKey, setIssueTypeKey] = useState<string>(
-    project?.issueTypes.find((type) => type.name === "Bug")?.id!
-  );
+  const [issueTypeKey, setIssueTypeKey] = useState<string>("");
 
   const dispatch = useAppDispatch();
 
@@ -25,16 +23,27 @@ export default function CreateIssueInput(props: any, identifier: string) {
     if (isCreate) {
       ref.current?.focus();
     }
-  }, [isCreate]);
+    if (props.isSubtask) {
+      setIssueTypeKey(
+        project?.issueTypes.find((type) => type.name === "Subtask")?.id!
+      );
+      setIssueTypeIcon("Subtask");
+    } else {
+      setIssueTypeKey(
+        project?.issueTypes.find((type) => type.name === "Bug")?.id!
+      );
+      setIssueTypeIcon("Bug");
+    }
+  }, [isCreate, props.isSubtask]);
 
   const onCreateIssue = () => {
     setIsCreate(true);
   };
   const onChangeIssueType = (e: any) => {
-    const issueTypeName = project?.issueTypes?.find(
+    const issueTypeIcon = project?.issueTypes?.find(
       (type) => type.id === e.key
-    )?.name;
-    setIssueTypeName(issueTypeName!);
+    )?.icon;
+    setIssueTypeIcon(issueTypeIcon!);
     setIssueTypeKey(e.key);
   };
 
@@ -86,7 +95,8 @@ export default function CreateIssueInput(props: any, identifier: string) {
             <Input
               prefix={
                 <IssueTypeSelect
-                  issueTypeKey={issueTypeName}
+                  isSubtask={props.isSubtask}
+                  issueTypeKey={issueTypeIcon}
                   onChangeIssueType={onChangeIssueType}
                 ></IssueTypeSelect>
               }

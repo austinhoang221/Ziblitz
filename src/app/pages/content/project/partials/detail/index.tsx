@@ -5,10 +5,7 @@ import React, { useEffect } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import "./index.scss";
 import SubMenu from "antd/es/menu/SubMenu";
-import {
-  getProjectByCode,
-  getProjectPriorities,
-} from "../../../../../../redux/slices/projectDetailSlice";
+import { getProjectByCode } from "../../../../../../redux/slices/projectDetailSlice";
 import { useAppDispatch } from "../../../../../customHooks/dispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../redux/store";
@@ -110,6 +107,14 @@ export default function DetailProject() {
           label: (
             <span>
               <i className="fa-solid fa-arrow-up mr-2"></i>Priorities
+            </span>
+          ),
+        },
+        {
+          key: "statuses",
+          label: (
+            <span>
+              <i className="fa-regular fa-rectangle-list mr-2"></i>Statuses
             </span>
           ),
         },

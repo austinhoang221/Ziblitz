@@ -25,7 +25,7 @@ export default function Project() {
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const [requestParam, setRequestParam] =
     useState<IPagination>(initialRequestParam);
-  const { listProject, totalCount, refreshData } = useProjectData(
+  const { listProject, totalCount, refreshData, isLoading } = useProjectData(
     userId,
     requestParam
   );
@@ -175,6 +175,7 @@ export default function Project() {
         dataSource={listProject}
         rowKey={(record) => record.id}
         pagination={false}
+        loading={isLoading}
       />
       {totalCount > 0 && (
         <Pagination

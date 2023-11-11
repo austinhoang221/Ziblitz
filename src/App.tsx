@@ -15,50 +15,50 @@ import InfoProject from "./app/pages/content/project/partials/detail/partials/in
 import IssueTypes from "./app/pages/content/project/partials/detail/partials/issue-types";
 import NotificationProject from "./app/pages/content/project/partials/detail/partials/notification";
 import Priorities from "./app/pages/content/project/partials/detail/partials/priorities";
+import Statuses from "./app/pages/content/project/partials/detail/partials/statuses";
 import TimelineProject from "./app/pages/content/project/partials/detail/partials/timeline";
 import { PrivateRoute } from "./app/routes/private-route";
 
 function App() {
   return (
-    <>
-      <Suspense fallback={<h1>Loading...</h1>}>
-        <Routes>
-          <Route path="/login" element={<Authentication />} />
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <Content />
-              </PrivateRoute>
-            }
-          >
-            <Route>
-              <Route path="dashboard" element={<Dashboard />}></Route>
-              <Route path="project" element={<Project />}></Route>
-              <Route path="project/:code" element={<DetailProject />}>
-                <Route path="timeline" element={<TimelineProject />}>
-                  <Route
-                    path="timeline/:issueId"
-                    element={<TimelineProject />}
-                  ></Route>
-                </Route>
-                <Route path="backlog" element={<BacklogProject />}>
-                  <Route path=":issueId"></Route>
-                </Route>
-                <Route path="board" element={<BoardProject />} />
-                <Route path="details" element={<InfoProject />} />
-                <Route path="issueTypes" element={<IssueTypes />} />
-                <Route path="priorities" element={<Priorities />} />
-                <Route path="notifications" element={<NotificationProject />} />
-                <Route path="access" element={<AccessProject />} />
-                <Route path="features" element={<FeatureProject />} />
-                <Route path="code" element={<CodeProject />} />
+    <Suspense fallback={<h1>Loading...</h1>}>
+      <Routes>
+        <Route path="/login" element={<Authentication />} />
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Content />
+            </PrivateRoute>
+          }
+        >
+          <Route>
+            <Route path="dashboard" element={<Dashboard />}></Route>
+            <Route path="project" element={<Project />}></Route>
+            <Route path="project/:code" element={<DetailProject />}>
+              <Route path="timeline" element={<TimelineProject />}>
+                <Route
+                  path="timeline/:issueId"
+                  element={<TimelineProject />}
+                ></Route>
               </Route>
+              <Route path="backlog" element={<BacklogProject />}>
+                <Route path=":issueId"></Route>
+              </Route>
+              <Route path="board" element={<BoardProject />} />
+              <Route path="details" element={<InfoProject />} />
+              <Route path="issueTypes" element={<IssueTypes />} />
+              <Route path="priorities" element={<Priorities />} />
+              <Route path="statuses" element={<Statuses />} />
+              <Route path="notifications" element={<NotificationProject />} />
+              <Route path="access" element={<AccessProject />} />
+              <Route path="features" element={<FeatureProject />} />
+              <Route path="code" element={<CodeProject />} />
             </Route>
           </Route>
-        </Routes>
-      </Suspense>
-    </>
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }
 

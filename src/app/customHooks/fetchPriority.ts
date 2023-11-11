@@ -9,10 +9,13 @@ import { IPriority } from "../models/IPriority";
 function usePriorityData(projectId: string, requestParam: IPagination) {
   const [listPriority, setListOfData] = useState<IPriority[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
+  const [isLoading, setLoading] = useState<boolean>(false);
+
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
   const fetchData = useCallback(() => {
+    setLoading(true);
     PriorityService.getAll(
       projectId,
       requestParam.pageNum,
@@ -22,6 +25,7 @@ function usePriorityData(projectId: string, requestParam: IPagination) {
       if (checkResponseStatus(res)) {
         setListOfData(res?.data?.content!);
         setTotalCount(res?.data?.totalCount!);
+        setLoading(false);
       }
     });
   }, [
@@ -39,7 +43,7 @@ function usePriorityData(projectId: string, requestParam: IPagination) {
     fetchData();
   }, [fetchData, project?.id, requestParam.pageNum, requestParam.pageSize]);
 
-  return { listPriority, totalCount, refreshData };
+  return { listPriority, totalCount, refreshData, isLoading };
 }
 
 export default usePriorityData;
