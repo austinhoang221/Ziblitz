@@ -1,10 +1,8 @@
 import {
-  Breadcrumb,
   Button,
   Card,
   Col,
   DatePickerProps,
-  Divider,
   Dropdown,
   Menu,
   message,
@@ -19,8 +17,10 @@ import dayjs from "dayjs";
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
 import { IssueService } from "../../../../services/issueService";
+import { useAppDispatch } from "../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../helpers";
 import { IIssue } from "../../../models/IIssue";
 import ChildIssues from "../child-issues";
@@ -33,6 +33,7 @@ import IssueStatusSelect from "../issue-status-select";
 import IssueType from "../issue-type";
 import IssueTypeSelect from "../issue-type-select";
 import "./index.scss";
+import IssueModalSkeleton from "./skeleton";
 
 export default function IssueModal(props: any) {
   const params = useParams();
@@ -40,8 +41,7 @@ export default function IssueModal(props: any) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isOpenIssueModal, setIsOpenIssueModal] = useState<boolean>(false);
   const [issue, setIssue] = useState<IIssue | null>(null);
-  const [isCreate, setIsCreate] = useState<boolean>(false);
-
+  const dispatch = useAppDispatch();
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
@@ -58,10 +58,10 @@ export default function IssueModal(props: any) {
     await IssueService.getById(params?.issueId!).then((res) => {
       if (checkResponseStatus(res)) {
         setIssue(res?.data!);
+        setIsOpenIssueModal(true);
         setTimeout(() => {
-          setIsOpenIssueModal(true);
           setIsLoading(false);
-        }, 500);
+        }, 700);
       }
     });
   }, [params?.issueId, setIssue, setIsOpenIssueModal]);
@@ -137,6 +137,17 @@ export default function IssueModal(props: any) {
       });
     }
   };
+
+  const onDeleteIssue = async (parentId: string, id: string) => {
+    await IssueService.deleteIssue(parentId, id).then((res) => {
+      if (checkResponseStatus(res)) {
+        showSuccessMessage();
+        dispatch(getProjectByCode(project?.code!));
+        onCancel();
+      }
+    });
+  };
+
   const onCancel = () => {
     setIsOpenIssueModal(false);
     navigate(-1);
@@ -189,9 +200,10 @@ export default function IssueModal(props: any) {
           <Tooltip title="Copy link to issue">
             <span
               className="ml-2 font-sz12 cursor-pointer"
-              onClick={() =>
-                navigator.clipboard.writeText(window.location.href)
-              }
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                showSuccessMessage();
+              }}
             >
               <i className="fa-solid fa-link"></i>
             </span>
@@ -209,15 +221,34 @@ export default function IssueModal(props: any) {
             className="c-backlog-action"
             overlay={
               <Menu>
-                <Menu.Item>Copy issue link</Menu.Item>
-                <Menu.Item>Copy issue key</Menu.Item>
+                <Menu.Item
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    showSuccessMessage();
+                  }}
+                >
+                  Copy issue link
+                </Menu.Item>
+                <Menu.Item
+                  onClick={() => {
+                    navigator.clipboard.writeText(issue?.code!);
+                    showSuccessMessage();
+                  }}
+                >
+                  Copy issue key
+                </Menu.Item>
                 <Menu.Item>
                   <Popconfirm
                     title="Delete"
                     description="Are you sure to delete this issue?"
                     okText="Yes"
                     cancelText="Cancel"
-                    // onConfirm={() => onDeleteIssue(parentId, issue?.id)}
+                    onConfirm={() =>
+                      onDeleteIssue(
+                        issue?.backlogId ?? issue?.sprintId!,
+                        issue?.id!
+                      )
+                    }
                   >
                     <div onClick={(e) => e.stopPropagation()}>
                       Move to trash
@@ -491,7 +522,7 @@ export default function IssueModal(props: any) {
             </Col>
           </Row>
         ) : (
-          <></>
+          <IssueModalSkeleton></IssueModalSkeleton>
         )}
       </Modal>
 

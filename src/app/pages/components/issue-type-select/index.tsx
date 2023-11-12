@@ -1,5 +1,6 @@
 import { Button, Dropdown, Menu } from "antd";
 import { MenuInfo } from "rc-menu/lib/interface";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
 import IssueType from "../issue-type";
@@ -13,7 +14,15 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
+  const [selectedKey, setSelectedKey] = useState<string>("");
 
+  useEffect(() => {
+    setSelectedKey(
+      project?.issueTypes.find(
+        (type) => type.icon === props.issueTypeKey.toLowerCase()
+      )?.id ?? ""
+    );
+  }, [props.issueTypeKey]);
   const getIssueType = () => {
     if (props.isSubtask) {
       return project?.issueTypes.filter((item) => item.name === "Subtask");
@@ -32,10 +41,7 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
       overlay={
         <Menu
           onClick={(e) => props.onChangeIssueType(e)}
-          selectedKeys={[
-            project?.issueTypes.find((type) => type.icon === props.issueTypeKey)
-              ?.id ?? "",
-          ]}
+          selectedKeys={[selectedKey]}
         >
           {(getIssueType() ?? []).map((type) => {
             return (

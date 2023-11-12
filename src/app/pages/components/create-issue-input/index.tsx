@@ -34,7 +34,7 @@ export default function CreateIssueInput(props: any, identifier: string) {
       );
       setIssueTypeIcon("Bug");
     }
-  }, [isCreate, props.isSubtask]);
+  }, [isCreate, project?.issueTypes, props.isSubtask]);
 
   const onCreateIssue = () => {
     setIsCreate(true);
