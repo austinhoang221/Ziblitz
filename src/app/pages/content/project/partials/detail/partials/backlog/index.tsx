@@ -13,13 +13,13 @@ import {
   Popconfirm,
   Row,
   Select,
-  Tooltip,
+  Skeleton,
 } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../../../redux/store";
 import "./index.scss";
 import HeaderProject from "../header";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import CreateIssueInput from "../../../../../../components/create-issue-input";
 import IssueType from "../../../../../../components/issue-type";
 import SubMenu from "antd/es/menu/SubMenu";
@@ -32,7 +32,6 @@ import { SprintService } from "../../../../../../../../services/sprintService";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import {
   getProjectByCode,
-  setProjectDetail,
   setSprints,
 } from "../../../../../../../../redux/slices/projectDetailSlice";
 import TextArea from "antd/es/input/TextArea";
@@ -62,12 +61,13 @@ const Backlog: React.FC = () => {
   const [isStartSprint, setIsStartSprint] = useState<boolean>(false);
   const [datePickerType, setDatePickerType] = useState<string>("custom");
   const [startingSprint, setStartingSprint] = useState<ISprint | null>(null);
-  const isShowEpic = useSelector(
-    (state: RootState) => state.projectDetail.isShowEpic
+  const { isShowEpic, isLoading } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const [editSprintForm] = Form.useForm();
   const { RangePicker } = DatePicker;
   const [editSprintId, setEditSprintId] = useState<string>("");
+  const [isFirstLoad, setFirstLoad] = useState<boolean>(true);
   const datePickerTypes = [
     {
       label: "Custom",
@@ -86,6 +86,12 @@ const Backlog: React.FC = () => {
       value: "quater",
     },
   ];
+
+  useEffect(() => {
+    setFirstLoad(false);
+  }, []);
+
+  useEffect(() => {}, []);
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
@@ -203,6 +209,7 @@ const Backlog: React.FC = () => {
         className="demo-loadmore-list"
         itemLayout="horizontal"
         dataSource={issues}
+        loading={isLoading}
         renderItem={(issue) => (
           <List.Item className="c-backlog-item">
             <div className="align-child-space-between align-center w-100">
@@ -401,187 +408,199 @@ const Backlog: React.FC = () => {
             <Epic></Epic>
           </Col>
         )}
-        <Col span={isShowEpic ? 18 : 24}>
-          <div className="mt-4 c-backlog">
-            <Collapse ghost={true}>
-              {sprints?.map((sprint) => {
-                return (
-                  <Collapse.Panel
-                    key={sprint.id}
-                    header={
-                      <div>
-                        <span className="font-weight-bold">
-                          {sprint.name}&nbsp;
-                          {sprint.startDate && (
+        {!isFirstLoad && !isLoading ? (
+          <Col span={isShowEpic ? 18 : 24}>
+            <div className="mt-4 c-backlog">
+              <Collapse ghost={true}>
+                {sprints?.map((sprint) => {
+                  return (
+                    <Collapse.Panel
+                      key={sprint.id}
+                      header={
+                        <div>
+                          <span className="font-weight-bold">
+                            {sprint.name}&nbsp;
+                            {sprint.startDate && (
+                              <span className="font-weight-normal text-muted">
+                                {dayjs(sprint.startDate).format("MMM D, YYYY")}{" "}
+                                - {dayjs(sprint.endDate).format("MMM D, YYYY")}
+                                &nbsp;
+                              </span>
+                            )}
                             <span className="font-weight-normal text-muted">
-                              {dayjs(sprint.startDate).format("MMM D, YYYY")} -{" "}
-                              {dayjs(sprint.endDate).format("MMM D, YYYY")}
-                              &nbsp;
+                              ({sprint?.issues?.length ?? 0}) issues
                             </span>
-                          )}
-                          <span className="font-weight-normal text-muted">
-                            ({sprint?.issues?.length ?? 0}) issues
                           </span>
-                        </span>
-                      </div>
-                    }
-                    extra={
-                      <>
-                        {sprint.issues?.length > 0 ? (
-                          <Button
-                            onClick={(e: any) => onClickCreateSprint(e)}
-                            type="default"
-                            className="mr-2"
-                          >
-                            Complete sprint
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={(e: any) => onClickStartSprint(e, sprint)}
-                            type="default"
-                            className="mr-2"
-                          >
-                            Start sprint
-                          </Button>
-                        )}
+                        </div>
+                      }
+                      extra={
+                        <>
+                          {sprint.issues?.length > 0 ? (
+                            <Button
+                              onClick={(e: any) => onClickCreateSprint(e)}
+                              type="default"
+                              className="mr-2"
+                            >
+                              Complete sprint
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={(e: any) =>
+                                onClickStartSprint(e, sprint)
+                              }
+                              type="default"
+                              className="mr-2"
+                            >
+                              Start sprint
+                            </Button>
+                          )}
 
-                        <Dropdown
-                          className="c-backlog-action"
-                          overlay={
-                            <Menu key={sprint.id}>
-                              <Menu.Item key="edit">
-                                <div
-                                  onClick={(e) => onClickEditSprint(e, sprint)}
-                                >
-                                  Edit
-                                </div>
-                              </Menu.Item>
-                              <Menu.Item key="delete">
-                                <Popconfirm
-                                  title="Delete"
-                                  description="Are you sure to delete this sprint?"
-                                  okText="Yes"
-                                  cancelText="Cancel"
-                                  onConfirm={(e) =>
-                                    onDeleteSprint(e, sprint?.id)
-                                  }
-                                >
-                                  <div onClick={(e) => e.stopPropagation()}>
-                                    Move to trash
+                          <Dropdown
+                            className="c-backlog-action"
+                            overlay={
+                              <Menu key={sprint.id}>
+                                <Menu.Item key="edit">
+                                  <div
+                                    onClick={(e) =>
+                                      onClickEditSprint(e, sprint)
+                                    }
+                                  >
+                                    Edit
                                   </div>
-                                </Popconfirm>
-                              </Menu.Item>
-                            </Menu>
-                          }
-                          trigger={["click"]}
-                        >
-                          <Button
-                            type="text"
-                            onClick={(e) => e.stopPropagation()}
+                                </Menu.Item>
+                                <Menu.Item key="delete">
+                                  <Popconfirm
+                                    title="Delete"
+                                    description="Are you sure to delete this sprint?"
+                                    okText="Yes"
+                                    cancelText="Cancel"
+                                    onConfirm={(e) =>
+                                      onDeleteSprint(e, sprint?.id)
+                                    }
+                                  >
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                      Move to trash
+                                    </div>
+                                  </Popconfirm>
+                                </Menu.Item>
+                              </Menu>
+                            }
+                            trigger={["click"]}
                           >
-                            <i className="fa-solid fa-ellipsis"></i>
-                          </Button>
-                        </Dropdown>
-                      </>
-                    }
-                  >
-                    {onRenderSprintContent(sprint)}
-                  </Collapse.Panel>
-                );
-              })}
+                            <Button
+                              type="text"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <i className="fa-solid fa-ellipsis"></i>
+                            </Button>
+                          </Dropdown>
+                        </>
+                      }
+                    >
+                      {onRenderSprintContent(sprint)}
+                    </Collapse.Panel>
+                  );
+                })}
 
-              <Collapse.Panel
-                key="backlog"
-                header={
-                  <div>
-                    <span className="font-weight-bold">
-                      Backlog{" "}
-                      <span className="font-weight-normal">
-                        ({backlogIssues?.length}) issues
+                <Collapse.Panel
+                  key="backlog"
+                  header={
+                    <div>
+                      <span className="font-weight-bold">
+                        Backlog{" "}
+                        <span className="font-weight-normal">
+                          ({backlogIssues?.length}) issues
+                        </span>
                       </span>
-                    </span>
-                  </div>
-                }
-                extra={
-                  <Button
-                    onClick={(e: any) => onClickCreateSprint(e)}
-                    type="default"
+                    </div>
+                  }
+                  extra={
+                    <Button
+                      onClick={(e: any) => onClickCreateSprint(e)}
+                      type="default"
+                    >
+                      Create sprint
+                    </Button>
+                  }
+                >
+                  {onRenderBacklogContent}
+                </Collapse.Panel>
+              </Collapse>
+              <Modal
+                title={isStartSprint ? "Start another sprint" : "Edit sprint"}
+                open={isChangeSprint}
+                onOk={onChangeSprint}
+                onCancel={(e) => onClickCancelEdit(e)}
+              >
+                {isStartSprint && (
+                  <span>
+                    {startingSprint?.issues.length} issue will be included in
+                    this sprint.{" "}
+                  </span>
+                )}
+                <Form
+                  onClick={(e) => e.stopPropagation()}
+                  form={editSprintForm}
+                  onValuesChange={handleFormChange}
+                >
+                  <Form.Item
+                    label="Sprint name"
+                    labelCol={{ span: 24 }}
+                    wrapperCol={{ span: 24 }}
+                    name="name"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your sprint name",
+                      },
+                    ]}
                   >
-                    Create sprint
-                  </Button>
-                }
-              >
-                {onRenderBacklogContent}
-              </Collapse.Panel>
-            </Collapse>
-            <Modal
-              title={isStartSprint ? "Start another sprint" : "Edit sprint"}
-              open={isChangeSprint}
-              onOk={onChangeSprint}
-              onCancel={(e) => onClickCancelEdit(e)}
-            >
-              {isStartSprint && (
-                <span>
-                  {startingSprint?.issues.length} issue will be included in this
-                  sprint.{" "}
-                </span>
-              )}
-              <Form
-                onClick={(e) => e.stopPropagation()}
-                form={editSprintForm}
-                onValuesChange={handleFormChange}
-              >
-                <Form.Item
-                  label="Sprint name"
-                  labelCol={{ span: 24 }}
-                  wrapperCol={{ span: 24 }}
-                  name="name"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter your sprint name",
-                    },
-                  ]}
-                >
-                  <Input type="text" placeholder="Name" />
-                </Form.Item>
-                <Form.Item
-                  label="Duration"
-                  labelCol={{ span: 24 }}
-                  wrapperCol={{ span: 24 }}
-                >
-                  <Select
-                    defaultValue="custom"
-                    onChange={(e) => setDatePickerType(e)}
-                    options={datePickerTypes}
-                  ></Select>
-                </Form.Item>
-                <Form.Item
-                  label="Time"
-                  labelCol={{ span: 24 }}
-                  wrapperCol={{ span: 24 }}
-                  name="time"
-                  rules={[
-                    {
-                      required: isStartSprint,
-                      message: "Please input sprint time",
-                    },
-                  ]}
-                >
-                  {onRenderTimePicker()}
-                </Form.Item>
-                <Form.Item
-                  label="Goal"
-                  labelCol={{ span: 24 }}
-                  wrapperCol={{ span: 24 }}
-                  name="goal"
-                >
-                  <TextArea></TextArea>
-                </Form.Item>
-              </Form>
-            </Modal>
-          </div>
-        </Col>
+                    <Input type="text" placeholder="Name" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Duration"
+                    labelCol={{ span: 24 }}
+                    wrapperCol={{ span: 24 }}
+                  >
+                    <Select
+                      defaultValue="custom"
+                      onChange={(e) => setDatePickerType(e)}
+                      options={datePickerTypes}
+                    ></Select>
+                  </Form.Item>
+                  <Form.Item
+                    label="Time"
+                    labelCol={{ span: 24 }}
+                    wrapperCol={{ span: 24 }}
+                    name="time"
+                    rules={[
+                      {
+                        required: isStartSprint,
+                        message: "Please input sprint time",
+                      },
+                    ]}
+                  >
+                    {onRenderTimePicker()}
+                  </Form.Item>
+                  <Form.Item
+                    label="Goal"
+                    labelCol={{ span: 24 }}
+                    wrapperCol={{ span: 24 }}
+                    name="goal"
+                  >
+                    <TextArea></TextArea>
+                  </Form.Item>
+                </Form>
+              </Modal>
+            </div>
+          </Col>
+        ) : (
+          <>
+            <Skeleton active></Skeleton>
+            <Skeleton active></Skeleton>
+            <Skeleton active></Skeleton>
+          </>
+        )}
       </Row>
 
       {contextHolder}

@@ -49,32 +49,33 @@ export default function CreateIssueInput(props: any, identifier: string) {
 
   const onSaveIssue = (e: any) => {
     if (e?.target.value) {
+      const payload: any = {
+        name: e.target.value,
+        issueTypeId: issueTypeKey,
+        creatorUserId: userId,
+        projectId: project?.id,
+      };
+      if (props.parentId) payload.parentId = props.parentId;
       if (props.type === "backlog") {
-        IssueService.createBacklogIssueByName(props.periodId, {
-          name: e.target.value,
-          issueTypeId: issueTypeKey,
-          creatorUserId: userId,
-          projectId: project?.id,
-        }).then((res) => {
-          if (checkResponseStatus(res)) {
-            props.onSaveIssue();
-            dispatch(getProjectByCode(project?.code!));
-            setIsCreate(false);
+        IssueService.createBacklogIssueByName(props.periodId, payload).then(
+          (res) => {
+            if (checkResponseStatus(res)) {
+              props.onSaveIssue(res?.data);
+              dispatch(getProjectByCode(project?.code!));
+              setIsCreate(false);
+            }
           }
-        });
+        );
       } else {
-        IssueService.createSprintIssueByName(props.periodId, {
-          name: e.target.value,
-          issueTypeId: issueTypeKey,
-          creatorUserId: userId,
-          projectId: project?.id,
-        }).then((res) => {
-          if (checkResponseStatus(res)) {
-            props.onSaveIssue();
-            dispatch(getProjectByCode(project?.code!));
-            setIsCreate(false);
+        IssueService.createSprintIssueByName(props.periodId, payload).then(
+          (res) => {
+            if (checkResponseStatus(res)) {
+              props.onSaveIssue();
+              dispatch(getProjectByCode(project?.code!));
+              setIsCreate(false);
+            }
           }
-        });
+        );
       }
     }
   };

@@ -5,6 +5,7 @@ import { IResponse } from "../app/models/IResponse";
 export class AuthenticationService {
   public static logIn = async (payload: any) => {
     try {
+      console.log(Endpoint.loginUrl);
       const response: IResponse<IAuthentication> = await axiosInstance.post(
         Endpoint.loginUrl,
         payload

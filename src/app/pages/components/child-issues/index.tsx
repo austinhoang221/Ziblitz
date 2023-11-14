@@ -52,7 +52,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "priority",
-      width: "8%",
+      width: "4%",
       align: "center",
       render: (issue: IIssue) => {
         return <IssuePriority priorityId={issue.priorityId!}></IssuePriority>;
@@ -61,7 +61,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "storyPointEstimate",
-      width: "8%",
+      width: "4%",
       align: "center",
       render: (issue: IIssue) => {
         return (
@@ -74,7 +74,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "assigneeId",
-      width: "10%",
+      width: "6%",
       align: "center",
       render: (issue: IIssue) => {
         return (

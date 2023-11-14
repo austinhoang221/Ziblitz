@@ -141,7 +141,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             fieldName={props.fieldName}
             type={props.type}
             periodId={props.periodId}
-            onSaveIssue={(e) => props.onSaveIssue(e)}
+            onSaveIssue={(issue?: IIssue) => props.onSaveIssue(issue)}
             issueId={props.issueId}
             selectedId={props.initialValue!}
             onBlur={() => setIsEditing(false)}
@@ -151,9 +151,9 @@ export default function InlineEdit(props: IInlineEditProps) {
         return (
           <SprintSelect
             className="w-100"
-            type={props.type}
+            type={props.periodType}
             periodId={props.periodId}
-            onSaveIssue={props.onSaveIssue}
+            onSaveIssue={(issue?: IIssue) => props.onSaveIssue(issue)}
             issueId={props.issueId}
             selectedId={props.initialValue!}
             onBlur={() => setIsEditing(false)}

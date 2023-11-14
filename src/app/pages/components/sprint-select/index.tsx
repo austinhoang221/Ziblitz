@@ -21,12 +21,18 @@ export default function SelectSprint(props: IIssueComponentProps) {
   });
   const onChangeSprint = async (e: any) => {
     if (props.type === "backlog") {
-      await IssueService.editBacklogIssue(props.periodId, props.issueId, {
+      const payload = {
         sprintId: e,
-      }).then((res) => {
+        backlogId: null,
+      };
+      await IssueService.editBacklogIssue(
+        props.periodId,
+        props.issueId,
+        payload
+      ).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
-          props.onSaveIssue();
+          props.onSaveIssue(res?.data);
         }
       });
     } else {
@@ -35,7 +41,7 @@ export default function SelectSprint(props: IIssueComponentProps) {
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
-          props.onSaveIssue();
+          props.onSaveIssue(res?.data);
         }
       });
     }

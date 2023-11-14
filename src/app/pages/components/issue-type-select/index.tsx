@@ -19,7 +19,7 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
   useEffect(() => {
     setSelectedKey(
       project?.issueTypes.find(
-        (type) => type.icon === props.issueTypeKey.toLowerCase()
+        (type) => type.icon === props.issueTypeKey?.toLowerCase()
       )?.id ?? ""
     );
   }, [props.issueTypeKey]);

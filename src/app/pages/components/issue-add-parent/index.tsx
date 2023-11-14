@@ -1,4 +1,5 @@
 import { Button, Dropdown, Empty, Menu, Tooltip } from "antd";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
@@ -10,30 +11,36 @@ interface IIssueAddParent {
   issue: IIssue;
   type: string;
   periodId: string;
-  onSaveIssue: () => void;
+  onSaveIssue: (issue?: IIssue) => void;
 }
 export default function IssueAddParent(props: IIssueAddParent) {
+  const [issue, setIssue] = useState<IIssue | null>(null);
+
+  useEffect(() => {
+    setIssue(props.issue);
+  }, [props.issue]);
+
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
   const dispatch = useAppDispatch();
   const onChangeField = (type: string, e: any) => {
     if (props.type === "backlog") {
-      IssueService.editBacklogIssue(props?.periodId!, props.issue.id, {
+      IssueService.editBacklogIssue(props?.periodId!, issue?.id!, {
         parentId: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
-          props.onSaveIssue();
+          props.onSaveIssue(res?.data!);
         }
       });
     } else if (props.type === "sprint") {
-      IssueService.editSprintIssue(props?.periodId!, props.issue.id, {
+      IssueService.editSprintIssue(props?.periodId!, issue?.id!, {
         parentId: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
-          props.onSaveIssue();
+          props.onSaveIssue(res?.data!);
         }
       });
     }
@@ -41,7 +48,7 @@ export default function IssueAddParent(props: IIssueAddParent) {
 
   return (
     <Tooltip
-      title={!props.issue.parentId ? "Add epic" : props.issue.parentName}
+      title={!issue?.parentId ? "Add epic" : issue?.parentName ?? ""}
       className="mr-2"
     >
       <Dropdown
@@ -54,7 +61,7 @@ export default function IssueAddParent(props: IIssueAddParent) {
           project?.epics?.length! > 0 ? (
             <Menu
               onClick={(e) => onChangeField("parentId", e.key)}
-              selectedKeys={[props.issue.parentId ?? ""]}
+              selectedKeys={[issue?.parentId ?? ""]}
             >
               {project?.epics.map((epic) => {
                 return (
@@ -79,7 +86,7 @@ export default function IssueAddParent(props: IIssueAddParent) {
           )
         }
       >
-        {!props.issue.parentId ? (
+        {!issue?.parentId ? (
           <Button type="text">
             <i className="fa-solid fa-pencil mr-2"></i>
             Add Epic
@@ -91,7 +98,7 @@ export default function IssueAddParent(props: IIssueAddParent) {
               alt=""
               className="mr-2"
             />
-            <span className="text-truncate">{props.issue?.parentName}</span>
+            <span className="text-truncate">{issue?.parentName}</span>
           </div>
         )}
       </Dropdown>

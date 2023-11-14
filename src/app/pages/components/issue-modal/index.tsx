@@ -47,21 +47,21 @@ export default function IssueModal(props: any) {
   );
   const [messageApi, contextHolder] = message.useMessage();
 
-  const showSuccessMessage = () => {
+  const showSuccessMessage = (issue?: IIssue) => {
     messageApi.open({
       type: "success",
       content: "Successfully",
     });
+    if (issue) setIssue(issue);
   };
+
   const fetchData = useCallback(async () => {
     setIsLoading(true);
+    setIsOpenIssueModal(true);
     await IssueService.getById(params?.issueId!).then((res) => {
       if (checkResponseStatus(res)) {
         setIssue(res?.data!);
-        setIsOpenIssueModal(true);
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 700);
+        setIsLoading(false);
       }
     });
   }, [params?.issueId, setIssue, setIsOpenIssueModal]);
@@ -113,8 +113,7 @@ export default function IssueModal(props: any) {
         [type]: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
-          setIssue(res?.data!);
-          showSuccessMessage();
+          showSuccessMessage(res?.data!);
         }
       });
     } else if (periodType === "sprint") {
@@ -122,8 +121,7 @@ export default function IssueModal(props: any) {
         [type]: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
-          setIssue(res?.data!);
-          showSuccessMessage();
+          showSuccessMessage(res?.data!);
         }
       });
     } else {
@@ -131,8 +129,7 @@ export default function IssueModal(props: any) {
         [type]: e,
       }).then((res) => {
         if (checkResponseStatus(res)) {
-          setIssue(res?.data!);
-          showSuccessMessage();
+          showSuccessMessage(res?.data!);
         }
       });
     }
@@ -294,7 +291,7 @@ export default function IssueModal(props: any) {
               <InlineEdit
                 initialValue={issue?.name!}
                 type="input"
-                onSaveIssue={showSuccessMessage}
+                onSaveIssue={(issue?: IIssue) => showSuccessMessage(issue)}
                 fieldName="name"
                 periodType={getPeriodType(issue!)}
                 periodId={issue?.sprintId ?? issue?.backlogId!}
@@ -321,7 +318,7 @@ export default function IssueModal(props: any) {
                   type="textarea"
                   issueId={issue?.id!}
                   fieldName="description"
-                  onSaveIssue={showSuccessMessage}
+                  onSaveIssue={(issue?: IIssue) => showSuccessMessage(issue)}
                 ></InlineEdit>
               </div>
               <span className="font-weight-bold ml-2 mt-4 mb-4">
@@ -334,6 +331,7 @@ export default function IssueModal(props: any) {
                     isSubtask={issue?.issueType?.name !== "Epic"}
                     type="backlog"
                     periodId={project?.backlog?.id!}
+                    parentId={issue?.id}
                     onSaveIssue={showSuccessMessage}
                   ></CreateIssueInput>
                 </>
@@ -377,10 +375,9 @@ export default function IssueModal(props: any) {
                       type="assigneeSelect"
                       issueId={issue?.id!}
                       fieldName="assigneeId"
-                      onSaveIssue={(e) => {
-                        setIssue(e!);
-                        showSuccessMessage();
-                      }}
+                      onSaveIssue={(issue?: IIssue) =>
+                        showSuccessMessage(issue)
+                      }
                     ></InlineEdit>
                   </Col>
                 </Row>
@@ -396,10 +393,9 @@ export default function IssueModal(props: any) {
                       type="sprintSelect"
                       issueId={issue?.id!}
                       fieldName="sprintId"
-                      onSaveIssue={(e) => {
-                        setIssue(e!);
-                        showSuccessMessage();
-                      }}
+                      onSaveIssue={(issue?: IIssue) =>
+                        showSuccessMessage(issue)
+                      }
                     ></InlineEdit>
                   </Col>
                 </Row>
@@ -416,10 +412,9 @@ export default function IssueModal(props: any) {
                         type="sprintSelect"
                         issueId={issue?.id!}
                         fieldName="sprintId"
-                        onSaveIssue={(e) => {
-                          setIssue(e!);
-                          showSuccessMessage();
-                        }}
+                        onSaveIssue={(issue?: IIssue) =>
+                          showSuccessMessage(issue)
+                        }
                       ></InlineEdit>
                     </Col>
                   </Row>
@@ -439,10 +434,9 @@ export default function IssueModal(props: any) {
                         type="storyPointEstimate"
                         issueId={issue?.id!}
                         fieldName="storyPointEstimate"
-                        onSaveIssue={(e) => {
-                          setIssue(e!);
-                          showSuccessMessage();
-                        }}
+                        onSaveIssue={(issue?: IIssue) =>
+                          showSuccessMessage(issue)
+                        }
                       ></InlineEdit>
                     </Col>
                   </Row>
@@ -461,10 +455,9 @@ export default function IssueModal(props: any) {
                           issueId={issue?.id}
                           fieldName="startDate"
                           disabledDate={disabledStartDate}
-                          onSaveIssue={(e) => {
-                            setIssue(e!);
-                            showSuccessMessage();
-                          }}
+                          onSaveIssue={(issue?: IIssue) =>
+                            showSuccessMessage(issue)
+                          }
                         ></InlineEdit>
                       </Col>
                     </Row>
@@ -481,10 +474,9 @@ export default function IssueModal(props: any) {
                           issueId={issue?.id}
                           fieldName="dueDate"
                           disabledDate={disabledDueDate}
-                          onSaveIssue={(e) => {
-                            setIssue(e!);
-                            showSuccessMessage();
-                          }}
+                          onSaveIssue={(issue?: IIssue) =>
+                            showSuccessMessage(issue)
+                          }
                         ></InlineEdit>
                       </Col>
                     </Row>
@@ -503,10 +495,9 @@ export default function IssueModal(props: any) {
                       type="reporterSelect"
                       issueId={issue?.id!}
                       fieldName="reporterId"
-                      onSaveIssue={(e) => {
-                        setIssue(e!);
-                        showSuccessMessage();
-                      }}
+                      onSaveIssue={(issue?: IIssue) =>
+                        showSuccessMessage(issue)
+                      }
                     ></InlineEdit>
                   </Col>
                 </Row>
