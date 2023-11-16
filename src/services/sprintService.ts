@@ -23,8 +23,27 @@ export class SprintService {
   ) => {
     try {
       const response: IResponse<ISprint> = await axiosInstance.put(
-        Endpoint.startSprint + projectId + "/sprints/" + sprintId + "/:start",
+        Endpoint.startSprint + projectId + "/sprints/" + sprintId + ":start",
         payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static completeSprint = async (
+    projectId: string,
+    sprintId: string
+  ) => {
+    try {
+      const response: IResponse<ISprint> = await axiosInstance.put(
+        Endpoint.completeSprint +
+          projectId +
+          "/sprints/" +
+          sprintId +
+          ":complete"
       );
       console.log("POST response:", response.data);
       return response;
