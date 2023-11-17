@@ -45,7 +45,9 @@ function App() {
               <Route path="backlog" element={<BacklogProject />}>
                 <Route path=":issueId"></Route>
               </Route>
-              <Route path="board" element={<BoardProject />} />
+              <Route path="board" element={<BoardProject />}>
+                <Route path="sprint/:sprintId"></Route>
+              </Route>
               <Route path="details" element={<InfoProject />} />
               <Route path="issueTypes" element={<IssueTypes />} />
               <Route path="priorities" element={<Priorities />} />

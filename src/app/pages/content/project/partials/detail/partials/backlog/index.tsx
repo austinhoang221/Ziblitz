@@ -3,7 +3,6 @@ import {
   Col,
   Collapse,
   Dropdown,
-  Form,
   List,
   Menu,
   message,
@@ -59,7 +58,7 @@ const Backlog: React.FC = () => {
   const [isFirstLoad, setFirstLoad] = useState<boolean>(true);
   const [mode, setMode] = useState<"start" | "edit" | "complete">("edit");
   const [editSprint, setEditSprint] = useState<ISprint | null>(null);
-  const [isShowSprintModal, setShowSprintModal] = useState<boolean>(true);
+  const [isShowSprintModal, setShowSprintModal] = useState<boolean>(false);
   useEffect(() => {
     setFirstLoad(false);
   }, []);
@@ -307,7 +306,7 @@ const Backlog: React.FC = () => {
             <Epic></Epic>
           </Col>
         )}
-        {!isFirstLoad ? (
+        {!isFirstLoad && !isLoading ? (
           <Col span={isShowEpic ? 18 : 24}>
             <div className="mt-4 c-backlog">
               <Collapse ghost={true}>

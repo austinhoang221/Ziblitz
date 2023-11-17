@@ -52,6 +52,18 @@ export class SprintService {
     }
   };
 
+  public static getById = async (projectId: string, sprintId: string) => {
+    try {
+      const response: IResponse<ISprint> = await axiosInstance.get(
+        Endpoint.getSprintById + projectId + "/sprints/" + sprintId
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
   public static updateSprint = async (
     projectId: string,
     sprintId: string,

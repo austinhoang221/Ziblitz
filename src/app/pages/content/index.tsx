@@ -16,7 +16,6 @@ export default function Content() {
   };
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const dispatch = useAppDispatch();
-  // const { listRole } = useRoleData();
   const { listUser } = useUserData(userId);
   const { listProject } = useProjectData(userId, initialRequestParam);
   useEffect(() => {
