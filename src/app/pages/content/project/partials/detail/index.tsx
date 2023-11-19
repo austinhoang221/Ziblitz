@@ -167,45 +167,50 @@ export default function DetailProject() {
     navigate(key);
   };
   return (
-    <>
-      <Layout style={{ backgroundColor: "#fff" }}>
-        <Sider width={200}>
-          <div
-            className="d-flex align-center p-3"
-            style={{ backgroundColor: "white" }}
-          >
-            <img
-              src={project?.avatarUrl}
-              alt=""
-              width="20px"
-              height="20px"
-              className="mr-2"
-            />
-            <Tooltip title={project?.name}>
-              <h4 className="text-truncate m-0">{project?.name}</h4>
-            </Tooltip>
-          </div>
-          <Menu
-            mode="inline"
-            defaultOpenKeys={["planning", "development"]}
-            selectedKeys={[lastSegment]}
-            style={{ height: "100%" }}
-          >
-            {renderMenuItems(menuItems)}
-          </Menu>
-        </Sider>
-        <Content className="c-content">
-          <Breadcrumb>
-            <Breadcrumb.Item>
-              <Link to="/project">Project</Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-              <a>{project?.name!}</a>
-            </Breadcrumb.Item>
-          </Breadcrumb>
-          <Outlet></Outlet>
-        </Content>
-      </Layout>
-    </>
+    <Layout style={{ backgroundColor: "#fff" }}>
+      <Sider width={200}>
+        <div
+          className="d-flex align-center p-3"
+          style={{ backgroundColor: "white" }}
+        >
+          <img
+            src={project?.avatarUrl}
+            alt=""
+            width="20px"
+            height="20px"
+            className="mr-2"
+          />
+          <Tooltip title={project?.name}>
+            <h4 className="text-truncate m-0">{project?.name}</h4>
+          </Tooltip>
+        </div>
+        <Menu
+          mode="inline"
+          defaultOpenKeys={["planning", "development"]}
+          selectedKeys={[lastSegment]}
+          style={{
+            bottom: 0,
+            height: "80vh",
+            maxHeight: "80vh",
+            overflowY: "scroll",
+            backgroundColor: "white",
+            zIndex: 1, // Optional: Adjust the z-index if needed
+          }}
+        >
+          {renderMenuItems(menuItems)}
+        </Menu>
+      </Sider>
+      <Content className="c-content">
+        <Breadcrumb>
+          <Breadcrumb.Item>
+            <Link to="/project">Project</Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <a>{project?.name!}</a>
+          </Breadcrumb.Item>
+        </Breadcrumb>
+        <Outlet></Outlet>
+      </Content>
+    </Layout>
   );
 }

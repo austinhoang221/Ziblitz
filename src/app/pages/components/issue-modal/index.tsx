@@ -176,13 +176,17 @@ export default function IssueModal(props: any) {
             </Button>
           ) : (
             <>
-              <IssueAddParent
-                type={getPeriodType(issue!)}
-                periodId={issue?.sprintId ?? issue?.backlogId!}
-                issue={issue!}
-                onSaveIssue={showSuccessMessage}
-              ></IssueAddParent>
-              /
+              {issue?.issueType.icon !== "subtask" && (
+                <>
+                  <IssueAddParent
+                    type={getPeriodType(issue!)}
+                    periodId={issue?.sprintId ?? issue?.backlogId!}
+                    issue={issue!}
+                    onSaveIssue={showSuccessMessage}
+                  ></IssueAddParent>
+                  /
+                </>
+              )}
               <IssueTypeSelect
                 onChangeIssueType={(e) =>
                   onChangeField("issueTypeId", getPeriodType(issue!), e.key)
@@ -482,6 +486,25 @@ export default function IssueModal(props: any) {
                     </Row>
                   </>
                 )}
+
+                <Row gutter={24} className="align-center">
+                  <Col span={8}>
+                    <span className="text-muted">Priority</span>
+                  </Col>
+                  <Col span={16}>
+                    <InlineEdit
+                      periodType={getPeriodType(issue!)}
+                      periodId={issue?.sprintId ?? issue?.backlogId!}
+                      initialValue={issue?.priorityId ?? null}
+                      type="prioritySelect"
+                      issueId={issue?.id!}
+                      fieldName="priorityId"
+                      onSaveIssue={(issue?: IIssue) =>
+                        showSuccessMessage(issue)
+                      }
+                    ></InlineEdit>
+                  </Col>
+                </Row>
 
                 <Row gutter={24} className="align-center">
                   <Col span={8}>

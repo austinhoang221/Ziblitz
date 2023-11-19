@@ -144,7 +144,7 @@ export default function Statuses() {
     <div className="issue-types">
       <HeaderProject
         title="Statuses"
-        type="priorities"
+        isFixedHeader={false}
         actionContent={
           <Button type="primary" onClick={() => onOpenModal("create")}>
             Create status

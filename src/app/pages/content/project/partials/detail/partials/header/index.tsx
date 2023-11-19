@@ -33,7 +33,7 @@ import {
 import { IUser } from "../../../../../../../models/IUser";
 interface IHeaderProject {
   title: string;
-  type: string;
+  isFixedHeader: boolean;
   actionContent: ReactNode;
 }
 export default function HeaderProject(props: IHeaderProject) {
@@ -137,7 +137,7 @@ export default function HeaderProject(props: IHeaderProject) {
           placeholder="Search..."
           style={{ width: 200 }}
         />
-        {props.type === "backlog" && (
+        {props.isFixedHeader && (
           <>
             <Avatar.Group className="mr-2">
               <>

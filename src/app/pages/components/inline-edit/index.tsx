@@ -18,6 +18,8 @@ import "react-quill/dist/quill.snow.css";
 import "./index.scss";
 import dayjs from "dayjs";
 import { IIssue } from "../../../models/IIssue";
+import SelectPriority from "../issue-priority-select";
+import IssuePriority from "../issue-priority";
 interface IInlineEditProps {
   type: string;
   periodType: string;
@@ -172,6 +174,17 @@ export default function InlineEdit(props: IInlineEditProps) {
             onBlur={onSave}
           ></InputNumber>
         );
+      case "prioritySelect":
+        return (
+          <SelectPriority
+            type={props.type}
+            periodId={props.periodId}
+            onSaveIssue={(issue?: IIssue) => props.onSaveIssue(issue)}
+            issueId={props.issueId}
+            selectedId={props.initialValue!}
+            onBlur={() => setIsEditing(false)}
+          ></SelectPriority>
+        );
       case "date":
         const currentDate = new Date();
         return (
@@ -248,6 +261,18 @@ export default function InlineEdit(props: IInlineEditProps) {
                       ?.name
                   }
                 </span>
+              ) : (
+                <span className="ml-2">None</span>
+              )}
+            </div>
+          </>
+        );
+      case "prioritySelect":
+        return (
+          <>
+            <div onClick={onEdit}>
+              {editedValue ? (
+                <IssuePriority priorityId={editedValue}></IssuePriority>
               ) : (
                 <span className="ml-2">None</span>
               )}

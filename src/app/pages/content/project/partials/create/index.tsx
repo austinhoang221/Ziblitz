@@ -34,7 +34,7 @@ export default function CreateProjectDrawer(props: any) {
       const response = await ProjectService.create(userId, payload);
       if (checkResponseStatus(response)) {
         dispatch(createProject(response!.data));
-        navigate(`/project/${response!.data.code}`);
+        navigate(`/project/${response!.data.code}/board`);
         onClickCancel();
       }
       setIsLoadingButtonSave(false);

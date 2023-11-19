@@ -99,7 +99,7 @@ export default function BoardProject(props: any) {
     <>
       <HeaderProject
         title="Board"
-        type="board"
+        isFixedHeader={true}
         actionContent={
           <>
             <span>

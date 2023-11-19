@@ -228,7 +228,7 @@ export default function IssueTypes() {
     <div className="issue-types">
       <HeaderProject
         title="Issue types"
-        type="issueTypes"
+        isFixedHeader={false}
         actionContent={
           <Button type="primary" onClick={() => onOpenModal("create")}>
             Create issue type

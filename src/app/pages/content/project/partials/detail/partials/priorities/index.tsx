@@ -178,7 +178,7 @@ export default function Priorities() {
     <div className="issue-types">
       <HeaderProject
         title="Priorities"
-        type="priorities"
+        isFixedHeader={false}
         actionContent={
           <Button type="primary" onClick={() => onOpenModal("create")}>
             Create priority

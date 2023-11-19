@@ -55,13 +55,9 @@ const Backlog: React.FC = () => {
   const { isShowEpic, isLoading } = useSelector(
     (state: RootState) => state.projectDetail
   );
-  const [isFirstLoad, setFirstLoad] = useState<boolean>(true);
   const [mode, setMode] = useState<"start" | "edit" | "complete">("edit");
   const [editSprint, setEditSprint] = useState<ISprint | null>(null);
   const [isShowSprintModal, setShowSprintModal] = useState<boolean>(false);
-  useEffect(() => {
-    setFirstLoad(false);
-  }, []);
 
   useEffect(() => {}, []);
   const showSuccessMessage = () => {
@@ -280,7 +276,7 @@ const Backlog: React.FC = () => {
     <>
       <HeaderProject
         title="Backlog"
-        type="backlog"
+        isFixedHeader={true}
         actionContent={
           <Dropdown
             overlay={
@@ -306,151 +302,141 @@ const Backlog: React.FC = () => {
             <Epic></Epic>
           </Col>
         )}
-        {!isFirstLoad && !isLoading ? (
-          <Col span={isShowEpic ? 18 : 24}>
-            <div className="mt-4 c-backlog">
-              <Collapse ghost={true}>
-                {sprints?.map((sprint) => {
-                  return (
-                    <Collapse.Panel
-                      key={sprint.id}
-                      header={
-                        <div>
-                          <span className="font-weight-bold">
-                            {sprint.name}&nbsp;
-                            {sprint.startDate && (
-                              <span className="font-weight-normal text-muted">
-                                {dayjs(sprint.startDate).format("MMM D, YYYY")}{" "}
-                                - {dayjs(sprint.endDate).format("MMM D, YYYY")}
-                                &nbsp;
-                              </span>
-                            )}
+        <Col span={isShowEpic ? 18 : 24}>
+          <div className="mt-4 c-backlog">
+            <Collapse ghost={true}>
+              {sprints?.map((sprint) => {
+                return (
+                  <Collapse.Panel
+                    key={sprint.id}
+                    header={
+                      <div>
+                        <span className="font-weight-bold">
+                          {sprint.name}&nbsp;
+                          {sprint.startDate && (
                             <span className="font-weight-normal text-muted">
-                              ({sprint?.issues?.length ?? 0}) issues
+                              {dayjs(sprint.startDate).format("MMM D, YYYY")} -{" "}
+                              {dayjs(sprint.endDate).format("MMM D, YYYY")}
+                              &nbsp;
                             </span>
+                          )}
+                          <span className="font-weight-normal text-muted">
+                            ({sprint?.issues?.length ?? 0}) issues
                           </span>
-                        </div>
-                      }
-                      extra={
-                        <>
-                          {sprint.issues?.length > 0 &&
-                            !sprint.isComplete &&
-                            sprint.isStart && (
-                              <Button
-                                onClick={(e: any) =>
-                                  onClickCompleteSprint(e, sprint)
-                                }
-                                type="default"
-                                className="mr-2"
-                              >
-                                Complete sprint
-                              </Button>
-                            )}
-
-                          {sprint.issues?.length > 0 &&
-                            !sprint.isComplete &&
-                            !sprint.isStart && (
-                              <Button
-                                onClick={(e: any) =>
-                                  onClickStartSprint(e, sprint)
-                                }
-                                type="default"
-                                className="mr-2"
-                              >
-                                Start sprint
-                              </Button>
-                            )}
-
-                          <Dropdown
-                            className="c-backlog-action"
-                            overlay={
-                              <Menu key={sprint.id}>
-                                <Menu.Item key="edit">
-                                  <div
-                                    onClick={(e) =>
-                                      onClickEditSprint(e, sprint)
-                                    }
-                                  >
-                                    Edit
-                                  </div>
-                                </Menu.Item>
-                                <Menu.Item key="delete">
-                                  <Popconfirm
-                                    title="Delete"
-                                    description="Are you sure to delete this sprint?"
-                                    okText="Yes"
-                                    cancelText="Cancel"
-                                    onConfirm={(e) =>
-                                      onDeleteSprint(e, sprint?.id)
-                                    }
-                                  >
-                                    <div onClick={(e) => e.stopPropagation()}>
-                                      Move to trash
-                                    </div>
-                                  </Popconfirm>
-                                </Menu.Item>
-                              </Menu>
-                            }
-                            trigger={["click"]}
-                          >
-                            <Button
-                              type="text"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <i className="fa-solid fa-ellipsis"></i>
-                            </Button>
-                          </Dropdown>
-                        </>
-                      }
-                    >
-                      {onRenderSprintContent(sprint)}
-                    </Collapse.Panel>
-                  );
-                })}
-
-                <Collapse.Panel
-                  key="backlog"
-                  header={
-                    <div>
-                      <span className="font-weight-bold">
-                        Backlog{" "}
-                        <span className="font-weight-normal">
-                          ({backlogIssues?.length}) issues
                         </span>
+                      </div>
+                    }
+                    extra={
+                      <>
+                        {sprint.issues?.length > 0 &&
+                          !sprint.isComplete &&
+                          sprint.isStart && (
+                            <Button
+                              onClick={(e: any) =>
+                                onClickCompleteSprint(e, sprint)
+                              }
+                              type="default"
+                              className="mr-2"
+                            >
+                              Complete sprint
+                            </Button>
+                          )}
+
+                        {sprint.issues?.length > 0 &&
+                          !sprint.isComplete &&
+                          !sprint.isStart && (
+                            <Button
+                              onClick={(e: any) =>
+                                onClickStartSprint(e, sprint)
+                              }
+                              type="default"
+                              className="mr-2"
+                            >
+                              Start sprint
+                            </Button>
+                          )}
+
+                        <Dropdown
+                          className="c-backlog-action"
+                          overlay={
+                            <Menu key={sprint.id}>
+                              <Menu.Item key="edit">
+                                <div
+                                  onClick={(e) => onClickEditSprint(e, sprint)}
+                                >
+                                  Edit
+                                </div>
+                              </Menu.Item>
+                              <Menu.Item key="delete">
+                                <Popconfirm
+                                  title="Delete"
+                                  description="Are you sure to delete this sprint?"
+                                  okText="Yes"
+                                  cancelText="Cancel"
+                                  onConfirm={(e) =>
+                                    onDeleteSprint(e, sprint?.id)
+                                  }
+                                >
+                                  <div onClick={(e) => e.stopPropagation()}>
+                                    Move to trash
+                                  </div>
+                                </Popconfirm>
+                              </Menu.Item>
+                            </Menu>
+                          }
+                          trigger={["click"]}
+                        >
+                          <Button
+                            type="text"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <i className="fa-solid fa-ellipsis"></i>
+                          </Button>
+                        </Dropdown>
+                      </>
+                    }
+                  >
+                    {onRenderSprintContent(sprint)}
+                  </Collapse.Panel>
+                );
+              })}
+
+              <Collapse.Panel
+                key="backlog"
+                header={
+                  <div>
+                    <span className="font-weight-bold">
+                      Backlog{" "}
+                      <span className="font-weight-normal">
+                        ({backlogIssues?.length}) issues
                       </span>
-                    </div>
-                  }
-                  extra={
-                    <Button
-                      onClick={(e: any) => onClickCreateSprint(e)}
-                      type="default"
-                    >
-                      Create sprint
-                    </Button>
-                  }
-                >
-                  {onRenderBacklogContent}
-                </Collapse.Panel>
-              </Collapse>
-              <EditSprintModal
-                onSaveSprint={() => {
-                  showSuccessMessage();
-                  setShowSprintModal(false);
-                }}
-                sprint={editSprint!}
-                mode={mode}
-                isShowModal={isShowSprintModal}
-                onCancel={() => setShowSprintModal(false)}
-              ></EditSprintModal>
-            </div>
-          </Col>
-        ) : (
-          <>
-            <Skeleton active></Skeleton>
-            <Skeleton active></Skeleton>
-            <Skeleton active></Skeleton>
-          </>
-        )}
+                    </span>
+                  </div>
+                }
+                extra={
+                  <Button
+                    onClick={(e: any) => onClickCreateSprint(e)}
+                    type="default"
+                  >
+                    Create sprint
+                  </Button>
+                }
+              >
+                {onRenderBacklogContent}
+              </Collapse.Panel>
+            </Collapse>
+            <EditSprintModal
+              onSaveSprint={() => {
+                showSuccessMessage();
+                setShowSprintModal(false);
+              }}
+              sprint={editSprint!}
+              mode={mode}
+              isShowModal={isShowSprintModal}
+              onCancel={() => setShowSprintModal(false)}
+            ></EditSprintModal>
+          </div>
+        </Col>
       </Row>
 
       {contextHolder}

@@ -7,8 +7,10 @@ import { IssueService } from "../../../../services/issueService";
 import { useAppDispatch } from "../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../helpers";
 import IssueTypeSelect from "../issue-type-select";
+import { LoadingOutlined } from "@ant-design/icons";
 export default function CreateIssueInput(props: any, identifier: string) {
   const [isCreate, setIsCreate] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [issueTypeIcon, setIssueTypeIcon] = useState<string>("");
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const ref = useRef<InputRef>(null);
@@ -49,6 +51,7 @@ export default function CreateIssueInput(props: any, identifier: string) {
 
   const onSaveIssue = (e: any) => {
     if (e?.target.value) {
+      setLoading(true);
       const payload: any = {
         name: e.target.value,
         issueTypeId: issueTypeKey,
@@ -63,6 +66,7 @@ export default function CreateIssueInput(props: any, identifier: string) {
               props.onSaveIssue(res?.data);
               dispatch(getProjectByCode(project?.code!));
               setIsCreate(false);
+              setLoading(false);
             }
           }
         );
@@ -73,6 +77,7 @@ export default function CreateIssueInput(props: any, identifier: string) {
               props.onSaveIssue();
               dispatch(getProjectByCode(project?.code!));
               setIsCreate(false);
+              setLoading(false);
             }
           }
         );
@@ -108,6 +113,7 @@ export default function CreateIssueInput(props: any, identifier: string) {
               onKeyDownCapture={(e) => {
                 if (e.key === "Escape") setIsCreate(false);
               }}
+              suffix={isLoading ? <LoadingOutlined /> : <></>}
             ></Input>
           </div>
         </div>
