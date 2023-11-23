@@ -1,3 +1,4 @@
+import { red } from "@ant-design/colors";
 import {
   Button,
   Card,
@@ -9,19 +10,28 @@ import {
   Modal,
   Popconfirm,
   Row,
+  Table,
   Tabs,
   TabsProps,
   Tooltip,
+  UploadFile,
+  UploadProps,
 } from "antd";
+import { ColumnsType } from "antd/es/table";
+import { RcFile } from "antd/es/upload";
+import Upload from "antd/es/upload/Upload";
 import dayjs from "dayjs";
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
+import { FileService } from "../../../../services/fileService";
 import { IssueService } from "../../../../services/issueService";
+import Endpoint from "../../../api/endpoint";
 import { useAppDispatch } from "../../../customHooks/dispatch";
-import { checkResponseStatus } from "../../../helpers";
+import { byteToMb, checkResponseStatus, getFileIcon } from "../../../helpers";
+import { IFile } from "../../../models/IFile";
 import { IIssue } from "../../../models/IIssue";
 import ChildIssues from "../child-issues";
 import CreateIssueInput from "../create-issue-input";
@@ -46,6 +56,115 @@ export default function IssueModal(props: any) {
     (state: RootState) => state.projectDetail.project
   );
   const [messageApi, contextHolder] = message.useMessage();
+  const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<IFile[]>([]);
+  const uploadProps: UploadProps = {
+    multiple: true,
+    beforeUpload(file: UploadFile) {
+      setUploadFileList((prevUploadFileList) => [...prevUploadFileList, file]);
+      return false;
+    },
+  };
+
+  React.useEffect(() => {
+    if (uploadFileList.length > 0) {
+      handleUpload();
+    }
+  }, [uploadFileList]);
+
+  const handleUpload = useCallback(() => {
+    const formData = new FormData();
+    uploadFileList.forEach((file) => {
+      formData.append("files", file as RcFile, file.name); // Note: The third argument is the filename
+    });
+
+    setIsLoading(true);
+
+    fetch(
+      `https://task-manager-service.azurewebsites.net/api/issues/${issue?.id}/attachments`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "text/plain",
+        },
+        body: formData,
+      }
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        setFileList((prevFileList) => [...prevFileList, result?.data]);
+        setUploadFileList([]);
+      })
+      .catch(() => {})
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [uploadFileList]);
+
+  const onClickDeleteFile = async (id: string) => {
+    await FileService.delete(issue?.id!, id).then((res) => {
+      if (checkResponseStatus(res)) {
+        const newFileList = fileList.filter((file) => file.id !== res?.data);
+        setFileList(newFileList);
+        showSuccessMessage();
+      }
+    });
+  };
+
+  const columns: ColumnsType<IFile> = [
+    {
+      title: "Name",
+      key: "title",
+      width: "45%",
+      render: (file: IFile) => (
+        <div className="d-flex align-center text-truncate">
+          <span className="font-sz16 mr-2">{getFileIcon(file.type)}</span>
+          <span className="">{file.name}</span>
+        </div>
+      ),
+    },
+    {
+      title: "Date added",
+      dataIndex: "modificationTime",
+      key: "modificationTime",
+      width: "30%",
+      render: (text: string) => {
+        return <span>{dayjs(text).format("MMM D, YYYY")}</span>;
+      },
+    },
+    {
+      title: "Size",
+      dataIndex: "size",
+      key: "size",
+      width: "20%",
+      render: (size: number) => {
+        return <span>{byteToMb(size)} MB</span>;
+      },
+    },
+    {
+      title: "",
+      key: "action",
+      width: "5%",
+      render: (file: IFile) => {
+        return (
+          <Popconfirm
+            title="Delete the file"
+            description="Are you sure to delete this file?"
+            okText="Yes"
+            cancelText="Cancel"
+            onConfirm={() => onClickDeleteFile(file?.id)}
+          >
+            <Button type="text" shape="circle">
+              <i
+                style={{ color: red.primary }}
+                className="fa-solid fa-trash-can"
+              ></i>
+            </Button>
+          </Popconfirm>
+        );
+      },
+    },
+  ];
 
   const showSuccessMessage = (issue?: IIssue) => {
     messageApi.open({
@@ -61,6 +180,12 @@ export default function IssueModal(props: any) {
     await IssueService.getById(params?.issueId!).then((res) => {
       if (checkResponseStatus(res)) {
         setIssue(res?.data!);
+        setIsLoading(false);
+      }
+    });
+    await FileService.getByIssueId(params?.issueId!).then((res) => {
+      if (checkResponseStatus(res)) {
+        setFileList(res?.data!);
         setIsLoading(false);
       }
     });
@@ -302,14 +427,16 @@ export default function IssueModal(props: any) {
                 issueId={issue?.id!}
               ></InlineEdit>
               <div className="mt-2 mb-4">
-                <Button
-                  type="text"
-                  className=" mr-2"
-                  style={{ backgroundColor: "#f1f2f4" }}
-                >
-                  <i className="fa-solid fa-paperclip mr-2"></i>
-                  Attach
-                </Button>
+                <Upload {...uploadProps}>
+                  <Button
+                    type="text"
+                    className=" mr-2"
+                    style={{ backgroundColor: "#f1f2f4" }}
+                  >
+                    <i className="fa-solid fa-paperclip mr-2"></i>
+                    Attach
+                  </Button>
+                </Upload>
               </div>
               <span className="font-weight-bold ml-2 mt-4 mb-2">
                 Description
@@ -325,6 +452,20 @@ export default function IssueModal(props: any) {
                   onSaveIssue={(issue?: IIssue) => showSuccessMessage(issue)}
                 ></InlineEdit>
               </div>
+              {fileList?.length > 0 && (
+                <>
+                  <span className="font-weight-bold ml-2 mt-4 mb-2">
+                    Attachments
+                  </span>
+                  <Table
+                    columns={columns}
+                    dataSource={fileList}
+                    rowKey={(record) => record.id}
+                    pagination={false}
+                    loading={isLoading}
+                  />
+                </>
+              )}
               <span className="font-weight-bold ml-2 mt-4 mb-4">
                 Child issues
               </span>
@@ -527,11 +668,9 @@ export default function IssueModal(props: any) {
               </Card>
               <p className="text-muted">
                 Created &nbsp;
-                <>
-                  {issue?.creationTime
-                    ? dayjs(issue?.creationTime).format("MMM D, YYYY h:mm A")
-                    : ""}
-                </>
+                {issue?.creationTime
+                  ? dayjs(issue?.creationTime).format("MMM D, YYYY h:mm A")
+                  : ""}
               </p>
             </Col>
           </Row>

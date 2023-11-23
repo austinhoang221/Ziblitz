@@ -25,7 +25,10 @@ export default class Endpoint {
   public static createEpic: string = this.baseUrl + "projects/";
   public static updateEpic: string = this.baseUrl + "projects/";
   public static getSprintIssue: string = this.baseUrl + "sprints/";
+  public static getAll: string = this.baseUrl + "projects/";
   public static getIssue: string = this.baseUrl + "issues/";
+  public static upload: string = this.baseUrl + "issues/";
+  public static getFiles: string = this.baseUrl + "issues/";
   public static getIssueHistories: string = this.baseUrl + "issues/";
   public static deleteIssue: string = this.baseUrl + "sprints/";
   public static editSprintIssue: string = this.baseUrl + "sprints/";

@@ -4,6 +4,25 @@ import { IResponse } from "../app/models/IResponse";
 import { ISprint } from "../app/models/ISprint";
 
 export class SprintService {
+  public static getAllIssue = async (
+    projectId: string,
+    sprintId?: string,
+    epicId?: string,
+    issueTypeId?: string
+  ) => {
+    let query = Endpoint.getSprintIssue + projectId + "/sprints";
+    if (sprintId) query += "?sprintId=" + sprintId;
+    if (epicId) query += "?epicId=" + epicId;
+    if (issueTypeId) query += "?issueTypeId=" + issueTypeId;
+    try {
+      const response: IResponse<ISprint> = await axiosInstance.get(query);
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
   public static createSprint = async (projectId: string) => {
     try {
       const response: IResponse<ISprint> = await axiosInstance.post(

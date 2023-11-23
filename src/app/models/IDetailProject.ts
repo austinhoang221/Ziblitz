@@ -1,6 +1,7 @@
 import { IBacklog } from "./IBacklog";
 import { IIssue } from "./IIssue";
 import { IIssueType } from "./IIssueType";
+import { IIssueOnBoard } from "./IProject";
 import { ISprint } from "./ISprint";
 import { IStatus } from "./IStatus";
 import { IUser } from "./IUser";
@@ -19,4 +20,5 @@ export interface IDetailProject {
   sprints: ISprint[];
   issueTypes: IIssueType[];
   statuses: IStatus[];
+  issueOnBoard: IIssueOnBoard;
 }

@@ -1,7 +1,9 @@
 import { IIssue } from "./IIssue";
 import { IIssueType } from "./IIssueType";
 import { IUser } from "./IUser";
-
+export interface IIssueOnBoard {
+  [issueType: string]: IIssue[];
+}
 export interface IProject {
   id: string;
   name: string;
@@ -13,4 +15,5 @@ export interface IProject {
   members: IUser[];
   epics: IIssue[];
   issueTypes: IIssueType[];
+  issueOnBoard: IIssueOnBoard;
 }

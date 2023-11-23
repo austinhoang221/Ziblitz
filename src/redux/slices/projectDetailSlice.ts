@@ -4,6 +4,7 @@ import { checkResponseStatus } from "../../app/helpers";
 import { IDetailProject } from "../../app/models/IDetailProject";
 import { IIssue } from "../../app/models/IIssue";
 import { IPriority } from "../../app/models/IPriority";
+import { IIssueOnBoard } from "../../app/models/IProject";
 import { ISprint } from "../../app/models/ISprint";
 import { ProjectService } from "../../services/projectService";
 interface IProjectDetail {
@@ -11,6 +12,7 @@ interface IProjectDetail {
   backlogIssues: IIssue[] | null;
   sprints: ISprint[] | null;
   priorities: IPriority[] | null;
+  issueOnBoard: IIssueOnBoard | null;
   isShowEpic: boolean;
   isLoading: boolean;
 }
@@ -19,6 +21,7 @@ const initialProjectDetailState: IProjectDetail = {
   backlogIssues: [],
   sprints: [],
   priorities: [],
+  issueOnBoard: null,
   isShowEpic: false,
   isLoading: false,
 };

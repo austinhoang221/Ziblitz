@@ -24,7 +24,7 @@ export default function IssueAddParent(props: IIssueAddParent) {
     (state: RootState) => state.projectDetail.project
   );
   const dispatch = useAppDispatch();
-  const onChangeField = (type: string, e: any) => {
+  const onChangeField = (e: any) => {
     if (props.type === "backlog") {
       IssueService.editBacklogIssue(props?.periodId!, issue?.id!, {
         parentId: e,
@@ -60,7 +60,7 @@ export default function IssueAddParent(props: IIssueAddParent) {
         overlay={
           project?.epics?.length! > 0 ? (
             <Menu
-              onClick={(e) => onChangeField("parentId", e.key)}
+              onClick={(e) => onChangeField(e.key)}
               selectedKeys={[issue?.parentId ?? ""]}
             >
               {project?.epics.map((epic) => {

@@ -1,3 +1,4 @@
+import { blue, green, orange, red, yellow } from "@ant-design/colors";
 import { IResponse } from "../models/IResponse";
 import Message from "../pages/components/message";
 
@@ -36,6 +37,11 @@ export const convertNameToInitials = (name: string) => {
   }
 };
 
+export const byteToMb = (kilobytes: number) => {
+  const megabytes = kilobytes / (1024 * 1024);
+  return megabytes.toFixed(2); // Limiting to two decimal places
+};
+
 export const getRandomColor = () => {
   const r = Math.floor(Math.random() * 256); // Random value between 0 and 255 for red
   const g = Math.floor(Math.random() * 256); // Random value between 0 and 255 for green
@@ -45,6 +51,47 @@ export const getRandomColor = () => {
   const hexColor = `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
 
   return hexColor;
+};
+
+export const getFileIcon = (type: string) => {
+  switch (type) {
+    case "video/mp4":
+      return (
+        <i className="fa-solid fa-video" style={{ color: yellow.primary }}></i>
+      );
+
+    case "image/jpeg":
+    case "image/png":
+      return (
+        <i className="fa-regular fa-image" style={{ color: orange[2] }}></i>
+      );
+
+    case "application/pdf":
+      return (
+        <i className="fa-regular fa-file-pdf" style={{ color: red[2] }}></i>
+      );
+
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    case "application/msword":
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.template":
+      return (
+        <i className="fa-regular fa-file-word" style={{ color: blue[2] }}></i>
+      );
+
+    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+    case "application/vnd.ms-excel":
+      return (
+        <i className="fa-regular fa-file-excel" style={{ color: green[2] }}></i>
+      );
+
+    case "application/rtf":
+      return "rtf-icon.png";
+
+    // Add more cases for other file types as needed
+
+    default:
+      return <i className="fa-regular fa-file"></i>;
+  }
 };
 
 export function checkResponseStatus<T>(response: IResponse<T> | undefined) {

@@ -1,3 +1,4 @@
+import { Task } from "gantt-task-react";
 import Endpoint from "../app/api/endpoint";
 import { axiosInstance } from "../app/middleware";
 import { IIssue } from "../app/models/IIssue";
@@ -13,6 +14,18 @@ export class IssueService {
       const response: IResponse<IIssue> = await axiosInstance.post(
         Endpoint.createBacklogIssue + backlogId + "/issues/:name",
         payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static getAll = async (projectId: string) => {
+    try {
+      const response: IResponse<Task[]> = await axiosInstance.get(
+        Endpoint.getAll + projectId + "/issues"
       );
       console.log("POST response:", response.data);
       return response;

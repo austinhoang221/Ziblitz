@@ -1,5 +1,5 @@
 import { gray } from "@ant-design/colors";
-import styled from "@xstyled/styled-components";
+import styled, { order } from "@xstyled/styled-components";
 import React, { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useSelector } from "react-redux";
@@ -18,6 +18,7 @@ export default function BoardProject(props: any) {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
+
   const {
     isCombineEnabled,
     initial,
@@ -36,7 +37,7 @@ export default function BoardProject(props: any) {
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
-    await SprintService.getById(project?.id!, params?.sprintId!).then((res) => {
+    await SprintService.getAllIssue(project?.id!).then((res) => {
       if (checkResponseStatus(res)) {
         setOrdered(res?.data!);
         setIsLoading(false);
@@ -119,18 +120,18 @@ export default function BoardProject(props: any) {
         >
           {(provided) => (
             <Container ref={provided.innerRef} {...provided.droppableProps}>
-              {/* {ordered?.map((key, index) => (
+              {/* {project?.statuses?.map((status, index) => (
                 <Column
-                  key={key}
+                  key={status.id}
                   index={index}
-                  title={key}
-                  quotes={columns[key]}
+                  title={status.name}
+                  quotes={?.[status.name]}
                   isScrollable={withScrollableColumns}
                   isCombineEnabled={isCombineEnabled}
                   useClone={useClone}
                 />
-              ))}
-              {provided.placeholder} */}
+              ))} */}
+              {provided.placeholder}
             </Container>
           )}
         </Droppable>

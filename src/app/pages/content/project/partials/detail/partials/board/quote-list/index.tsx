@@ -77,7 +77,7 @@ function InnerList(props: any) {
 }
 
 const InnerQuoteList = React.memo(function InnerQuoteList(props: any) {
-  return props.quotes.map((quote: any, index: number) => (
+  return props.quotes?.map((quote: any, index: number) => (
     <Draggable key={quote.id} draggableId={quote.id} index={index}>
       {(dragProvided, dragSnapshot) => (
         <QuoteItem
