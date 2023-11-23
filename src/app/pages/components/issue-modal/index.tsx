@@ -49,6 +49,7 @@ export default function IssueModal(props: any) {
   const params = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
   const [isOpenIssueModal, setIsOpenIssueModal] = useState<boolean>(false);
   const [issue, setIssue] = useState<IIssue | null>(null);
   const dispatch = useAppDispatch();
@@ -78,7 +79,7 @@ export default function IssueModal(props: any) {
       formData.append("files", file as RcFile, file.name); // Note: The third argument is the filename
     });
 
-    setIsLoading(true);
+    setIsUploadFile(true);
 
     fetch(
       `https://task-manager-service.azurewebsites.net/api/issues/${issue?.id}/attachments`,
@@ -97,7 +98,7 @@ export default function IssueModal(props: any) {
       })
       .catch(() => {})
       .finally(() => {
-        setIsLoading(false);
+        setIsUploadFile(false);
       });
   }, [uploadFileList]);
 
@@ -115,11 +116,12 @@ export default function IssueModal(props: any) {
     {
       title: "Name",
       key: "title",
-      width: "45%",
+      width: "auto",
+      ellipsis: true,
       render: (file: IFile) => (
-        <div className="d-flex align-center text-truncate">
+        <div className="d-flex align-center">
           <span className="font-sz16 mr-2">{getFileIcon(file.type)}</span>
-          <span className="">{file.name}</span>
+          <span className="text-truncate">{file.name}</span>
         </div>
       ),
     },
@@ -127,7 +129,7 @@ export default function IssueModal(props: any) {
       title: "Date added",
       dataIndex: "modificationTime",
       key: "modificationTime",
-      width: "30%",
+      width: "20%",
       render: (text: string) => {
         return <span>{dayjs(text).format("MMM D, YYYY")}</span>;
       },
@@ -136,7 +138,7 @@ export default function IssueModal(props: any) {
       title: "Size",
       dataIndex: "size",
       key: "size",
-      width: "20%",
+      width: "15%",
       render: (size: number) => {
         return <span>{byteToMb(size)} MB</span>;
       },
@@ -144,7 +146,7 @@ export default function IssueModal(props: any) {
     {
       title: "",
       key: "action",
-      width: "5%",
+      width: "50px",
       render: (file: IFile) => {
         return (
           <Popconfirm
@@ -462,7 +464,7 @@ export default function IssueModal(props: any) {
                     dataSource={fileList}
                     rowKey={(record) => record.id}
                     pagination={false}
-                    loading={isLoading}
+                    loading={isUploadFile}
                   />
                 </>
               )}
@@ -474,8 +476,8 @@ export default function IssueModal(props: any) {
                   <ChildIssues data={issue?.childIssues ?? []}></ChildIssues>
                   <CreateIssueInput
                     isSubtask={issue?.issueType?.name !== "Epic"}
-                    type="backlog"
-                    periodId={project?.backlog?.id!}
+                    type={getPeriodType(issue!)}
+                    periodId={issue?.sprintId ?? issue?.backlogId!}
                     parentId={issue?.id}
                     onSaveIssue={showSuccessMessage}
                   ></CreateIssueInput>
