@@ -92,7 +92,7 @@ export default function IssueModal(props: any) {
     )
       .then((res) => res.json())
       .then((result) => {
-        setFileList((prevFileList) => [...prevFileList, result?.data]);
+        setFileList((prevFileList) => [...prevFileList, ...result?.data]);
         setUploadFileList([]);
       })
       .catch(() => {})

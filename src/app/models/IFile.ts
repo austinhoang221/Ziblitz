@@ -4,5 +4,5 @@ export interface IFile {
   link: string;
   size: number;
   type: string;
-  modificationTime: string;
+  creationTime: string;
 }
