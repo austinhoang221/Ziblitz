@@ -33,7 +33,7 @@ export default function Content() {
   return (
     <>
       <Header></Header>
-      <div>
+      <div className="scroll">
         <Outlet />
       </div>
     </>

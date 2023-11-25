@@ -1,5 +1,6 @@
 import { gray } from "@ant-design/colors";
 import styled, { order } from "@xstyled/styled-components";
+import { Col, Row, Skeleton } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useSelector } from "react-redux";
@@ -7,16 +8,17 @@ import { Outlet, useParams } from "react-router-dom";
 import { RootState } from "../../../../../../../../redux/store";
 import { SprintService } from "../../../../../../../../services/sprintService";
 import { checkResponseStatus } from "../../../../../../../helpers";
-import { ISprint } from "../../../../../../../models/ISprint";
+import { IIssueOnBoard } from "../../../../../../../models/IProject";
+import IssueModal from "../../../../../../components/issue-modal";
 import HeaderProject from "../header";
 import Column from "./columns";
-
+import { DotChartOutlined } from "@ant-design/icons";
 export default function BoardProject(props: any) {
   const params = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [ordered, setOrdered] = useState<ISprint>();
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const [ordered, setOrdered] = useState<IIssueOnBoard>();
+  const { project, isLoading: isLoadingProject } = useSelector(
+    (state: RootState) => state.projectDetail
   );
 
   const {
@@ -26,13 +28,11 @@ export default function BoardProject(props: any) {
     containerHeight,
     withScrollableColumns,
   } = props;
-  const [columns, setColumns] = useState(initial);
   const Container = styled.divBox`
     background-color: #fff;
-    min-height: 100vh;
-    /* like display:flex but will allow bleeding over the window width */
-    min-width: 100vw;
+    max-height: 80vh;
     display: inline-flex;
+    min-width: 100vw;
   `;
 
   const fetchData = useCallback(async () => {
@@ -46,10 +46,10 @@ export default function BoardProject(props: any) {
   }, [params?.sprintId, project?.id]);
 
   useEffect(() => {
-    if (params?.sprintId) {
+    if (project?.id) {
       fetchData();
     }
-  }, [params.sprintId, fetchData]);
+  }, [project?.id]);
 
   const onDragEnd = (result: any) => {
     // if (result.combine) {
@@ -110,32 +110,55 @@ export default function BoardProject(props: any) {
         }
       ></HeaderProject>
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable
-          droppableId="board"
-          type="COLUMN"
-          direction="horizontal"
-          ignoreContainerClipping={Boolean(containerHeight)}
-          isCombineEnabled={isCombineEnabled}
-        >
-          {(provided) => (
-            <Container ref={provided.innerRef} {...provided.droppableProps}>
-              {/* {project?.statuses?.map((status, index) => (
-                <Column
-                  key={status.id}
-                  index={index}
-                  title={status.name}
-                  quotes={?.[status.name]}
-                  isScrollable={withScrollableColumns}
-                  isCombineEnabled={isCombineEnabled}
-                  useClone={useClone}
-                />
-              ))} */}
-              {provided.placeholder}
-            </Container>
-          )}
-        </Droppable>
-      </DragDropContext>
+      {isLoading || isLoadingProject ? (
+        <Row gutter={128} className="mt-4">
+          {project?.statuses?.map((status, index) => (
+            <Col key={index} span={6}>
+              <div className="d-flex d-flex-direction-column ">
+                <Skeleton.Input active style={{ width: "250px" }} />
+                <Skeleton.Node
+                  active
+                  className="mt-2"
+                  style={{ width: "250px", height: "55vh" }}
+                >
+                  <DotChartOutlined
+                    style={{ fontSize: 40, color: "#bfbfbf" }}
+                  />
+                </Skeleton.Node>
+              </div>
+            </Col>
+          ))}
+        </Row>
+      ) : (
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable
+            droppableId="board"
+            type="COLUMN"
+            direction="horizontal"
+            ignoreContainerClipping={Boolean(containerHeight)}
+            isCombineEnabled={isCombineEnabled}
+          >
+            {(provided) => (
+              <Container ref={provided.innerRef} {...provided.droppableProps}>
+                {project?.statuses?.map((status, index) => (
+                  <Column
+                    key={status.id}
+                    index={index}
+                    title={status.name}
+                    quotes={ordered?.[status.name]}
+                    isScrollable={withScrollableColumns}
+                    isCombineEnabled={isCombineEnabled}
+                    useClone={useClone}
+                  />
+                ))}
+                {provided.placeholder}
+              </Container>
+            )}
+          </Droppable>
+        </DragDropContext>
+      )}
+
+      <IssueModal></IssueModal>
       <Outlet></Outlet>
     </>
   );

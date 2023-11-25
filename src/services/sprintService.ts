@@ -1,5 +1,6 @@
 import Endpoint from "../app/api/endpoint";
 import { axiosInstance } from "../app/middleware";
+import { IIssueOnBoard } from "../app/models/IProject";
 import { IResponse } from "../app/models/IResponse";
 import { ISprint } from "../app/models/ISprint";
 
@@ -15,7 +16,7 @@ export class SprintService {
     if (epicId) query += "?epicId=" + epicId;
     if (issueTypeId) query += "?issueTypeId=" + issueTypeId;
     try {
-      const response: IResponse<ISprint> = await axiosInstance.get(query);
+      const response: IResponse<IIssueOnBoard> = await axiosInstance.get(query);
       console.log("POST response:", response.data);
       return response;
     } catch (error) {

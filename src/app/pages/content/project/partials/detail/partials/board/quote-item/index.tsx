@@ -1,6 +1,12 @@
+import { blue, gray } from "@ant-design/colors";
 import styled from "@xstyled/styled-components";
+import { Button } from "antd";
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import IssueAddParent from "../../../../../../../components/issue-add-parent";
+import IssuePriority from "../../../../../../../components/issue-priority";
+import IssueType from "../../../../../../../components/issue-type";
+import UserAvatar from "../../../../../../../components/user-avatar";
 
 const getBackgroundColor = (
   isDragging: boolean,
@@ -8,7 +14,7 @@ const getBackgroundColor = (
   authorColors: any
 ) => {
   if (isDragging) {
-    return authorColors.soft;
+    return "#FFFF";
   }
 
   if (isGroupedOver) {
@@ -19,7 +25,7 @@ const getBackgroundColor = (
 };
 
 const getBorderColor = (isDragging: boolean, authorColors: any) =>
-  isDragging ? authorColors.hard : "transparent";
+  isDragging ? blue.primary : "transparent";
 
 const Container = styled.aBox`
   border-radius: 2px;
@@ -44,12 +50,6 @@ const Container = styled.aBox`
     text-decoration: none;
   }
 
-  &:focus {
-    outline: none;
-    border-color: ${(props: any) => props.colors.hard};
-    box-shadow: none;
-  }
-
   /* flexbox */
   display: flex;
 `;
@@ -63,20 +63,16 @@ const Content = styled.divBox`
   flex-direction: column;
 `;
 
+const ParentName = styled.divBox`
+  border-radius: 3px;
+  background-color: #dfd8fd;
+  color: #172b4d;
+`;
+
 const Footer = styled.divBox`
   display: flex;
   margin-top: 10px;
   align-items: center;
-`;
-
-const Author = styled.smallBox`
-  color: ${(props: any) => props.colors.hard};
-  flex-grow: 0;
-  margin: 0;
-  background-color: ${(props: any) => props.colors.soft};
-  border-radius: 10px;
-  font-weight: normal;
-  padding: 5px;
 `;
 
 function getStyle(provided: any, style: any) {
@@ -94,6 +90,11 @@ function QuoteItem(props: any) {
   const { quote, isDragging, isGroupedOver, provided, style, isClone, index } =
     props;
 
+  const navigate = useNavigate();
+  const onNavigateToIssue = (id: string) => {
+    navigate(id);
+  };
+
   return (
     <Container
       isDragging={isDragging}
@@ -108,16 +109,40 @@ function QuoteItem(props: any) {
       data-index={index}
       aria-label={`${quote.name}`}
     >
-      <Content>
-        {quote.name}
-        <IssueAddParent
-          periodId={quote.backlogId ?? quote.sprintId}
-          type={quote.backlogId ? "backlog" : "sprint"}
-          issue={quote}
-          onSaveIssue={() => {}}
-        ></IssueAddParent>
-        <Footer></Footer>
+      <Content onClick={() => onNavigateToIssue(quote.id)}>
+        <span className="text-black text-truncate">{quote.name}</span>
+        <div className="align-child-space-between align-center w-100 mb-2">
+          <div className="d-flex">
+            <ParentName>{quote?.parentName}</ParentName>
+          </div>
+
+          <IssuePriority priorityId={quote.priorityId}></IssuePriority>
+        </div>
+
+        <div className="align-child-space-between align-center w-100 mb-2">
+          <div className="d-flex align-center">
+            <Button
+              type="text"
+              className="p-0"
+              style={{ width: "18px", height: "18px" }}
+            >
+              <IssueType issueTypeKey={quote.issueType?.icon}></IssueType>
+            </Button>
+            <span className="ml-2">{quote.code}</span>
+          </div>
+          <div>
+            <Button type="text" shape="circle" className="mr-2">
+              {quote?.issueDetail?.storyPointEstimate ?? 0}
+            </Button>
+            <UserAvatar
+              isShowName={false}
+              isMultiple={false}
+              userIds={[quote.assigneeId]}
+            ></UserAvatar>
+          </div>
+        </div>
       </Content>
+      <Footer></Footer>
     </Container>
   );
 }

@@ -15,11 +15,9 @@ const Header = styled.divBox`
   justify-content: center;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
-  background-color: ${(isDragging: boolean) => (isDragging ? gray[3] : "#fff")};
+  background-color: ${(isDragging: boolean) =>
+    isDragging ? "rgb(235, 236, 240)" : "rgb(235, 236, 240)"};
   transition: background-color 0.2s ease;
-  &:hover {
-    background-color: ${gray[3]};
-  }
 `;
 
 const Title = styled.divBox`

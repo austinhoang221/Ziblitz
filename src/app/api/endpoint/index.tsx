@@ -24,7 +24,7 @@ export default class Endpoint {
   public static createSprintIssue: string = this.baseUrl + "sprints/";
   public static createEpic: string = this.baseUrl + "projects/";
   public static updateEpic: string = this.baseUrl + "projects/";
-  public static getSprintIssue: string = this.baseUrl + "sprints/";
+  public static getSprintIssue: string = this.baseUrl + "projects/";
   public static getAll: string = this.baseUrl + "projects/";
   public static getIssue: string = this.baseUrl + "issues/";
   public static upload: string = this.baseUrl + "issues/";

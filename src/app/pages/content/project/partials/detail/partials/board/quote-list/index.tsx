@@ -21,13 +21,23 @@ const Wrapper = styled.divBox`
     getBackgroundColor(props.isDraggingOver, props.isDraggingFrom)};
   display: flex;
   flex-direction: column;
-  opacity: ${(isDropDisabled: boolean) => (isDropDisabled ? 0.5 : "inherit")};
-  padding: 10pxpx;
-  border: 10pxpx;
+  opacity: ${(isDropDisabled: boolean) => (isDropDisabled ? 1 : "inherit")};
+  padding: 10px;
+  border: 10px;
   padding-bottom: 0;
   transition: background-color 0.2s ease, opacity 0.1s ease;
   user-select: none;
   width: 250px;
+  overflow-y: scroll;
+  height: 60vh;
+  max-height: 60vh;
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5); /* Set color of the thumb */
+    border-radius: 6px; /* Round the corners of the thumb */
+  }
+  &::-webkit-scrollbar-track {
+    background-color: red; /* Set the background color of the track */
+  }
 `;
 
 const scrollContainerHeight = 250;
@@ -45,7 +55,6 @@ const DropZone = styled.divBox`
 const ScrollContainer = styled.divBox`
   overflow-x: hidden;
   overflow-y: auto;
-  max-height: ${scrollContainerHeight}px;
 `;
 
 const Title = styled.divBox`
