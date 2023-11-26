@@ -7,14 +7,19 @@ import { ISprint } from "../app/models/ISprint";
 export class SprintService {
   public static getAllIssue = async (
     projectId: string,
+    searchValue: string,
     sprintId?: string,
     epicId?: string,
     issueTypeId?: string
   ) => {
-    let query = Endpoint.getSprintIssue + projectId + "/sprints";
-    if (sprintId) query += "?sprintId=" + sprintId;
-    if (epicId) query += "?epicId=" + epicId;
-    if (issueTypeId) query += "?issueTypeId=" + issueTypeId;
+    let query =
+      Endpoint.getSprintIssue +
+      projectId +
+      "/sprints?searchValue=" +
+      searchValue;
+    if (sprintId) query += "&sprintId=" + sprintId;
+    if (epicId) query += "&epicId=" + epicId;
+    if (issueTypeId) query += "&issueTypeId=" + issueTypeId;
     try {
       const response: IResponse<IIssueOnBoard> = await axiosInstance.get(query);
       console.log("POST response:", response.data);

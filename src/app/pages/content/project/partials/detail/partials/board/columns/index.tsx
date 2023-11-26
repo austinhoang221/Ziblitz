@@ -47,7 +47,7 @@ export default function Column(props: any) {
             </Title>
           </Header>
           <QuoteList
-            listId={props.title}
+            listId={props.id}
             listType="QUOTE"
             style={{
               backgroundColor: snapshot.isDragging ? gray.primary : null,
@@ -56,6 +56,7 @@ export default function Column(props: any) {
             internalScroll={props.isScrollable}
             isCombineEnabled={Boolean(props.isCombineEnabled)}
             useClone={Boolean(props.useClone)}
+            isLoading={props.isLoading}
           />
         </Container>
       )}

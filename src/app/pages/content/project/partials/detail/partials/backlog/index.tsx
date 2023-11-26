@@ -272,11 +272,13 @@ const Backlog: React.FC = () => {
     </>
   );
 
+  const onSearch = (value: string) => {};
   return (
     <>
       <HeaderProject
         title="Backlog"
         isFixedHeader={true}
+        onSearch={onSearch}
         actionContent={
           <Dropdown
             overlay={

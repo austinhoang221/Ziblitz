@@ -1,4 +1,5 @@
 import styled from "@xstyled/styled-components";
+import { Spin } from "antd";
 import React from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import QuoteItem from "../quote-item";
@@ -144,20 +145,29 @@ export default function QuoteList(props: any) {
           isDraggingFrom={Boolean(dropSnapshot.draggingFromThisWith)}
           {...dropProvided.droppableProps}
         >
-          {internalScroll ? (
-            <ScrollContainer style={scrollContainerStyle}>
+          {!props.isLoading ? (
+            internalScroll ? (
+              <ScrollContainer style={scrollContainerStyle}>
+                <InnerList
+                  quotes={quotes}
+                  title={title}
+                  dropProvided={dropProvided}
+                />
+              </ScrollContainer>
+            ) : (
               <InnerList
                 quotes={quotes}
                 title={title}
                 dropProvided={dropProvided}
               />
-            </ScrollContainer>
+            )
           ) : (
-            <InnerList
-              quotes={quotes}
-              title={title}
-              dropProvided={dropProvided}
-            />
+            <div
+              className="ml-auto mr-auto d-flex align-center text-center"
+              style={{ height: "80%" }}
+            >
+              <Spin spinning />
+            </div>
           )}
         </Wrapper>
       )}

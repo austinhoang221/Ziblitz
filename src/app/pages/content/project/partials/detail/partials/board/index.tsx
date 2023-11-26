@@ -13,21 +13,20 @@ import IssueModal from "../../../../../../components/issue-modal";
 import HeaderProject from "../header";
 import Column from "./columns";
 import { DotChartOutlined } from "@ant-design/icons";
+import { IssueService } from "../../../../../../../../services/issueService";
+import { IIssue } from "../../../../../../../models/IIssue";
 export default function BoardProject(props: any) {
   const params = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState<boolean>(false);
   const [ordered, setOrdered] = useState<IIssueOnBoard>();
   const { project, isLoading: isLoadingProject } = useSelector(
     (state: RootState) => state.projectDetail
   );
 
-  const {
-    isCombineEnabled,
-    initial,
-    useClone,
-    containerHeight,
-    withScrollableColumns,
-  } = props;
+  const { isCombineEnabled, useClone, containerHeight, withScrollableColumns } =
+    props;
   const Container = styled.divBox`
     background-color: #fff;
     max-height: 80vh;
@@ -37,63 +36,71 @@ export default function BoardProject(props: any) {
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
-    await SprintService.getAllIssue(project?.id!).then((res) => {
+    await SprintService.getAllIssue(project?.id!, searchValue).then((res) => {
       if (checkResponseStatus(res)) {
         setOrdered(res?.data!);
         setIsLoading(false);
       }
     });
-  }, [params?.sprintId, project?.id]);
+  }, [params?.sprintId, project?.id, searchValue]);
 
   useEffect(() => {
     if (project?.id) {
       fetchData();
     }
-  }, [project?.id]);
+  }, [project?.id, searchValue]);
 
-  const onDragEnd = (result: any) => {
-    // if (result.combine) {
-    //   if (result.type === "COLUMN") {
-    //     const shallow = [...ordered];
-    //     shallow.splice(result.source.index, 1);
-    //     setOrdered(shallow);
-    //     return;
-    //   }
-    //   const column = columns[result.source.droppableId];
-    //   const withQuoteRemoved = [...column];
-    //   withQuoteRemoved.splice(result.source.index, 1);
-    //   const orderedColumns = {
-    //     ...columns,
-    //     [result.source.droppableId]: withQuoteRemoved
-    //   };
-    //   setColumns(orderedColumns);
-    //   return;
-    // }
-    // // dropped nowhere
-    // if (!result.destination) {
-    //   return;
-    // }
-    // const source = result.source;
-    // const destination = result.destination;
-    // // did not move anywhere - can bail early
-    // if (
-    //   source.droppableId === destination.droppableId &&
-    //   source.index === destination.index
-    // ) {
-    //   return;
-    // }
-    // // reordering column
-    // if (result.type === "COLUMN") {
-    //   const reorderedorder = reorder(ordered, source.index, destination.index);
-    //   setOrdered(reorderedorder);
-    //   return;
-    // }
-    // const data = reorderQuoteMap({
-    //   quoteMap: columns,
-    //   source,
-    //   destination
-    // });
-    // setColumns(data.quoteMap);
+  const onDragEnd = async (result: any) => {
+    if (!result.destination) {
+      return;
+    }
+    const source = result.source;
+    const destination = result.destination;
+    // did not move anywhere - can bail early
+    if (source.droppableId === destination.droppableId) {
+      return;
+    }
+
+    if (result.type === "QUOTE") {
+      let moveIssue: IIssue | undefined;
+      setIsLoadingUpdate(true);
+
+      project?.statuses?.map(async (status) => {
+        if (ordered?.[status.name]) {
+          moveIssue = ordered?.[status.name].find(
+            (issue) => issue.id === result.draggableId
+          );
+
+          if (moveIssue) {
+            const shallow = [...ordered?.[status.name]];
+            shallow.splice(result.source.index, 1);
+            const destinationStatus = project?.statuses?.find(
+              (status) => status.id === destination.droppableId
+            );
+
+            const destinationShallow = [...ordered?.[destinationStatus!.name]];
+            destinationShallow.splice(result.destination.index, 0, moveIssue);
+
+            const newOrdered: IIssueOnBoard = {
+              [status.name]: shallow,
+              [destinationStatus?.name!]: destinationShallow,
+            };
+            setOrdered((prevState) => ({ ...prevState, ...newOrdered }));
+
+            await IssueService.editSprintIssue(
+              moveIssue.sprintId!,
+              moveIssue.id,
+              { statusId: destination.droppableId }
+            );
+            setIsLoadingUpdate(false);
+          }
+        }
+      });
+    }
+  };
+
+  const onSearch = (value: string) => {
+    setSearchValue(value);
   };
 
   return (
@@ -101,6 +108,7 @@ export default function BoardProject(props: any) {
       <HeaderProject
         title="Board"
         isFixedHeader={true}
+        onSearch={onSearch}
         actionContent={
           <>
             <span>
@@ -145,6 +153,7 @@ export default function BoardProject(props: any) {
                     key={status.id}
                     index={index}
                     title={status.name}
+                    id={status.id}
                     quotes={ordered?.[status.name]}
                     isScrollable={withScrollableColumns}
                     isCombineEnabled={isCombineEnabled}
