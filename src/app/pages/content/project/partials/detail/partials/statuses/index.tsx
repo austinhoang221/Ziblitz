@@ -33,6 +33,8 @@ export default function Statuses() {
   const [mode, setMode] = useState<string>("");
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
   const [statusId, setStatusId] = useState<string>("");
+  const [searchValue, setSearchValue] = useState<string>("");
+
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
@@ -140,11 +142,16 @@ export default function Statuses() {
     }
   };
 
+  const onSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
   return (
     <div className="issue-types">
       <HeaderProject
         title="Statuses"
         isFixedHeader={false}
+        onSearch={onSearch}
         actionContent={
           <Button type="primary" onClick={() => onOpenModal("create")}>
             Create status

@@ -31,6 +31,7 @@ export default function Priorities() {
   const [priorityId, setPriorityId] = useState<string>("");
   const [colorValue, setColorValue] =
     useState<ColorPickerProps["value"]>("#1677ff");
+  const [searchValue, setSearchValue] = useState<string>("");
 
   const initialRequestParam: IPagination = {
     pageNum: 1,
@@ -174,11 +175,16 @@ export default function Priorities() {
     }
   };
 
+  const onSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
   return (
     <div className="issue-types">
       <HeaderProject
         title="Priorities"
         isFixedHeader={false}
+        onSearch={onSearch}
         actionContent={
           <Button type="primary" onClick={() => onOpenModal("create")}>
             Create priority

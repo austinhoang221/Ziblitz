@@ -22,7 +22,10 @@ export default function SelectUser(props: ISelectUserProps) {
     initialRequestUserParam
   );
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
-  const { listUser, loading } = useUserData(userId, requestUserParam.name);
+  const { listUser, isLoadingUser: loading } = useUserData(
+    userId,
+    requestUserParam.name
+  );
   const dispatch = useAppDispatch();
   const project = useSelector(
     (state: RootState) => state.projectDetail.project

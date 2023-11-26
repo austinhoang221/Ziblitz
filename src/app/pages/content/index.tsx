@@ -1,3 +1,4 @@
+import { Spin } from "antd";
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { setProjects } from "../../../redux/slices/projectSlice";
@@ -7,6 +8,7 @@ import { useAppDispatch } from "../../customHooks/dispatch";
 import useProjectData from "../../customHooks/fetchProject";
 import useUserData from "../../customHooks/fetchUser";
 import { IPagination } from "../../models/IPagination";
+import { FullScreenSpinner } from "../components/fullscreen-spinner";
 import Header from "../components/header";
 export default function Content() {
   const initialRequestParam: IPagination = {
@@ -16,8 +18,12 @@ export default function Content() {
   };
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const dispatch = useAppDispatch();
-  const { listUser } = useUserData(userId);
-  const { listProject } = useProjectData(userId, initialRequestParam);
+  const { listUser, isLoadingUser } = useUserData(userId);
+  const { listProject, isLoading: isLoadingProject } = useProjectData(
+    userId,
+    initialRequestParam
+  );
+  const isLoading = isLoadingUser || isLoadingProject;
   useEffect(() => {
     dispatch(getAllRole());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -33,9 +39,13 @@ export default function Content() {
   return (
     <>
       <Header></Header>
-      <div className="scroll">
-        <Outlet />
-      </div>
+      {isLoading ? (
+        <FullScreenSpinner></FullScreenSpinner>
+      ) : (
+        <div className="scroll">
+          <Outlet />
+        </div>
+      )}
     </>
   );
 }

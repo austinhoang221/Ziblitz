@@ -105,13 +105,13 @@ export class IssueService {
   };
 
   public static editBacklogIssue = async (
-    sprintId: string,
+    backlogId: string,
     id: string,
     payload: any
   ) => {
     try {
       const response: IResponse<IIssue> = await axiosInstance.patch(
-        Endpoint.editBacklogIssue + sprintId + "/issues/" + id,
+        Endpoint.editBacklogIssue + backlogId + "/issues/" + id,
         payload
       );
       console.log("POST response:", response.data);
@@ -122,13 +122,13 @@ export class IssueService {
   };
 
   public static editSprintIssue = async (
-    backlogId: string,
+    sprintId: string,
     id: string,
     payload: any
   ) => {
     try {
       const response: IResponse<IIssue> = await axiosInstance.patch(
-        Endpoint.editSprintIssue + backlogId + "/issues/" + id,
+        Endpoint.editSprintIssue + sprintId + "/issues/" + id,
         payload
       );
       console.log("POST response:", response.data);

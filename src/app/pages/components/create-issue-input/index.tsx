@@ -74,7 +74,7 @@ export default function CreateIssueInput(props: any, identifier: string) {
         IssueService.createSprintIssueByName(props.periodId, payload).then(
           (res) => {
             if (checkResponseStatus(res)) {
-              props.onSaveIssue();
+              props.onSaveIssue(res?.data);
               dispatch(getProjectByCode(project?.code!));
               setIsCreate(false);
               setLoading(false);

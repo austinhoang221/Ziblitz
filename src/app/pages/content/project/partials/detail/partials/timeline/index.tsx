@@ -13,6 +13,8 @@ export default function TimelineProject() {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
+  const [searchValue, setSearchValue] = useState<string>("");
+
   useEffect(() => {
     const fetchData = () => {
       setIsLoading(true);
@@ -26,12 +28,17 @@ export default function TimelineProject() {
     if (project?.id) fetchData();
   }, [project?.id]);
 
+  const onSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
   return (
     <>
       <HeaderProject
         title="Timeline"
         isFixedHeader={true}
         actionContent={<></>}
+        onSearch={onSearch}
       ></HeaderProject>
       <div className="mt-4">
         {!isLoading && tasks?.length > 0 ? (

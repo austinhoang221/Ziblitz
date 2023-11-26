@@ -62,6 +62,7 @@ export default function IssueTypes() {
   ];
   const [requestParam, setRequestParam] =
     useState<IPagination>(initialRequestParam);
+  const [searchValue, setSearchValue] = useState<string>("");
 
   const { listIssueType, totalCount, refreshData, isLoading } =
     useIssueTypeData(project?.id!, requestParam);
@@ -224,11 +225,16 @@ export default function IssueTypes() {
     }
   };
 
+  const onSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
   return (
     <div className="issue-types">
       <HeaderProject
         title="Issue types"
         isFixedHeader={false}
+        onSearch={onSearch}
         actionContent={
           <Button type="primary" onClick={() => onOpenModal("create")}>
             Create issue type

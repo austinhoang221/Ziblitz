@@ -35,6 +35,7 @@ interface IHeaderProject {
   title: string;
   isFixedHeader: boolean;
   actionContent: ReactNode;
+  onSearch: (value: string) => void;
 }
 export default function HeaderProject(props: IHeaderProject) {
   const initialRequestUserParam = {
@@ -97,13 +98,17 @@ export default function HeaderProject(props: IHeaderProject) {
     });
   };
 
-  const onSearch = (search: string) => {
+  const onSearchUser = (search: string) => {
     ref.current = search;
     setIsLoadingMention(true);
     setTimeout(() => {
       setRequestUserParam({ name: search });
       setIsLoadingMention(false);
     }, 300);
+  };
+
+  const onSearch = (search: string) => {
+    props.onSearch(search);
   };
 
   const getOptionLabel = (user: IUser) => (
@@ -136,6 +141,7 @@ export default function HeaderProject(props: IHeaderProject) {
           className="mr-2"
           placeholder="Search..."
           style={{ width: 200 }}
+          onSearch={(value) => onSearch(value)}
         />
         {props.isFixedHeader && (
           <>
@@ -236,7 +242,7 @@ export default function HeaderProject(props: IHeaderProject) {
             >
               <Mentions
                 loading={isLoadingMention}
-                onSearch={onSearch}
+                onSearch={onSearchUser}
                 options={listUser.map((user: IUser) => {
                   return {
                     key: user.id,
