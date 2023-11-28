@@ -80,13 +80,14 @@ export default function IssueModal(props: any) {
     });
 
     setIsUploadFile(true);
-
+    const user = localStorage.getItem("user");
     fetch(
       `https://task-manager-service.azurewebsites.net/api/issues/${issue?.id}/attachments`,
       {
         method: "POST",
         headers: {
           Accept: "text/plain",
+          Authorization: `Bearer ${JSON.parse(user!).token}`,
         },
         body: formData,
       }
@@ -121,7 +122,9 @@ export default function IssueModal(props: any) {
       render: (file: IFile) => (
         <div className="d-flex align-center">
           <span className="font-sz16 mr-2">{getFileIcon(file.type)}</span>
-          <span className="text-truncate">{file.name}</span>
+          <Tooltip title={file.name}>
+            <span className="text-truncate">{file.name}</span>
+          </Tooltip>
         </div>
       ),
     },
