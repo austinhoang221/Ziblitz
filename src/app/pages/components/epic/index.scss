@@ -1,6 +1,8 @@
 .epic {
     background-color: #f7f8f9;
     border-radius: 6px;
+    max-height: 64vh;
+    overflow: hidden scroll;
 
     .header {
         padding: 12px;

@@ -20,7 +20,11 @@ export default function EditSprintModal(props: IEditSprintModalProps) {
   const dispatch = useAppDispatch();
   const [editSprintForm] = Form.useForm();
   const [datePickerType, setDatePickerType] = useState<string>("custom");
-  const [moveOpenIssueType, setMoveOpenIssueType] = useState<string>("sprint");
+  const [moveOpenIssueType, setMoveOpenIssueType] = useState<string>("current");
+  const [moveOpenIssueToSprintOptions, setMoveOpenIssueToSprintOptions] =
+    useState<any>([]);
+  const [moveOpenIssueToSprintId, setMoveOpenIssueToSprintId] =
+    useState<string>();
   const { RangePicker } = DatePicker;
   const [loading, setLoading] = useState<boolean>(false);
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
@@ -50,11 +54,15 @@ export default function EditSprintModal(props: IEditSprintModalProps) {
   const moveOpenIssueTypes = [
     {
       label: "New sprint",
-      value: "sprint",
+      value: "New sprint",
+    },
+    {
+      label: "Current sprint",
+      value: "current",
     },
     {
       label: "Backlog",
-      value: "backlog",
+      value: "Backlog",
     },
   ];
 
@@ -97,6 +105,21 @@ export default function EditSprintModal(props: IEditSprintModalProps) {
         return `Complete ${props.sprint?.name}`;
     }
   };
+
+  useEffect(() => {
+    const options: any = project?.sprints
+      .filter((sprint) => sprint.id !== props.sprint?.id)
+      .map((sprint) => {
+        return {
+          label: sprint.name,
+          value: sprint.id,
+        };
+      });
+    if (options && options?.length > 0) {
+      setMoveOpenIssueToSprintOptions(options ?? []);
+      setMoveOpenIssueToSprintId(options.find((option: any) => option)?.value);
+    }
+  }, [project?.sprints]);
 
   const handleFormChange = () => {
     if (!isFormDirty) {
@@ -182,15 +205,23 @@ export default function EditSprintModal(props: IEditSprintModalProps) {
         }
       });
     } else {
-      await SprintService.completeSprint(project?.id!, props.sprint?.id!).then(
-        (res) => {
-          if (checkResponseStatus(res)) {
-            dispatch(getProjectByCode(project?.code!));
-            setLoading(false);
-            props.onSaveSprint();
-          }
+      let payload: any = {};
+      if (moveOpenIssueType === "current") {
+        payload.sprintId = moveOpenIssueToSprintId;
+      } else {
+        payload.option = moveOpenIssueType;
+      }
+      await SprintService.completeSprint(
+        project?.id!,
+        props.sprint?.id!,
+        payload
+      ).then((res) => {
+        if (checkResponseStatus(res)) {
+          dispatch(getProjectByCode(project?.code!));
+          setLoading(false);
+          props.onSaveSprint();
         }
-      );
+      });
     }
   };
 
@@ -230,10 +261,18 @@ export default function EditSprintModal(props: IEditSprintModalProps) {
             wrapperCol={{ span: 24 }}
           >
             <Select
-              defaultValue="sprint"
+              defaultValue="current"
+              className="mb-2"
               onChange={(e) => setMoveOpenIssueType(e)}
               options={moveOpenIssueTypes}
             ></Select>
+            {moveOpenIssueType === "current" && (
+              <Select
+                value={moveOpenIssueToSprintId}
+                onChange={(e) => setMoveOpenIssueToSprintId(e)}
+                options={moveOpenIssueToSprintOptions}
+              ></Select>
+            )}
           </Form.Item>
         </>
       ) : (

@@ -50,7 +50,8 @@ export class SprintService {
 
   public static completeSprint = async (
     projectId: string,
-    sprintId: string
+    sprintId: string,
+    payload: any
   ) => {
     try {
       const response: IResponse<ISprint> = await axiosInstance.put(
@@ -58,7 +59,8 @@ export class SprintService {
           projectId +
           "/sprints/" +
           sprintId +
-          ":complete"
+          ":complete",
+        payload
       );
       console.log("POST response:", response.data);
       return response;

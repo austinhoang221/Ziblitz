@@ -305,8 +305,8 @@ const Backlog: React.FC = () => {
           </Col>
         )}
         <Col span={isShowEpic ? 18 : 24}>
-          <div className="mt-4 c-backlog">
-            <Collapse ghost={true}>
+          <div className="mt-4 ">
+            <Collapse className="c-backlog">
               {sprints?.map((sprint) => {
                 return (
                   <Collapse.Panel

@@ -7,7 +7,7 @@
 
 .c-backlog {
   overflow: hidden scroll;
-  max-height: 58vh;
+  max-height: calc(100vh - 19rem);
 
   .c-backlog-item {
     cursor: pointer;
