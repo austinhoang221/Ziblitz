@@ -11,10 +11,13 @@ import { RootState } from "../../../../redux/store";
 import { IssueService } from "../../../../services/issueService";
 import { useAppDispatch } from "../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../helpers";
+import { LoadingOutlined } from "@ant-design/icons";
+
 import "./index.scss";
 export default function Epic() {
   const dispatch = useAppDispatch();
   const [isCreating, setCreating] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
   const ref = useRef<InputRef>(null);
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
@@ -27,12 +30,14 @@ export default function Epic() {
   };
 
   const onCreateEpic = async (e: any) => {
+    setLoading(true);
     await IssueService.createEpic(project?.id!, {
       name: e?.target.value,
       creatorUserId: userId,
       projectId: project?.id!,
     }).then((res) => {
       if (checkResponseStatus(res)) {
+        setLoading(false);
         setCreating(false);
         dispatch(getProjectByCode(project?.code!));
       }
@@ -112,6 +117,7 @@ export default function Epic() {
             onKeyDownCapture={(e) => {
               if (e.key === "Escape") setCreating(false);
             }}
+            suffix={isLoading ? <LoadingOutlined /> : <></>}
           ></Input>
         )}
       </div>

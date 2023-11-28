@@ -134,7 +134,6 @@ export default function HeaderProject(props: IHeaderProject) {
       {contextHolder}
       <div className="align-child-space-between align-center">
         <h1 className="mb-0 mt-2">{props.title}</h1>
-        {props.actionContent}
       </div>
       <div className="d-flex align-center mt-2">
         <Search
@@ -226,6 +225,7 @@ export default function HeaderProject(props: IHeaderProject) {
             </Dropdown>
           </>
         )}
+        {props.actionContent}
 
         <Modal
           title="Add member"

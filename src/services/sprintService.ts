@@ -5,23 +5,13 @@ import { IResponse } from "../app/models/IResponse";
 import { ISprint } from "../app/models/ISprint";
 
 export class SprintService {
-  public static getAllIssue = async (
-    projectId: string,
-    searchValue: string,
-    sprintId?: string,
-    epicId?: string,
-    issueTypeId?: string
-  ) => {
-    let query =
-      Endpoint.getSprintIssue +
-      projectId +
-      "/sprints?searchValue=" +
-      searchValue;
-    if (sprintId) query += "&sprintId=" + sprintId;
-    if (epicId) query += "&epicId=" + epicId;
-    if (issueTypeId) query += "&issueTypeId=" + issueTypeId;
+  public static getAllIssue = async (projectId: string, payload: any) => {
+    let query = Endpoint.getSprintIssue + projectId + "/sprints/get-sprints";
     try {
-      const response: IResponse<IIssueOnBoard> = await axiosInstance.get(query);
+      const response: IResponse<IIssueOnBoard> = await axiosInstance.post(
+        query,
+        payload
+      );
       console.log("POST response:", response.data);
       return response;
     } catch (error) {

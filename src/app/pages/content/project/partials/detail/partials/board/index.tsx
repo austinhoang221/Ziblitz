@@ -1,7 +1,6 @@
-import { gray } from "@ant-design/colors";
-import styled, { order } from "@xstyled/styled-components";
-import { Col, Row, Skeleton } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
+import styled from "@xstyled/styled-components";
+import { Button, Checkbox, Col, Dropdown, Menu, Row, Skeleton } from "antd";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
@@ -15,11 +14,17 @@ import Column from "./columns";
 import { DotChartOutlined } from "@ant-design/icons";
 import { IssueService } from "../../../../../../../../services/issueService";
 import { IIssue } from "../../../../../../../models/IIssue";
+import Search from "antd/es/input/Search";
+import { CheckboxValueType } from "antd/es/checkbox/Group";
+import { CheckboxChangeEvent } from "antd/es/checkbox";
 export default function BoardProject(props: any) {
   const params = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [isLoadingUpdate, setIsLoadingUpdate] = useState<boolean>(false);
+  const [searchEpicValue, setSearchEpicValue] = useState<string>("");
+  const [epicOptions, setEpicOptions] = useState<any>([]);
+  const [searchEpicOptions, setSearchEpicOptions] = useState<any>([]);
+  const [checkedEpics, setCheckedEpics] = useState<CheckboxValueType[]>([]);
   const [ordered, setOrdered] = useState<IIssueOnBoard>();
   const { project, isLoading: isLoadingProject } = useSelector(
     (state: RootState) => state.projectDetail
@@ -27,6 +32,11 @@ export default function BoardProject(props: any) {
 
   const { isCombineEnabled, useClone, containerHeight, withScrollableColumns } =
     props;
+
+  const checkAllEpic = epicOptions.length === checkedEpics.length;
+  const indeterminateEpic =
+    checkedEpics.length > 0 && checkedEpics.length < epicOptions.length;
+
   const Container = styled.divBox`
     background-color: #fff;
     max-height: 80vh;
@@ -36,19 +46,62 @@ export default function BoardProject(props: any) {
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
-    await SprintService.getAllIssue(project?.id!, searchValue).then((res) => {
+    const payload = {
+      epicIds: checkedEpics,
+      issueTypeId: null,
+      sprintId: null,
+      searchKey: searchValue,
+    };
+    await SprintService.getAllIssue(project?.id!, payload).then((res) => {
       if (checkResponseStatus(res)) {
         setOrdered(res?.data!);
         setIsLoading(false);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params?.sprintId, project?.id, searchValue]);
+
+  useEffect(() => {
+    if (project?.id && project?.epics) {
+      let epicOptions = project?.epics.map((epic) => ({
+        label: epic.name,
+        value: epic.id,
+      }));
+      setEpicOptions([...epicOptions]);
+    }
+  }, [project?.id]);
+
+  useEffect(() => {
+    setCheckedEpics([...epicOptions.map((item: any) => item.value)]);
+  }, [epicOptions]);
+
+  useEffect(() => {
+    if (searchEpicValue) {
+      const options = epicOptions.filter((epic: any) =>
+        epic.label.toLowerCase().includes(searchEpicValue.toLowerCase())
+      );
+      setSearchEpicOptions(options);
+    } else {
+      setSearchEpicOptions(epicOptions);
+    }
+  }, [epicOptions, searchEpicValue]);
 
   useEffect(() => {
     if (project?.id) {
       fetchData();
     }
-  }, [project?.id, searchValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project?.id, searchValue, checkedEpics]);
+
+  const onCheckAllChange = (e: CheckboxChangeEvent) => {
+    setCheckedEpics(
+      e.target.checked ? epicOptions.map((option: any) => option.value) : []
+    );
+  };
+
+  const onCheckedChange = (list: CheckboxValueType[]) => {
+    setCheckedEpics(list);
+  };
 
   const onDragEnd = async (result: any) => {
     if (!result.destination) {
@@ -63,7 +116,6 @@ export default function BoardProject(props: any) {
 
     if (result.type === "QUOTE") {
       let moveIssue: IIssue | undefined;
-      setIsLoadingUpdate(true);
 
       project?.statuses?.map(async (status) => {
         if (ordered?.[status.name]) {
@@ -92,7 +144,6 @@ export default function BoardProject(props: any) {
               moveIssue.id,
               { statusId: destination.droppableId }
             );
-            setIsLoadingUpdate(false);
           }
         }
       });
@@ -103,19 +154,57 @@ export default function BoardProject(props: any) {
     setSearchValue(value);
   };
 
+  const onSearchEpic = (value: string) => {
+    setSearchEpicValue(value);
+  };
+
+  const onRenderAction: React.ReactNode = (
+    <Dropdown
+      overlay={
+        <Menu>
+          <Menu.Item>
+            <div onClick={(e) => e.stopPropagation()}>
+              <Search
+                className="mb-2"
+                placeholder="Search filters..."
+                style={{ width: "250px" }}
+                onChange={(event: any) => onSearchEpic(event.target.value)}
+              />
+              <br></br>
+              <Checkbox
+                value="all"
+                indeterminate={indeterminateEpic}
+                checked={checkAllEpic}
+                onChange={onCheckAllChange}
+                className="w-100"
+              >
+                All
+              </Checkbox>
+              <Checkbox.Group
+                className="d-flex d-flex-direction-column"
+                options={searchEpicOptions}
+                value={checkedEpics}
+                onChange={onCheckedChange}
+              />
+            </div>
+          </Menu.Item>
+        </Menu>
+      }
+      trigger={["click"]}
+    >
+      <Button type="text" className="ml-2">
+        <span>Epic</span> <i className="fa-solid fa-chevron-down ml-2"></i>
+      </Button>
+    </Dropdown>
+  );
+
   return (
     <>
       <HeaderProject
         title="Board"
-        isFixedHeader={true}
+        isFixedHeader={false}
         onSearch={onSearch}
-        actionContent={
-          <>
-            <span>
-              <i className="fa-regular fa-clock"></i>
-            </span>
-          </>
-        }
+        actionContent={onRenderAction}
       ></HeaderProject>
 
       {isLoading || isLoadingProject ? (
