@@ -58,6 +58,7 @@ export default function SelectUser(props: ISelectUserProps) {
     if (props.type === "backlog") {
       await IssueService.editBacklogIssue(props.periodId, props.issueId, {
         [props.fieldName]: e,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
@@ -67,6 +68,7 @@ export default function SelectUser(props: ISelectUserProps) {
     } else {
       await IssueService.editSprintIssue(props.periodId, props.issueId, {
         [props.fieldName]: e,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));

@@ -21,6 +21,7 @@ export default function SelectPriority(props: IIssueComponentProps) {
     (state: RootState) => state.projectDetail.project
   );
   const dispatch = useAppDispatch();
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
 
   const [requestParam, setRequestParam] =
     useState<IPagination>(initialRequestParam);
@@ -34,6 +35,7 @@ export default function SelectPriority(props: IIssueComponentProps) {
     if (props.type === "backlog") {
       await IssueService.editBacklogIssue(props.periodId, props.issueId, {
         priorityId: e,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
@@ -43,6 +45,7 @@ export default function SelectPriority(props: IIssueComponentProps) {
     } else {
       await IssueService.editSprintIssue(props.periodId, props.issueId, {
         priorityId: e,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));

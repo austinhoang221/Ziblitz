@@ -24,6 +24,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
 
   useEffect(() => {
     if (isEditing) {
@@ -44,6 +45,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
       if (props.type === "backlog") {
         IssueService.editBacklogIssue(props.periodId, props.issueId, {
           name: e.target.value,
+          modificationUserId: userId,
         }).then((res) => {
           if (checkResponseStatus(res)) {
             dispatch(getProjectByCode(project?.code!));
@@ -53,6 +55,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
       } else {
         IssueService.editSprintIssue(props.periodId, props.issueId, {
           name: e.target.value,
+          modificationUserId: userId,
         }).then((res) => {
           if (checkResponseStatus(res)) {
             dispatch(getProjectByCode(project?.code!));

@@ -59,6 +59,8 @@ export default function IssueModal(props: any) {
   const [messageApi, contextHolder] = message.useMessage();
   const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
   const [fileList, setFileList] = useState<IFile[]>([]);
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
+
   const uploadProps: UploadProps = {
     multiple: true,
     beforeUpload(file: UploadFile) {
@@ -241,6 +243,7 @@ export default function IssueModal(props: any) {
     if (periodType === "backlog") {
       IssueService.editBacklogIssue(issue?.backlogId!, issue?.id!, {
         [type]: e,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           showSuccessMessage(res?.data!);
@@ -249,6 +252,7 @@ export default function IssueModal(props: any) {
     } else if (periodType === "sprint") {
       IssueService.editSprintIssue(issue?.backlogId!, issue?.id!, {
         [type]: e,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           showSuccessMessage(res?.data!);

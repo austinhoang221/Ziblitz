@@ -62,6 +62,7 @@ export default function InlineEdit(props: IInlineEditProps) {
       if (props.type === "backlog") {
         IssueService.editBacklogIssue(props.periodId, props.issueId, {
           [props.fieldName]: editedValue,
+          modificationUserId: userId,
         }).then((res) => {
           if (checkResponseStatus(res)) {
             dispatch(getProjectByCode(project?.code!));
@@ -72,6 +73,7 @@ export default function InlineEdit(props: IInlineEditProps) {
       } else if (props.type === "sprint") {
         IssueService.editSprintIssue(props.periodId, props.issueId, {
           [props.fieldName]: editedValue,
+          modificationUserId: userId,
         }).then((res) => {
           if (checkResponseStatus(res)) {
             dispatch(getProjectByCode(project?.code!));
@@ -82,6 +84,7 @@ export default function InlineEdit(props: IInlineEditProps) {
       } else {
         IssueService.updateEpic(project?.id!, props.issueId, {
           [props.fieldName]: editedValue,
+          modificationUserId: userId,
         }).then((res) => {
           if (checkResponseStatus(res)) {
             dispatch(getProjectByCode(project?.code!));

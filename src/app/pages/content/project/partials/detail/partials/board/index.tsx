@@ -33,6 +33,7 @@ export default function BoardProject(props: any) {
   const { project, isLoading: isLoadingProject } = useSelector(
     (state: RootState) => state.projectDetail
   );
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
 
   const { isCombineEnabled, useClone, containerHeight, withScrollableColumns } =
     props;
@@ -205,7 +206,7 @@ export default function BoardProject(props: any) {
             await IssueService.editSprintIssue(
               moveIssue.sprintId!,
               moveIssue.id,
-              { statusId: destination.droppableId }
+              { statusId: destination.droppableId, modificationUserId: userId }
             );
           }
         }

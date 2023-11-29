@@ -15,6 +15,7 @@ interface IIssueAddParent {
 }
 export default function IssueAddParent(props: IIssueAddParent) {
   const [issue, setIssue] = useState<IIssue | null>(null);
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
 
   useEffect(() => {
     setIssue(props.issue);
@@ -28,6 +29,7 @@ export default function IssueAddParent(props: IIssueAddParent) {
     if (props.type === "backlog") {
       IssueService.editBacklogIssue(props?.periodId!, issue?.id!, {
         parentId: e,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
@@ -37,6 +39,7 @@ export default function IssueAddParent(props: IIssueAddParent) {
     } else if (props.type === "sprint") {
       IssueService.editSprintIssue(props?.periodId!, issue?.id!, {
         parentId: e,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));

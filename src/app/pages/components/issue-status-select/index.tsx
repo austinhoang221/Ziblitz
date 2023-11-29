@@ -14,11 +14,13 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
     (state: RootState) => state.projectDetail.project
   );
   const dispatch = useAppDispatch();
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
 
   const onChangeIssueStatus = async (e: any) => {
     if (props.type === "backlog") {
       await IssueService.editBacklogIssue(props.periodId, props.issueId, {
         statusId: e.key,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
@@ -28,6 +30,7 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
     } else {
       await IssueService.editSprintIssue(props.periodId, props.issueId, {
         statusId: e.key,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));

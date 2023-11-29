@@ -14,6 +14,7 @@ export default function SelectSprint(props: IIssueComponentProps) {
   const project = useSelector(
     (state: RootState) => state.projectDetail.project
   );
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
 
   const ref = useRef<BaseSelectRef>(null);
   useEffect(() => {
@@ -24,6 +25,7 @@ export default function SelectSprint(props: IIssueComponentProps) {
       const payload = {
         sprintId: e,
         backlogId: null,
+        modificationUserId: userId,
       };
       await IssueService.editBacklogIssue(
         props.periodId,
@@ -38,6 +40,7 @@ export default function SelectSprint(props: IIssueComponentProps) {
     } else {
       await IssueService.editSprintIssue(props.periodId, props.issueId, {
         sprintId: e,
+        modificationUserId: userId,
       }).then((res) => {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));

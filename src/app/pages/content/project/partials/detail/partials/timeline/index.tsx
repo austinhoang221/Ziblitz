@@ -6,7 +6,7 @@ import { RootState } from "../../../../../../../../redux/store";
 import { IssueService } from "../../../../../../../../services/issueService";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import HeaderProject from "../header";
-
+import "gantt-task-react/dist/index.css";
 export default function TimelineProject() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -20,7 +20,15 @@ export default function TimelineProject() {
       setIsLoading(true);
       IssueService.getAll(project?.id!).then((res) => {
         if (checkResponseStatus(res)) {
-          setTasks(res?.data?.filter((item) => item.start && item.end)!);
+          let data = res?.data?.filter((item) => item.start && item.end)!;
+          data = data.map((item) => {
+            return {
+              ...item,
+              start: new Date(item.start),
+              end: new Date(item.end),
+            };
+          });
+          setTasks(data);
           setIsLoading(false);
         }
       });
