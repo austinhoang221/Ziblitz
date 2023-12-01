@@ -32,23 +32,30 @@ export default function IssueHistory(props: any) {
           itemLayout="horizontal"
           dataSource={listHistory}
           renderItem={(history, index) => (
-            <List.Item key={history.id}>
-              <>
-                <>
-                  <div className="align-center d-flex">
-                    <UserAvatar
-                      isMultiple={false}
-                      isShowName={true}
-                      userIds={[history.creatorUserId]}
-                    ></UserAvatar>
-                    <span className="ml-2 mr-2">{history.name}</span>
-                  </div>
-                </>
-                <span className="ml-2">
-                  {dayjs(history.creationTime).format("MMM D, YYYY h:mm A")}
-                </span>
-              </>
-            </List.Item>
+            <>
+              <List.Item>
+                <List.Item.Meta
+                  key={history.id}
+                  title={
+                    <div>
+                      <UserAvatar
+                        isMultiple={false}
+                        isShowName={true}
+                        userIds={[history.creatorUserId]}
+                      ></UserAvatar>
+                      <span className="ml-1">{history.name}</span>
+                      <span className="float-right">
+                        {dayjs(history.creationTime).format(
+                          "MMM D, YYYY h:mm A"
+                        )}
+                      </span>
+                      <br />
+                    </div>
+                  }
+                  description={history.content}
+                ></List.Item.Meta>
+              </List.Item>
+            </>
           )}
         ></List>
       );
