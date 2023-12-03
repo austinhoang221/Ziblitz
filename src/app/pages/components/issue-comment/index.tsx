@@ -1,48 +1,122 @@
-import { List, Skeleton } from "antd";
+import { Button, List, Skeleton } from "antd";
 import dayjs from "dayjs";
-import React, { useState } from "react";
-import { IIssue } from "../../../models/IIssue";
+import React, { useEffect, useState } from "react";
+import ReactQuill from "react-quill";
+import { IssueService } from "../../../../services/issueService";
+import { checkResponseStatus } from "../../../helpers";
+import { IIssueComment } from "../../../models/IIssueComment";
 import InlineEdit from "../inline-edit";
 import UserAvatar from "../user-avatar";
 
 interface IInlineEditProps {
-  periodType: string;
-  initialValue: string | null;
   periodId: string;
-  issue: IIssue;
+  issueId: string;
   onSaveIssue: () => void;
 }
 
 export default function IssueComment(props: IInlineEditProps) {
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [isEdit, setEdit] = useState<boolean>(false);
+  const [comments, setComments] = useState<IIssueComment[]>([]);
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
+  const [editedValue, setEditedValue] = useState<string>("");
+  const [createValue, setCreateValue] = useState<string>("");
+
+  const fetchData = async () => {
+    setLoading(true);
+    await IssueService.getComments(props.issueId).then((res) => {
+      if (checkResponseStatus(res)) {
+        setTimeout(() => {
+          setComments(res?.data!);
+          setLoading(false);
+        }, 500);
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [props.issueId]);
+
+  const onDeleteComment = (id: string) => {
+    IssueService.deleteComment(id).then((res) => {
+      if (checkResponseStatus(res)) {
+        props.onSaveIssue();
+      }
+    });
+  };
 
   const onRenderContent = () => {
     if (!isLoading) {
       return (
-        // <List
-        //   itemLayout="horizontal"
-        //   dataSource={listHistory}
-        //   renderItem={(history, index) => (
-        //     <List.Item key={history.id}>
-        //       <>
-        //         <>
-        //           <div className="align-center d-flex">
-        //             <UserAvatar
-        //               isMultiple={false}
-        //               isShowName={true}
-        //               userIds={[history.creatorUserId]}
-        //             ></UserAvatar>
-        //             <span className="ml-2 mr-2">{history.name}</span>
-        //           </div>
-        //         </>
-        //         <span className="ml-2">
-        //           {dayjs(history.creationTime).format("MMM D, YYYY h:mm A")}
-        //         </span>
-        //       </>
-        //     </List.Item>
-        //   )}
-        // ></List>
-        <></>
+        <>
+          <div className="d-flex">
+            <UserAvatar
+              className="mr-2 mt-2"
+              isMultiple={false}
+              isShowName={false}
+              userIds={[userId]}
+            ></UserAvatar>
+            <ReactQuill
+              className="mt-2 w-100"
+              theme="snow"
+              onChange={setCreateValue}
+            />
+          </div>
+          <Button type="primary" onClick={onUpdate}>
+            Save
+          </Button>
+          <List
+            itemLayout="horizontal"
+            dataSource={comments}
+            renderItem={(comment, index) => (
+              <>
+                <List.Item key={comment.id}>
+                  <List.Item.Meta
+                    title={
+                      <div>
+                        <UserAvatar
+                          isMultiple={false}
+                          isShowName={true}
+                          userIds={[comment.creatorUserId]}
+                        ></UserAvatar>
+                        <span className="float-right">
+                          {dayjs(comment.creationTime).format(
+                            "MMM D, YYYY h:mm A"
+                          )}
+                        </span>
+                        <br />
+                      </div>
+                    }
+                    description={
+                      !isEdit ? (
+                        <>
+                          <p>{comment.content}</p>
+                          <span className="mr-2">Edit</span>
+                          <span onClick={() => onDeleteComment(comment.id)}>
+                            Delete
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <ReactQuill
+                            className="mt-2 w-100"
+                            theme="snow"
+                            value={comment.content}
+                            onChange={setEditedValue}
+                          />
+                          <Button type="primary" onClick={onCreate}>
+                            Save
+                          </Button>
+                        </>
+                      )
+                    }
+                  ></List.Item.Meta>
+                </List.Item>
+              </>
+            )}
+          ></List>
+        </>
       );
     } else {
       return (
@@ -53,25 +127,25 @@ export default function IssueComment(props: IInlineEditProps) {
     }
   };
 
-  return (
-    <>
-      <InlineEdit
-        periodType={
-          props.issue?.backlogId
-            ? "backlog"
-            : props.issue?.sprintId
-            ? "sprint"
-            : "epic"
-        }
-        periodId={props.issue?.sprintId ?? props.issue?.backlogId!}
-        initialValue={props.issue?.description ?? "Add a description..."}
-        type="textarea"
-        issueId={props.issue?.id}
-        fieldName="comment"
-        onSaveIssue={props.onSaveIssue}
-      ></InlineEdit>
+  const onCreate = () => {
+    IssueService.createComment(props.issueId, createValue).then((res) => {
+      if (checkResponseStatus(res)) {
+        setComments([...comments, res?.data!]);
+        setCreateValue("");
+        props.onSaveIssue();
+      }
+    });
+  };
 
-      {onRenderContent()}
-    </>
-  );
+  const onUpdate = () => {
+    IssueService.updateComment(props.issueId, editedValue).then((res) => {
+      if (checkResponseStatus(res)) {
+        setComments([...comments, res?.data!]);
+        setEditedValue("");
+        props.onSaveIssue();
+      }
+    });
+  };
+
+  return <>{onRenderContent()}</>;
 }

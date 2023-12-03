@@ -214,11 +214,9 @@ export default function IssueModal(props: any) {
       label: "Comment",
       children: (
         <IssueComment
-          initialValue={issue?.name!}
           onSaveIssue={showSuccessMessage}
-          periodType={getPeriodType(issue!)}
           periodId={issue?.sprintId ?? issue?.backlogId!}
-          issue={issue!}
+          issueId={issue?.id!}
         ></IssueComment>
       ),
     },
@@ -498,23 +496,25 @@ export default function IssueModal(props: any) {
               />
             </Col>
             <Col span={8}>
-              <IssueStatusSelect
-                type={
-                  issue?.backlogId
-                    ? "backlog"
-                    : issue?.sprintId
-                    ? "sprint"
-                    : "epic"
-                }
-                selectedId={issue?.statusId!}
-                periodId={issue?.sprintId ?? issue?.backlogId!}
-                issueId={issue?.id!}
-                style={{ width: "120px", minWidth: "120px" }}
-                onSaveIssue={(issue) => {
-                  setIssue(issue!);
-                  showSuccessMessage();
-                }}
-              ></IssueStatusSelect>
+              <div className="d-inline-bl">
+                <IssueStatusSelect
+                  type={
+                    issue?.backlogId
+                      ? "backlog"
+                      : issue?.sprintId
+                      ? "sprint"
+                      : "epic"
+                  }
+                  selectedId={issue?.statusId!}
+                  periodId={issue?.sprintId ?? issue?.backlogId!}
+                  issueId={issue?.id!}
+                  style={{ width: "120px", minWidth: "120px" }}
+                  onSaveIssue={(issue) => {
+                    setIssue(issue!);
+                    showSuccessMessage();
+                  }}
+                ></IssueStatusSelect>
+              </div>
 
               <Card title="Details" className="mt-4">
                 <Row gutter={24} className="align-center">

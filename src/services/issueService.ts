@@ -2,6 +2,7 @@ import { Task } from "gantt-task-react";
 import Endpoint from "../app/api/endpoint";
 import { axiosInstance } from "../app/middleware";
 import { IIssue } from "../app/models/IIssue";
+import { IIssueComment } from "../app/models/IIssueComment";
 import { IIssueHistory } from "../app/models/IIssueHistory";
 import { IResponse } from "../app/models/IResponse";
 
@@ -50,6 +51,56 @@ export class IssueService {
     try {
       const response: IResponse<IIssueHistory[]> = await axiosInstance.get(
         Endpoint.getIssueHistories + id + "/issuehistories"
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static getComments = async (id: string) => {
+    try {
+      const response: IResponse<IIssueComment[]> = await axiosInstance.get(
+        Endpoint.getIssueHistories + id + "/comments"
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static createComment = async (id: string, payload: string) => {
+    try {
+      const response: IResponse<IIssueComment> = await axiosInstance.post(
+        Endpoint.getIssueComment + id + "/comments",
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static updateComment = async (id: string, payload: string) => {
+    try {
+      const response: IResponse<IIssueComment> = await axiosInstance.put(
+        Endpoint.getIssueComment + id + "/comments",
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static deleteComment = async (id: string) => {
+    try {
+      const response: IResponse<IIssueComment> = await axiosInstance.delete(
+        Endpoint.getIssueComment + id + "/comments"
       );
       console.log("POST response:", response.data);
       return response;

@@ -1,4 +1,4 @@
-import { Empty } from "antd";
+import { Empty, Table } from "antd";
 import { Gantt, Task } from "gantt-task-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -49,10 +49,14 @@ export default function TimelineProject() {
         onSearch={onSearch}
       ></HeaderProject>
       <div className="mt-4">
-        {!isLoading && tasks?.length > 0 ? (
-          <Gantt tasks={tasks} />
+        {!isLoading ? (
+          tasks?.length > 0 ? (
+            <Gantt tasks={tasks} />
+          ) : (
+            <Empty></Empty>
+          )
         ) : (
-          <Empty></Empty>
+          <Table loading={true}></Table>
         )}
       </div>
     </>

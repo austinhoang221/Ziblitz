@@ -30,6 +30,7 @@ export default class Endpoint {
   public static upload: string = this.baseUrl + "issues/";
   public static getFiles: string = this.baseUrl + "issues/";
   public static getIssueHistories: string = this.baseUrl + "issues/";
+  public static getIssueComment: string = this.baseUrl + "issues/";
   public static deleteIssue: string = this.baseUrl + "sprints/";
   public static editSprintIssue: string = this.baseUrl + "sprints/";
   public static editBacklogIssue: string = this.baseUrl + "backlogs/";
