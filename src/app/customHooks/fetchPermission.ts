@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { IssueTypeService } from "../../services/issueTypeService";
+import { PermissionService } from "../../services/permissionService";
+import { PriorityService } from "../../services/priorityService";
 import { checkResponseStatus } from "../helpers";
-import { IIssueType } from "../models/IIssueType";
 import { IPagination } from "../models/IPagination";
+import { IPermissionGroup } from "../models/IPermission";
+import { IPriority } from "../models/IPriority";
 
-function useIssueTypeData(projectId: string, requestParam: IPagination) {
-  const [listIssueType, setListOfData] = useState<IIssueType[]>([]);
+function usePermissionData(projectId: string, requestParam: IPagination) {
+  const [listPermission, setListOfData] = useState<IPermissionGroup[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -16,7 +18,7 @@ function useIssueTypeData(projectId: string, requestParam: IPagination) {
   );
   const fetchData = useCallback(() => {
     setLoading(true);
-    IssueTypeService.getAll(
+    PermissionService.getAll(
       projectId,
       requestParam.pageNum,
       requestParam.pageSize,
@@ -45,7 +47,7 @@ function useIssueTypeData(projectId: string, requestParam: IPagination) {
     }
   }, [fetchData, project?.id, requestParam.pageNum, requestParam.pageSize]);
 
-  return { listIssueType, totalCount, refreshData, isLoading };
+  return { listPermission, totalCount, refreshData, isLoading };
 }
 
-export default useIssueTypeData;
+export default usePermissionData;

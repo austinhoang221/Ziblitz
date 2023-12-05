@@ -1,5 +1,13 @@
 import { red } from "@ant-design/colors";
-import { Button, Form, Input, message, Modal, Pagination } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  message,
+  Modal,
+  Pagination,
+  Popconfirm,
+} from "antd";
 import TextArea from "antd/es/input/TextArea";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useState } from "react";
@@ -80,12 +88,20 @@ export default function Statuses() {
       width: "40px",
       render: (id: string) => {
         return (
-          <Button type="text" shape="circle" onClick={() => onDeleteStatus(id)}>
-            <i
-              style={{ color: red.primary }}
-              className="fa-solid fa-trash-can"
-            ></i>
-          </Button>
+          <Popconfirm
+            title="Delete the status"
+            description="Are you sure to delete this status?"
+            okText="Yes"
+            cancelText="Cancel"
+            onConfirm={() => onDeleteStatus(id)}
+          >
+            <Button type="text" shape="circle">
+              <i
+                style={{ color: red.primary }}
+                className="fa-solid fa-trash-can"
+              ></i>
+            </Button>
+          </Popconfirm>
         );
       },
     },

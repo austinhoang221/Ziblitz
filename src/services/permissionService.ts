@@ -1,7 +1,7 @@
 import Endpoint from "../app/api/endpoint";
 import { axiosInstance } from "../app/middleware";
-import { IIssueType } from "../app/models/IIssueType";
 import { IPaginateResponse } from "../app/models/IPaginateResponse";
+import { IPermissionGroup } from "../app/models/IPermission";
 import { IResponse } from "../app/models/IResponse";
 
 export class PermissionService {
@@ -20,9 +20,10 @@ export class PermissionService {
       });
     }
     try {
-      const response: IPaginateResponse<IIssueType[]> = await axiosInstance.get(
-        Endpoint.getIssueType + projectId + "/issuetypes" + query
-      );
+      const response: IPaginateResponse<IPermissionGroup[]> =
+        await axiosInstance.get(
+          Endpoint.getPermission + projectId + "/permissiongroups" + query
+        );
       console.log("POST response:", response.data.content);
       return response;
     } catch (error) {
@@ -30,22 +31,13 @@ export class PermissionService {
     }
   };
 
-  public static getById = async (projectId: string, id: string) => {
+  public static create = async (
+    projectId: string,
+    payload: IPermissionGroup
+  ) => {
     try {
-      const response: IResponse<IIssueType> = await axiosInstance.get(
-        Endpoint.getIssueType + projectId + "/issuetypes/" + id
-      );
-      console.log("POST response:", response.data);
-      return response;
-    } catch (error) {
-      console.error("Error making POST request:", error);
-    }
-  };
-
-  public static create = async (projectId: string, payload: IIssueType) => {
-    try {
-      const response: IResponse<IIssueType> = await axiosInstance.post(
-        Endpoint.getIssueType + projectId + "/issuetypes",
+      const response: IResponse<IPermissionGroup> = await axiosInstance.post(
+        Endpoint.getPermission + projectId + "/permissiongroups",
         payload
       );
       console.log("POST response:", response.data);
@@ -61,8 +53,8 @@ export class PermissionService {
     payload: any
   ) => {
     try {
-      const response: IResponse<IIssueType> = await axiosInstance.put(
-        Endpoint.getIssueType + projectId + "/issuetypes/" + id,
+      const response: IResponse<IPermissionGroup> = await axiosInstance.put(
+        Endpoint.getPermission + projectId + "/permissiongroups/" + id,
         payload
       );
       console.log("POST response:", response.data);
@@ -74,8 +66,8 @@ export class PermissionService {
 
   public static delete = async (projectId: string, id: string) => {
     try {
-      const response: IResponse<IIssueType> = await axiosInstance.delete(
-        Endpoint.getIssueType + projectId + "/issuetypes/" + id
+      const response: IResponse<IPermissionGroup> = await axiosInstance.delete(
+        Endpoint.getPermission + projectId + "/permissiongroups/" + id
       );
       console.log("POST response:", response.data);
       return response;

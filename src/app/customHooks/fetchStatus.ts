@@ -40,7 +40,9 @@ function useStatusData(projectId: string, requestParam: IPagination) {
   };
 
   useEffect(() => {
-    fetchData();
+    if (project?.id) {
+      fetchData();
+    }
   }, [fetchData, project?.id, requestParam.pageNum, requestParam.pageSize]);
 
   return { listStatus, totalCount, refreshData, isLoading };

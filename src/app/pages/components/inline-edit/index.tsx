@@ -353,6 +353,19 @@ export default function InlineEdit(props: IInlineEditProps) {
               Assign to me
             </Button>
           )}
+
+          {props.type === "assigneeSelect" && userId && (
+            <Button
+              type="link"
+              style={{ paddingLeft: "11px" }}
+              onClick={() => {
+                setEditedValue(null);
+                onSave();
+              }}
+            >
+              Unassigned
+            </Button>
+          )}
         </>
       )}
     </div>

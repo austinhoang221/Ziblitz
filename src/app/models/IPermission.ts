@@ -4,10 +4,10 @@ export interface IPermissions {
 }
 
 export interface IProjectPermissions {
-  timeline: Permissions;
-  backlog: Permissions;
-  board: Permissions;
-  project: Permissions;
+  timeline: IPermissions;
+  backlog: IPermissions;
+  board: IPermissions;
+  project: IPermissions;
 }
 
 export interface IPermissionGroup {
