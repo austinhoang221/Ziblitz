@@ -23,6 +23,7 @@ import {
 import { RootState } from "../../../../../../../../redux/store";
 import { ProjectService } from "../../../../../../../../services/projectService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
+import usePermissionData from "../../../../../../../customHooks/fetchPermission";
 import useRoleData from "../../../../../../../customHooks/fetchRole";
 import useUserData from "../../../../../../../customHooks/fetchUser";
 import {
@@ -30,6 +31,7 @@ import {
   convertNameToInitials,
   getRandomColor,
 } from "../../../../../../../helpers";
+import { IPagination } from "../../../../../../../models/IPagination";
 import { IUser } from "../../../../../../../models/IUser";
 interface IHeaderProject {
   title: string;
@@ -46,8 +48,8 @@ export default function HeaderProject(props: IHeaderProject) {
     initialRequestUserParam
   );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isLoadingButtonSave, setLoadingButtonSave] = useState<boolean>(false);
   const { listUser } = useUserData(userId, requestUserParam.name);
-  const { listRole } = useRoleData();
   const ref = useRef<string>();
   const dispatch = useAppDispatch();
   const [isLoadingMention, setIsLoadingMention] = useState<boolean>(false);
@@ -57,6 +59,15 @@ export default function HeaderProject(props: IHeaderProject) {
   const { isShowEpic, project } = useSelector(
     (state: RootState) => state.projectDetail
   );
+  const initialRequestParam: IPagination = {
+    pageNum: 1,
+    pageSize: 5,
+    sort: ["name:asc"],
+  };
+
+  const requestParam = useRef(initialRequestParam);
+  const { listPermission, totalCount, refreshData, isLoading } =
+    usePermissionData(project?.id!, requestParam.current);
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
@@ -71,6 +82,7 @@ export default function HeaderProject(props: IHeaderProject) {
   }, [project?.id, dispatch]);
   const onClickCancel = () => {
     setIsModalOpen(false);
+    addMemberForm.resetFields();
   };
   const onClickOpenModal = () => {
     setIsModalOpen(true);
@@ -78,24 +90,28 @@ export default function HeaderProject(props: IHeaderProject) {
 
   const onClickOk = () => {
     const mentions = getMentions(addMemberForm.getFieldValue("name"));
-    const role = addMemberForm.getFieldValue("role");
-    let userIds: string[] = [];
-    mentions.forEach((mention) => {
-      const user = listUser.find((user) => user.email === mention.value);
-      userIds.push(user?.id!);
-    });
-    const payload = {
-      projectId: project?.id,
-      role: role,
-      userIds: userIds,
-    };
-    ProjectService.addMember(userId, payload).then((res) => {
-      if (checkResponseStatus(res)) {
-        dispatch(getProjectByCode(project?.code!));
-        setIsModalOpen(false);
-        showSuccessMessage();
-      }
-    });
+    if (mentions?.length > 0) {
+      setLoadingButtonSave(true);
+      const role = addMemberForm.getFieldValue("role");
+      let userIds: string[] = [];
+      mentions.forEach((mention) => {
+        const user = listUser.find((user) => user.email === mention.value);
+        userIds.push(user?.id!);
+      });
+      const payload = {
+        projectId: project?.id,
+        role: role,
+        userIds: userIds,
+      };
+      ProjectService.addMember(userId, payload).then((res) => {
+        if (checkResponseStatus(res)) {
+          dispatch(getProjectByCode(project?.code!));
+          onClickCancel();
+          setLoadingButtonSave(false);
+          showSuccessMessage();
+        }
+      });
+    }
   };
 
   const onSearchUser = (search: string) => {
@@ -126,9 +142,24 @@ export default function HeaderProject(props: IHeaderProject) {
     </>
   );
 
-  const onChangeToggleEpic = (e: any) => {
-    dispatch(setIsShowEpic(e));
+  const getOptions = () => {
+    const mentions = getMentions(addMemberForm.getFieldValue("name"));
+    return listUser
+      .filter(
+        (user) =>
+          !project?.members.some((member) => member.id === user.id) &&
+          user.id !== project?.leader.id &&
+          !mentions.some((mention) => mention.value === user.email)
+      )
+      .map((user: IUser) => {
+        return {
+          key: user.id,
+          label: getOptionLabel(user),
+          value: user.email,
+        };
+      });
   };
+
   return (
     <>
       {contextHolder}
@@ -185,44 +216,6 @@ export default function HeaderProject(props: IHeaderProject) {
               onClick={onClickOpenModal}
               icon={<i className="fa-solid fa-user-plus"></i>}
             />
-
-            <Dropdown
-              overlay={
-                <Menu>
-                  <Menu.Item>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <Select
-                        mode="multiple"
-                        allowClear
-                        style={{ width: "250px" }}
-                        placeholder="Please select"
-                        // onChange={handleChange}
-                        options={project?.epics.map((epic) => {
-                          return {
-                            label: <span>{epic.name}</span>,
-                            value: epic.id,
-                          };
-                        })}
-                      />
-                      <Divider className="mt-2 mb-2"></Divider>
-                      <div className="d-flex">
-                        <Switch
-                          checked={isShowEpic}
-                          onChange={(e) => onChangeToggleEpic(e)}
-                        />
-                        <span className="ml-2">Epic</span>
-                      </div>
-                    </div>
-                  </Menu.Item>
-                </Menu>
-              }
-              trigger={["click"]}
-            >
-              <Button type="text" className="ml-2">
-                <span>Epic</span>{" "}
-                <i className="fa-solid fa-chevron-down ml-2"></i>
-              </Button>
-            </Dropdown>
           </>
         )}
         {props.actionContent}
@@ -231,6 +224,7 @@ export default function HeaderProject(props: IHeaderProject) {
           title="Add member"
           open={isModalOpen}
           onOk={onClickOk}
+          confirmLoading={isLoadingButtonSave}
           onCancel={onClickCancel}
         >
           <Form form={addMemberForm}>
@@ -239,32 +233,40 @@ export default function HeaderProject(props: IHeaderProject) {
               labelCol={{ span: 24 }}
               wrapperCol={{ span: 24 }}
               name="name"
+              required
+              rules={[
+                {
+                  required: true,
+                  message: "Please add users",
+                },
+              ]}
             >
               <Mentions
                 loading={isLoadingMention}
                 onSearch={onSearchUser}
-                options={listUser.map((user: IUser) => {
-                  return {
-                    key: user.id,
-                    label: getOptionLabel(user),
-                    value: user.email,
-                  };
-                })}
+                options={getOptions()}
               ></Mentions>
             </Form.Item>
             <Form.Item
-              label="Role"
+              label="Permission"
               labelCol={{ span: 24 }}
               wrapperCol={{ span: 24 }}
-              name="role"
+              name="permission"
+              required
+              rules={[
+                {
+                  required: true,
+                  message: "Please choose permission",
+                },
+              ]}
             >
               <Select
-                defaultValue={listRole.find((item) => item.id)?.id}
-                options={listRole.map((role) => {
+                defaultValue={listPermission.find((item) => item.id)?.id}
+                options={listPermission.map((permission) => {
                   return {
-                    key: role.id,
-                    label: role.name,
-                    value: role.id,
+                    key: permission.id,
+                    label: permission.name,
+                    value: permission.id,
                   };
                 })}
               ></Select>

@@ -2,13 +2,16 @@ import {
   Button,
   Col,
   Collapse,
+  Divider,
   Dropdown,
   List,
   Menu,
   message,
   Popconfirm,
   Row,
+  Select,
   Skeleton,
+  Switch,
 } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../../../redux/store";
@@ -27,6 +30,7 @@ import { SprintService } from "../../../../../../../../services/sprintService";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import {
   getProjectByCode,
+  setIsShowEpic,
   setSprints,
 } from "../../../../../../../../redux/slices/projectDetailSlice";
 import dayjs from "dayjs";
@@ -272,6 +276,10 @@ const Backlog: React.FC = () => {
     </>
   );
 
+  const onChangeToggleEpic = (e: any) => {
+    dispatch(setIsShowEpic(e));
+  };
+
   const onSearch = (value: string) => {};
   return (
     <>
@@ -280,24 +288,65 @@ const Backlog: React.FC = () => {
         isFixedHeader={true}
         onSearch={onSearch}
         actionContent={
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item>
-                  <div onClick={(e) => e.stopPropagation()}>
-                    Manage custom filter
-                  </div>
-                </Menu.Item>
-              </Menu>
-            }
-            trigger={["click"]}
-          >
-            <Button type="text" onClick={(e) => e.preventDefault()}>
-              <i className="fa-solid fa-ellipsis"></i>
-            </Button>
-          </Dropdown>
+          <>
+            <Dropdown
+              className="mr-2"
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <Select
+                        mode="multiple"
+                        allowClear
+                        style={{ width: "250px" }}
+                        placeholder="Please select"
+                        // onChange={handleChange}
+                        options={project?.epics.map((epic) => {
+                          return {
+                            label: <span>{epic.name}</span>,
+                            value: epic.id,
+                          };
+                        })}
+                      />
+                      <Divider className="mt-2 mb-2"></Divider>
+                      <div className="d-flex">
+                        <Switch
+                          checked={isShowEpic}
+                          onChange={(e) => onChangeToggleEpic(e)}
+                        />
+                        <span className="ml-2">Epic</span>
+                      </div>
+                    </div>
+                  </Menu.Item>
+                </Menu>
+              }
+              trigger={["click"]}
+            >
+              <Button type="text" className="ml-2">
+                <span>Epic</span>{" "}
+                <i className="fa-solid fa-chevron-down ml-2"></i>
+              </Button>
+            </Dropdown>
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      Manage custom filter
+                    </div>
+                  </Menu.Item>
+                </Menu>
+              }
+              trigger={["click"]}
+            >
+              <Button type="text" onClick={(e) => e.preventDefault()}>
+                <i className="fa-solid fa-ellipsis"></i>
+              </Button>
+            </Dropdown>
+          </>
         }
       ></HeaderProject>
+
       <Row gutter={isShowEpic ? 24 : 0}>
         {isShowEpic && (
           <Col span={6} className="mt-4">

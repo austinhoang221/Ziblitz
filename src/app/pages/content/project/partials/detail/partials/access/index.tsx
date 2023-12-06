@@ -31,14 +31,15 @@ import {
 import HeaderProject from "../header";
 
 export default function AccessProject() {
+  const project = useSelector(
+    (state: RootState) => state.projectDetail.project
+  );
   const initialRequestParam: IPagination = {
     pageNum: 1,
     pageSize: 5,
     sort: ["name:asc"],
   };
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
-  );
+
   const [requestParam, setRequestParam] =
     useState<IPagination>(initialRequestParam);
   const { listPermission, totalCount, refreshData, isLoading } =
@@ -341,10 +342,14 @@ export default function AccessProject() {
     <div className="issue-types">
       <HeaderProject
         title="Access"
-        isFixedHeader={false}
+        isFixedHeader={true}
         onSearch={onSearch}
         actionContent={
-          <Button type="primary" onClick={() => onOpenModal("create")}>
+          <Button
+            className="ml-2"
+            type="primary"
+            onClick={() => onOpenModal("create")}
+          >
             Create group
           </Button>
         }
