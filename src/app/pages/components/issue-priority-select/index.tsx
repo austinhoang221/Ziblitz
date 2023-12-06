@@ -22,6 +22,7 @@ export default function SelectPriority(props: IIssueComponentProps) {
   );
   const dispatch = useAppDispatch();
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
+  const [isLoadingSave, setIsLoadingSave] = useState(false);
 
   const [requestParam, setRequestParam] =
     useState<IPagination>(initialRequestParam);
@@ -32,6 +33,7 @@ export default function SelectPriority(props: IIssueComponentProps) {
   );
 
   const onChangePriority = async (e: any) => {
+    setIsLoadingSave(true);
     if (props.type === "backlog") {
       await IssueService.editBacklogIssue(props.periodId, props.issueId, {
         priorityId: e,
@@ -40,6 +42,7 @@ export default function SelectPriority(props: IIssueComponentProps) {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
           props.onSaveIssue(res?.data);
+          setIsLoadingSave(false);
         }
       });
     } else {
@@ -50,6 +53,7 @@ export default function SelectPriority(props: IIssueComponentProps) {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
           props.onSaveIssue(res?.data);
+          setIsLoadingSave(false);
         }
       });
     }
@@ -71,7 +75,7 @@ export default function SelectPriority(props: IIssueComponentProps) {
       onFocus={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
       onBlur={props.onBlur}
-      loading={isLoading}
+      loading={isLoading || isLoadingSave}
     ></Select>
   );
 }

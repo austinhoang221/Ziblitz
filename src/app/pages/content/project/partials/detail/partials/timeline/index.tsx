@@ -28,7 +28,7 @@ export default function TimelineProject() {
               end: new Date(item.end),
             };
           });
-          setTasks(data);
+          setTasks(data.reverse());
           setIsLoading(false);
         }
       });

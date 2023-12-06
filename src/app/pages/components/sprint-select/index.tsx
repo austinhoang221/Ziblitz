@@ -1,5 +1,5 @@
 import { Select } from "antd";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
@@ -15,12 +15,13 @@ export default function SelectSprint(props: IIssueComponentProps) {
     (state: RootState) => state.projectDetail.project
   );
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
-
+  const [isLoading, setIsLoading] = useState(false);
   const ref = useRef<BaseSelectRef>(null);
   useEffect(() => {
     ref?.current?.focus();
   });
   const onChangeSprint = async (e: any) => {
+    setIsLoading(true);
     if (props.type === "backlog") {
       const payload = {
         sprintId: e,
@@ -35,6 +36,7 @@ export default function SelectSprint(props: IIssueComponentProps) {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
           props.onSaveIssue(res?.data);
+          setIsLoading(false);
         }
       });
     } else {
@@ -45,12 +47,14 @@ export default function SelectSprint(props: IIssueComponentProps) {
         if (checkResponseStatus(res)) {
           dispatch(getProjectByCode(project?.code!));
           props.onSaveIssue(res?.data);
+          setIsLoading(false);
         }
       });
     }
   };
   return (
     <Select
+      loading={isLoading}
       style={{ width: "150px" }}
       className={props.className}
       showSearch

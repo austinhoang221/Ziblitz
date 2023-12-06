@@ -20,6 +20,8 @@ import dayjs from "dayjs";
 import { IIssue } from "../../../models/IIssue";
 import SelectPriority from "../issue-priority-select";
 import IssuePriority from "../issue-priority";
+import { LoadingOutlined } from "@ant-design/icons";
+
 interface IInlineEditProps {
   type: string;
   periodType: string;
@@ -40,6 +42,8 @@ export default function InlineEdit(props: IInlineEditProps) {
   const dispatch = useAppDispatch();
   const ref = useRef<any>(null);
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (isEditing) {
       ref.current?.focus();
@@ -59,6 +63,7 @@ export default function InlineEdit(props: IInlineEditProps) {
       editedValue !== "" &&
       editedValue !== props.initialValue
     ) {
+      setIsLoading(true);
       if (props.type === "backlog") {
         IssueService.editBacklogIssue(props.periodId, props.issueId, {
           [props.fieldName]: editedValue,
@@ -68,6 +73,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             dispatch(getProjectByCode(project?.code!));
             setIsEditing(false);
             props.onSaveIssue(res?.data);
+            setIsLoading(false);
           }
         });
       } else if (props.type === "sprint") {
@@ -79,6 +85,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             dispatch(getProjectByCode(project?.code!));
             setIsEditing(false);
             props.onSaveIssue(res?.data);
+            setIsLoading(false);
           }
         });
       } else {
@@ -90,6 +97,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             dispatch(getProjectByCode(project?.code!));
             setIsEditing(false);
             props.onSaveIssue(res?.data);
+            setIsLoading(false);
           }
         });
       }
@@ -181,6 +189,7 @@ export default function InlineEdit(props: IInlineEditProps) {
       case "prioritySelect":
         return (
           <SelectPriority
+            className="w-100"
             type={props.type}
             periodId={props.periodId}
             onSaveIssue={(issue?: IIssue) => props.onSaveIssue(issue)}
@@ -193,6 +202,7 @@ export default function InlineEdit(props: IInlineEditProps) {
         const currentDate = new Date();
         return (
           <DatePicker
+            suffixIcon={isLoading ? <LoadingOutlined /> : <></>}
             className="w-100"
             ref={ref}
             defaultValue={
@@ -274,7 +284,7 @@ export default function InlineEdit(props: IInlineEditProps) {
       case "prioritySelect":
         return (
           <>
-            <div onClick={onEdit}>
+            <div className="edit-content" onClick={onEdit}>
               {editedValue ? (
                 <IssuePriority priorityId={editedValue}></IssuePriority>
               ) : (
