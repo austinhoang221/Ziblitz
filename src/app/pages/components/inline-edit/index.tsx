@@ -94,6 +94,7 @@ export default function InlineEdit(props: IInlineEditProps) {
         });
       }
     } else {
+      setEditedValue(props.initialValue);
       setIsEditing(false);
     }
   };
@@ -354,7 +355,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             </Button>
           )}
 
-          {props.type === "assigneeSelect" && userId && (
+          {/* {props.type === "assigneeSelect" && userId && (
             <Button
               type="link"
               style={{ paddingLeft: "11px" }}
@@ -365,7 +366,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             >
               Unassigned
             </Button>
-          )}
+          )} */}
         </>
       )}
     </div>

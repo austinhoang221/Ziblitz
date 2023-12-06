@@ -59,10 +59,10 @@ export class IssueService {
     }
   };
 
-  public static getComments = async (id: string) => {
+  public static getComments = async (issueId: string) => {
     try {
       const response: IResponse<IIssueComment[]> = await axiosInstance.get(
-        Endpoint.getIssueHistories + id + "/comments"
+        Endpoint.getIssueHistories + issueId + "/comments"
       );
       console.log("POST response:", response.data);
       return response;
@@ -71,10 +71,10 @@ export class IssueService {
     }
   };
 
-  public static createComment = async (id: string, payload: string) => {
+  public static createComment = async (issueId: string, payload: any) => {
     try {
       const response: IResponse<IIssueComment> = await axiosInstance.post(
-        Endpoint.getIssueComment + id + "/comments",
+        Endpoint.getIssueComment + issueId + "/comments",
         payload
       );
       console.log("POST response:", response.data);
@@ -84,10 +84,14 @@ export class IssueService {
     }
   };
 
-  public static updateComment = async (id: string, payload: string) => {
+  public static updateComment = async (
+    issueId: string,
+    id: string,
+    payload: any
+  ) => {
     try {
       const response: IResponse<IIssueComment> = await axiosInstance.put(
-        Endpoint.getIssueComment + id + "/comments",
+        Endpoint.getIssueComment + issueId + "/comments/" + id,
         payload
       );
       console.log("POST response:", response.data);
@@ -97,10 +101,10 @@ export class IssueService {
     }
   };
 
-  public static deleteComment = async (id: string) => {
+  public static deleteComment = async (issueId: string, id: string) => {
     try {
       const response: IResponse<IIssueComment> = await axiosInstance.delete(
-        Endpoint.getIssueComment + id + "/comments"
+        Endpoint.getIssueComment + issueId + "/comments/" + id
       );
       console.log("POST response:", response.data);
       return response;
