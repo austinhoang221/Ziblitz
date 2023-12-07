@@ -64,7 +64,7 @@ export default function InlineEdit(props: IInlineEditProps) {
       editedValue !== props.initialValue
     ) {
       setIsLoading(true);
-      if (props.type === "backlog") {
+      if (props.periodType === "backlog") {
         IssueService.editBacklogIssue(props.periodId, props.issueId, {
           [props.fieldName]: editedValue,
           modificationUserId: userId,
@@ -76,7 +76,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             setIsLoading(false);
           }
         });
-      } else if (props.type === "sprint") {
+      } else if (props.periodType === "sprint") {
         IssueService.editSprintIssue(props.periodId, props.issueId, {
           [props.fieldName]: editedValue,
           modificationUserId: userId,
@@ -123,6 +123,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             onChange={(e) => setEditedValue(e.target.value)}
             onBlur={onSave}
             onPressEnter={onSave}
+            suffix={isLoading ? <LoadingOutlined /> : <></>}
           />
         );
 
@@ -184,6 +185,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             onChange={(e) => setEditedValue(e)}
             onPressEnter={onSave}
             onBlur={onSave}
+            suffix={isLoading ? <LoadingOutlined /> : <></>}
           ></InputNumber>
         );
       case "prioritySelect":
