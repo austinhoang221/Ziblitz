@@ -39,6 +39,8 @@ export default function MembersProject() {
       permissionGroupId: permissionId,
     }).then((res) => {
       if (checkResponseStatus(res)) {
+        dispatch(getMembers(project?.id!));
+        dispatch(getPermissions(project?.id!));
         showSuccessMessage();
       }
     });

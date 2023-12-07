@@ -16,6 +16,7 @@ import TextArea from "antd/es/input/TextArea";
 import { ColumnsType } from "antd/es/table";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { getPermissions } from "../../../../../../../../redux/slices/permissionSlice";
 import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
 import { PermissionService } from "../../../../../../../../services/permissionService";
@@ -119,7 +120,7 @@ export default function AccessProject() {
     await PermissionService.delete(project?.id!, id).then((res) => {
       if (checkResponseStatus(res)) {
         refreshData();
-        refreshData();
+        dispatch(getPermissions(project?.id!));
         showSuccessMessage();
       }
     });
@@ -319,12 +320,14 @@ export default function AccessProject() {
       let response;
       if (mode === "create") {
         response = await PermissionService.create(project?.id!, payload);
+        dispatch(getPermissions(project?.id!));
       } else {
         response = await PermissionService.update(
           project?.id!,
           permissionId,
           payload
         );
+        dispatch(getPermissions(project?.id!));
       }
       if (checkResponseStatus(response)) {
         refreshData();
