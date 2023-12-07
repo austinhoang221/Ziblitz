@@ -7,6 +7,7 @@ import {
   message,
   Modal,
   Pagination,
+  Popconfirm,
   Table,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -101,18 +102,23 @@ export default function Priorities() {
       dataIndex: "id",
       key: "action",
       width: "40px",
-      render: (id: string) => {
+      render: (priority: IPriority) => {
         return (
-          <Button
-            type="text"
-            shape="circle"
-            onClick={() => onDeletePriority(id)}
+          <Popconfirm
+            title="Delete the priority"
+            description="Are you sure to delete this priority?"
+            okText="Yes"
+            cancelText="Cancel"
+            onConfirm={() => onDeletePriority(priority.id)}
+            disabled={priority.isMain}
           >
-            <i
-              style={{ color: red.primary }}
-              className="fa-solid fa-trash-can"
-            ></i>
-          </Button>
+            <Button type="text" shape="circle" disabled={priority.isMain}>
+              <i
+                style={{ color: red.primary }}
+                className="fa-solid fa-trash-can"
+              ></i>
+            </Button>
+          </Popconfirm>
         );
       },
     },

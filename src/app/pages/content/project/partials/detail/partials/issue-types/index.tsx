@@ -7,6 +7,7 @@ import {
   message,
   Modal,
   Pagination,
+  Popconfirm,
   Popover,
   Row,
   Table,
@@ -117,18 +118,23 @@ export default function IssueTypes() {
       dataIndex: "id",
       key: "action",
       width: "40px",
-      render: (id: string) => {
+      render: (issueType: IIssueType) => {
         return (
-          <Button
-            type="text"
-            shape="circle"
-            onClick={() => onDeleteIssueType(id)}
+          <Popconfirm
+            title="Delete the issue type"
+            description="Are you sure to delete this issue type?"
+            okText="Yes"
+            cancelText="Cancel"
+            onConfirm={() => onDeleteIssueType(issueType.id)}
+            disabled={issueType.isMain}
           >
-            <i
-              style={{ color: red.primary }}
-              className="fa-solid fa-trash-can"
-            ></i>
-          </Button>
+            <Button type="text" shape="circle" disabled={issueType.isMain}>
+              <i
+                style={{ color: red.primary }}
+                className="fa-solid fa-trash-can"
+              ></i>
+            </Button>
+          </Popconfirm>
         );
       },
     },

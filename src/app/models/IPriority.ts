@@ -5,4 +5,5 @@ export interface IPriority {
   color: string;
   icon: string;
   projectId: string;
+  isMain: boolean;
 }

@@ -3,4 +3,5 @@ export interface IStatus {
   name: string;
   description: string;
   projectId: string;
+  isMain: boolean;
 }

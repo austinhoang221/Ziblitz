@@ -86,16 +86,17 @@ export default function Statuses() {
       dataIndex: "id",
       key: "action",
       width: "40px",
-      render: (id: string) => {
+      render: (status: IStatus) => {
         return (
           <Popconfirm
             title="Delete the status"
             description="Are you sure to delete this status?"
             okText="Yes"
             cancelText="Cancel"
-            onConfirm={() => onDeleteStatus(id)}
+            onConfirm={() => onDeleteStatus(status.id)}
+            disabled={status.isMain}
           >
-            <Button type="text" shape="circle">
+            <Button type="text" shape="circle" disabled={status.isMain}>
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"
