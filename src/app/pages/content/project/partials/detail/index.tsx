@@ -135,6 +135,14 @@ export default function DetailProject() {
           ),
         },
         {
+          key: "members",
+          label: (
+            <span>
+              <i className="fa-solid fa-users mr-2"></i>Members
+            </span>
+          ),
+        },
+        {
           key: "features",
           label: (
             <span>

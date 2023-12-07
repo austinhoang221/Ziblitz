@@ -16,6 +16,10 @@ import Search from "antd/es/input/Search";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
+  getMembers,
+  getPermissions,
+} from "../../../../../../../../redux/slices/permissionSlice";
+import {
   getProjectByCode,
   getProjectPriorities,
   setIsShowEpic,
@@ -23,6 +27,7 @@ import {
 import { RootState } from "../../../../../../../../redux/store";
 import { ProjectService } from "../../../../../../../../services/projectService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
+import useMemberData from "../../../../../../../customHooks/fetchMember";
 import usePermissionData from "../../../../../../../customHooks/fetchPermission";
 import useRoleData from "../../../../../../../customHooks/fetchRole";
 import useUserData from "../../../../../../../customHooks/fetchUser";
@@ -47,8 +52,16 @@ export default function HeaderProject(props: IHeaderProject) {
   const [requestUserParam, setRequestUserParam] = useState(
     initialRequestUserParam
   );
+
+  const { isShowEpic, project } = useSelector(
+    (state: RootState) => state.projectDetail
+  );
+  const { members, permissions, isLoading } = useSelector(
+    (state: RootState) => state.permissions
+  );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoadingButtonSave, setLoadingButtonSave] = useState<boolean>(false);
+
   const { listUser } = useUserData(userId, requestUserParam.name);
   const ref = useRef<string>();
   const dispatch = useAppDispatch();
@@ -56,18 +69,9 @@ export default function HeaderProject(props: IHeaderProject) {
   const [addMemberForm] = Form.useForm();
   const { getMentions } = Mentions;
   const [messageApi, contextHolder] = message.useMessage();
-  const { isShowEpic, project } = useSelector(
-    (state: RootState) => state.projectDetail
-  );
-  const initialRequestParam: IPagination = {
-    pageNum: 1,
-    pageSize: 5,
-    sort: ["name:asc"],
-  };
 
-  const requestParam = useRef(initialRequestParam);
-  const { listPermission, totalCount, refreshData, isLoading } =
-    usePermissionData(project?.id!, requestParam.current);
+  const [permissionId, setPermissionId] = useState<string>("");
+
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
@@ -80,6 +84,20 @@ export default function HeaderProject(props: IHeaderProject) {
       dispatch(getProjectPriorities(project?.id));
     }
   }, [project?.id, dispatch]);
+
+  useEffect(() => {
+    if (project?.id) {
+      if (!members || members?.length === 0) dispatch(getMembers(project?.id!));
+      if (!permissions || permissions?.length === 0)
+        dispatch(getPermissions(project?.id!));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project?.id]);
+
+  useEffect(() => {
+    setPermissionId(permissions?.find((item) => item.id)?.id ?? "");
+  }, [permissions]);
+
   const onClickCancel = () => {
     setIsModalOpen(false);
     addMemberForm.resetFields();
@@ -102,6 +120,7 @@ export default function HeaderProject(props: IHeaderProject) {
         projectId: project?.id,
         role: role,
         userIds: userIds,
+        permissionGroupId: permissionId,
       };
       ProjectService.addMember(userId, payload).then((res) => {
         if (checkResponseStatus(res)) {
@@ -109,6 +128,8 @@ export default function HeaderProject(props: IHeaderProject) {
           onClickCancel();
           setLoadingButtonSave(false);
           showSuccessMessage();
+          dispatch(getMembers(project?.id!));
+          dispatch(getPermissions(project?.id!));
         }
       });
     }
@@ -242,7 +263,7 @@ export default function HeaderProject(props: IHeaderProject) {
               ]}
             >
               <Mentions
-                loading={isLoadingMention}
+                loading={isLoadingMention || isLoading}
                 onSearch={onSearchUser}
                 options={getOptions()}
               ></Mentions>
@@ -261,12 +282,30 @@ export default function HeaderProject(props: IHeaderProject) {
               ]}
             >
               <Select
-                defaultValue={listPermission.find((item) => item.id)?.id}
-                options={listPermission.map((permission) => {
+                loading={isLoading}
+                onChange={setPermissionId}
+                defaultValue={permissions?.find((item) => item.id)?.id}
+                options={permissions?.map((permission) => {
                   return {
                     key: permission.id,
                     label: permission.name,
                     value: permission.id,
+                    disabled:
+                      (permission.name === "Product Owner" &&
+                        members.some(
+                          (member) =>
+                            permissions?.find(
+                              (permission) =>
+                                permission.name === "Product Owner"
+                            )?.id === member.permissionGroupId
+                        )) ||
+                      (permission.name === "Scrum Master" &&
+                        members.some(
+                          (member) =>
+                            permissions?.find(
+                              (permission) => permission.name === "Scrum Master"
+                            )?.id === member.permissionGroupId
+                        )),
                   };
                 })}
               ></Select>

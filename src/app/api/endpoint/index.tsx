@@ -12,6 +12,7 @@ export default class Endpoint {
   public static deleteProject: string = this.baseUrl + "users/";
   public static getPriorities: string = this.baseUrl + "projects/";
   public static getIssueType: string = this.baseUrl + "projects/";
+  public static getMembers: string = this.baseUrl + "projects/";
   public static getPermission: string = this.baseUrl + "projects/";
   public static getStatus: string = this.baseUrl + "projects/";
   public static getPriority: string = this.baseUrl + "projects/";

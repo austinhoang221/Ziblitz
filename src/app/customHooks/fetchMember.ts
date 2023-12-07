@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { PermissionService } from "../../services/permissionService";
+import { MemberService } from "../../services/memberService";
 import { checkResponseStatus } from "../helpers";
+import { IMember } from "../models/IMember";
 import { IPagination } from "../models/IPagination";
-import { IPermissionGroup } from "../models/IPermission";
 
-function usePermissionData(projectId: string, requestParam: IPagination) {
-  const [listPermission, setListOfData] = useState<IPermissionGroup[]>([]);
+function useMemberData(projectId: string, requestParam: IPagination) {
+  const [listMember, setListOfData] = useState<IMember[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -16,7 +16,7 @@ function usePermissionData(projectId: string, requestParam: IPagination) {
   );
   const fetchData = useCallback(() => {
     setLoading(true);
-    PermissionService.getAll(
+    MemberService.getAll(
       projectId,
       requestParam.pageNum,
       requestParam.pageSize,
@@ -43,9 +43,10 @@ function usePermissionData(projectId: string, requestParam: IPagination) {
     if (project?.id) {
       fetchData();
     }
-  }, [fetchData, project?.id, requestParam.pageNum, requestParam.pageSize]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project?.id, requestParam.pageNum, requestParam.pageSize]);
 
-  return { listPermission, totalCount, refreshData, isLoading };
+  return { listMember, totalCount, refreshData, isLoading };
 }
 
-export default usePermissionData;
+export default useMemberData;
