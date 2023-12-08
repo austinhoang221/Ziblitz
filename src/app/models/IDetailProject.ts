@@ -1,6 +1,7 @@
 import { IBacklog } from "./IBacklog";
 import { IIssue } from "./IIssue";
 import { IIssueType } from "./IIssueType";
+import { IPermissionGroup } from "./IPermission";
 import { IIssueOnBoard } from "./IProject";
 import { ISprint } from "./ISprint";
 import { IStatus } from "./IStatus";
@@ -21,4 +22,5 @@ export interface IDetailProject {
   issueTypes: IIssueType[];
   statuses: IStatus[];
   issueOnBoard: IIssueOnBoard;
+  userPermissionGroup: IPermissionGroup;
 }

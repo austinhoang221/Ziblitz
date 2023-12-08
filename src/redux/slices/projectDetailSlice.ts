@@ -1,8 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Endpoint from "../../app/api/endpoint";
 import { checkResponseStatus } from "../../app/helpers";
 import { IDetailProject } from "../../app/models/IDetailProject";
 import { IIssue } from "../../app/models/IIssue";
+import {
+  IPermissionGroup,
+  IProjectPermissions,
+} from "../../app/models/IPermission";
 import { IPriority } from "../../app/models/IPriority";
 import { IIssueOnBoard } from "../../app/models/IProject";
 import { ISprint } from "../../app/models/ISprint";
@@ -13,6 +16,7 @@ interface IProjectDetail {
   sprints: ISprint[] | null;
   priorities: IPriority[] | null;
   issueOnBoard: IIssueOnBoard | null;
+  projectPermissions: IPermissionGroup | null;
   isShowEpic: boolean;
   isLoading: boolean;
 }
@@ -21,6 +25,7 @@ const initialProjectDetailState: IProjectDetail = {
   backlogIssues: [],
   sprints: [],
   priorities: [],
+  projectPermissions: null,
   issueOnBoard: null,
   isShowEpic: false,
   isLoading: false,
@@ -85,6 +90,7 @@ export const projectDetailSlice = createSlice({
       (state, action: PayloadAction<any>) => {
         let newState = { ...state };
         newState.project = action.payload;
+        newState.projectPermissions = action.payload.userPermissionGroup;
         newState.isLoading = false;
         if (action.payload !== null) {
           if (action.payload.backlog) {

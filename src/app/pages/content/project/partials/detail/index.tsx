@@ -1,4 +1,4 @@
-import { Breadcrumb, Layout, Menu, Tooltip } from "antd";
+import { Breadcrumb, Layout, Menu, Skeleton, Spin, Tooltip } from "antd";
 import { Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import React, { useEffect } from "react";
@@ -9,6 +9,7 @@ import { getProjectByCode } from "../../../../../../redux/slices/projectDetailSl
 import { useAppDispatch } from "../../../../../customHooks/dispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../redux/store";
+import { IProjectPermissions } from "../../../../../models/IPermission";
 export default function DetailProject() {
   const params = useParams();
   const pathname = window.location.pathname;
@@ -17,8 +18,8 @@ export default function DetailProject() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions, isLoading } = useSelector(
+    (state: RootState) => state.projectDetail
   );
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function DetailProject() {
           <i className="fa-solid fa-map mr-2"></i>Planning
         </span>
       ),
+
       children: [
         {
           key: "timeline",
@@ -153,17 +155,44 @@ export default function DetailProject() {
       ],
     },
   ];
+
+  const isHavePermission = (key: string): boolean => {
+    if (
+      projectPermissions?.permissions &&
+      key in projectPermissions.permissions
+    ) {
+      const objectKey = key as keyof IProjectPermissions;
+      return !projectPermissions.permissions[objectKey].viewPermission;
+    }
+    return false;
+  };
+
+  const isHaveProjectPermission = (key: string): boolean => {
+    if (projectPermissions?.permissions && key === "settings") {
+      return projectPermissions.permissions["project"].viewPermission;
+    }
+    return false;
+  };
+
   const renderMenuItems = (items: any) => {
     return items.map((item: any) => {
       if (item.children) {
         return (
-          <SubMenu key={item.key} title={item.label}>
+          <SubMenu
+            disabled={isHaveProjectPermission(item.key)}
+            key={item.key}
+            title={item.label}
+          >
             {renderMenuItems(item.children)}
           </SubMenu>
         );
       } else {
         return (
-          <Menu.Item key={item.key} onClick={() => onNavigateItem(item.key)}>
+          <Menu.Item
+            disabled={isHavePermission(item.key)!}
+            key={item.key}
+            onClick={() => onNavigateItem(item.key)}
+          >
             {item.label}
           </Menu.Item>
         );
@@ -205,7 +234,57 @@ export default function DetailProject() {
             zIndex: 1, // Optional: Adjust the z-index if needed
           }}
         >
-          {renderMenuItems(menuItems)}
+          {!isLoading ? (
+            renderMenuItems(menuItems)
+          ) : (
+            <>
+              <Skeleton.Input active block className="mb-2 mt-2" />
+              <Skeleton.Input
+                active
+                block
+                style={{ width: "30%" }}
+                className="mb-2"
+              />
+              <Skeleton.Input
+                active
+                block
+                style={{ width: "30%" }}
+                className="mb-2"
+              />
+              <Skeleton.Input
+                active
+                block
+                style={{ width: "30%" }}
+                className="mb-2"
+              />
+              <Skeleton.Input active block className="mb-2 mt-2" />
+              <Skeleton.Input
+                active
+                block
+                style={{ width: "30%" }}
+                className="mb-2"
+              />
+              <Skeleton.Input active block className="mb-2 mt-2" />
+              <Skeleton.Input
+                active
+                block
+                style={{ width: "30%" }}
+                className="mb-2"
+              />
+              <Skeleton.Input
+                active
+                block
+                style={{ width: "30%" }}
+                className="mb-2"
+              />
+              <Skeleton.Input
+                active
+                block
+                style={{ width: "30%" }}
+                className="mb-2"
+              />
+            </>
+          )}
         </Menu>
       </Sider>
       <Content className="c-content">
