@@ -77,7 +77,7 @@ export default function Epic() {
                   <div className="font-weight-medium">Due date</div>
                   <div className="text-muted">
                     {epic.dueDate
-                      ? dayjs(epic.startDate).format("MMM D, YYYY")
+                      ? dayjs(epic.dueDate).format("MMM D, YYYY")
                       : "None"}
                   </div>
                 </div>

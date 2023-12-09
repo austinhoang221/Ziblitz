@@ -10,6 +10,7 @@ import { useAppDispatch } from "../../../../../customHooks/dispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../redux/store";
 import { IProjectPermissions } from "../../../../../models/IPermission";
+import { useIsFirstRender } from "../../../../../customHooks/useIsFirstRender";
 export default function DetailProject() {
   const params = useParams();
   const pathname = window.location.pathname;
@@ -21,6 +22,8 @@ export default function DetailProject() {
   const { project, projectPermissions, isLoading } = useSelector(
     (state: RootState) => state.projectDetail
   );
+
+  const isFirstRender = useIsFirstRender();
 
   useEffect(() => {
     dispatch(getProjectByCode(params?.code!));
@@ -169,7 +172,7 @@ export default function DetailProject() {
 
   const isHaveProjectPermission = (key: string): boolean => {
     if (projectPermissions?.permissions && key === "settings") {
-      return projectPermissions.permissions["project"].viewPermission;
+      return !projectPermissions.permissions["project"].viewPermission;
     }
     return false;
   };
@@ -234,9 +237,7 @@ export default function DetailProject() {
             zIndex: 1, // Optional: Adjust the z-index if needed
           }}
         >
-          {!isLoading ? (
-            renderMenuItems(menuItems)
-          ) : (
+          {isLoading && isFirstRender ? (
             <>
               <Skeleton.Input active block className="mb-2 mt-2" />
               <Skeleton.Input
@@ -284,6 +285,8 @@ export default function DetailProject() {
                 className="mb-2"
               />
             </>
+          ) : (
+            renderMenuItems(menuItems)
           )}
         </Menu>
       </Sider>

@@ -307,6 +307,14 @@ export default function AccessProject() {
 
     try {
       await drawerForm.validateFields();
+      if (
+        drawerFormValue.backlog?.length === 0 &&
+        drawerFormValue.backlog?.timeline === 0 &&
+        drawerFormValue.board?.length &&
+        drawerFormValue.project?.length
+      ) {
+        return;
+      }
       setIsLoadingButtonSave(true);
 
       const payload: IPermissionGroup = {

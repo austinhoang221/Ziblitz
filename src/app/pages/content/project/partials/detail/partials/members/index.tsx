@@ -1,5 +1,13 @@
 import { red } from "@ant-design/colors";
-import { Button, message, Pagination, Popconfirm, Select, Table } from "antd";
+import {
+  Alert,
+  Button,
+  message,
+  Pagination,
+  Popconfirm,
+  Select,
+  Table,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
@@ -34,8 +42,8 @@ export default function MembersProject() {
     });
   };
 
-  const onChangePermission = (userId: string, permissionId: string) => {
-    MemberService.update(project?.id!, userId, {
+  const onChangePermission = (member: IMember, permissionId: string) => {
+    MemberService.update(project?.id!, member.id, {
       permissionGroupId: permissionId,
     }).then((res) => {
       if (checkResponseStatus(res)) {
@@ -86,7 +94,7 @@ export default function MembersProject() {
             style={{ width: "150px" }}
             defaultValue={member.permissionGroupId}
             className="mb-2"
-            onChange={(e) => onChangePermission(member.id, e)}
+            onChange={(e) => onChangePermission(member, e)}
             options={permissions.map((permission) => {
               return {
                 key: permission.id,
@@ -151,6 +159,11 @@ export default function MembersProject() {
         onSearch={onSearch}
         actionContent={<></>}
       ></HeaderProject>
+      <Alert
+        className="mt-2"
+        message="A project must have at least 1 Product Owner, 1 Scrum Master"
+        type="info"
+      />
       <Table
         className="mt-3"
         columns={columns}

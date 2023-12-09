@@ -59,6 +59,7 @@ export default function InfoProject() {
       description: infoForm.getFieldValue("description"),
       avatarUrl: "",
       leaderId: infoForm.getFieldValue("leaderId"),
+      defaultAssigneeId: infoForm.getFieldValue("defaultAssigneeId"),
     };
     setIsLoadingButtonSave(true);
     ProjectService.update(userId, payload, payload.id).then((res) => {
@@ -147,9 +148,10 @@ export default function InfoProject() {
             required={false}
             label="Name"
             name="name"
+            initialValue={project?.name}
             rules={[{ required: true, message: "Please enter project name" }]}
           >
-            <Input placeholder="Name" defaultValue={project?.name} />
+            <Input placeholder="Name" />
           </Form.Item>
           <Form.Item
             label="Key"
@@ -172,7 +174,26 @@ export default function InfoProject() {
             name="leaderId"
           >
             <Select
+              disabled={true}
               defaultValue={project?.leader?.id}
+              onChange={handleFormChange}
+              options={users.map((user) => {
+                return {
+                  label: getOptionLabel(user),
+                  value: user.id,
+                };
+              })}
+            ></Select>
+          </Form.Item>
+          <Form.Item
+            label="Default assignee"
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+            required={false}
+            name="defaultAssigneeId"
+            initialValue={project?.projectConfiguration?.defaultAssigneeId}
+          >
+            <Select
               onChange={handleFormChange}
               options={users.map((user) => {
                 return {

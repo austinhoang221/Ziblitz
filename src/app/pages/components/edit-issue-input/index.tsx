@@ -8,6 +8,8 @@ import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
 import "./index.scss";
 import { useNavigate } from "react-router-dom";
+import { LoadingOutlined } from "@ant-design/icons";
+
 interface IEditIssueInput {
   periodId: string;
   initialValue: string;
@@ -17,6 +19,7 @@ interface IEditIssueInput {
 }
 const EditIssueInput = (props: IEditIssueInput) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [editedValue, setEditedValue] = useState(props.initialValue);
   const dispatch = useAppDispatch();
   const ref = useRef<InputRef>(null);
@@ -42,6 +45,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
 
   const onSaveIssue = (e: any) => {
     if (e?.target.value) {
+      setIsLoading(true);
       if (props.type === "backlog") {
         IssueService.editBacklogIssue(props.periodId, props.issueId, {
           name: e.target.value,
@@ -49,6 +53,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
         }).then((res) => {
           if (checkResponseStatus(res)) {
             dispatch(getProjectByCode(project?.code!));
+            setIsLoading(false);
             props.onSaveIssue();
           }
         });
@@ -60,6 +65,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
           if (checkResponseStatus(res)) {
             dispatch(getProjectByCode(project?.code!));
             props.onSaveIssue();
+            setIsLoading(false);
           }
         });
       }
@@ -75,6 +81,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
       {isEditing ? (
         <div>
           <Input
+            suffix={isLoading ? <LoadingOutlined /> : <></>}
             ref={ref}
             className="w-100"
             value={editedValue}

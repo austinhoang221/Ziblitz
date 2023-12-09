@@ -57,16 +57,17 @@ export default function InlineEdit(props: IInlineEditProps) {
     setIsEditing(true);
   };
 
-  const onSave = () => {
+  const onSave = (value?: any) => {
     if (
-      editedValue !== null &&
-      editedValue !== "" &&
-      editedValue !== props.initialValue
+      (editedValue !== null &&
+        editedValue !== "" &&
+        editedValue !== props.initialValue) ||
+      (value && value !== props.initialValue)
     ) {
       setIsLoading(true);
       if (props.periodType === "backlog") {
         IssueService.editBacklogIssue(props.periodId, props.issueId, {
-          [props.fieldName]: editedValue,
+          [props.fieldName]: value ?? editedValue,
           modificationUserId: userId,
         }).then((res) => {
           if (checkResponseStatus(res)) {
@@ -78,7 +79,7 @@ export default function InlineEdit(props: IInlineEditProps) {
         });
       } else if (props.periodType === "sprint") {
         IssueService.editSprintIssue(props.periodId, props.issueId, {
-          [props.fieldName]: editedValue,
+          [props.fieldName]: value ?? editedValue,
           modificationUserId: userId,
         }).then((res) => {
           if (checkResponseStatus(res)) {
@@ -90,7 +91,7 @@ export default function InlineEdit(props: IInlineEditProps) {
         });
       } else {
         IssueService.updateEpic(project?.id!, props.issueId, {
-          [props.fieldName]: editedValue,
+          [props.fieldName]: value ?? editedValue,
           modificationUserId: userId,
         }).then((res) => {
           if (checkResponseStatus(res)) {
@@ -121,8 +122,8 @@ export default function InlineEdit(props: IInlineEditProps) {
               }
             }}
             onChange={(e) => setEditedValue(e.target.value)}
-            onBlur={onSave}
-            onPressEnter={onSave}
+            onBlur={() => onSave()}
+            onPressEnter={() => onSave()}
             suffix={isLoading ? <LoadingOutlined /> : <></>}
           />
         );
@@ -137,7 +138,7 @@ export default function InlineEdit(props: IInlineEditProps) {
               value={editedValue ?? ""}
               onChange={setEditedValue}
             />
-            <Button type="primary" onClick={onSave}>
+            <Button type="primary" onClick={() => onSave()}>
               Save
             </Button>
             <Button
@@ -183,8 +184,8 @@ export default function InlineEdit(props: IInlineEditProps) {
             ref={ref}
             value={props.initialValue ?? "0"}
             onChange={(e) => setEditedValue(e)}
-            onPressEnter={onSave}
-            onBlur={onSave}
+            onPressEnter={() => onSave()}
+            onBlur={() => onSave()}
             suffix={isLoading ? <LoadingOutlined /> : <></>}
           ></InputNumber>
         );
@@ -214,7 +215,7 @@ export default function InlineEdit(props: IInlineEditProps) {
             }
             value={editedValue ? dayjs(editedValue) : null}
             onChange={(e, string) => setEditedValue(string)}
-            onBlur={onSave}
+            onBlur={() => onSave()}
             disabledDate={props.disabledDate}
           />
         );
@@ -360,7 +361,7 @@ export default function InlineEdit(props: IInlineEditProps) {
               style={{ paddingLeft: "11px" }}
               onClick={() => {
                 setEditedValue(userId);
-                onSave();
+                onSave(userId);
               }}
             >
               Assign to me
