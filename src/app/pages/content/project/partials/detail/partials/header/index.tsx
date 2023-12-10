@@ -53,9 +53,11 @@ export default function HeaderProject(props: IHeaderProject) {
     initialRequestUserParam
   );
 
-  const { isShowEpic, project } = useSelector(
+  const { project, projectPermissions } = useSelector(
     (state: RootState) => state.projectDetail
   );
+  const editPermission =
+    projectPermissions && projectPermissions.permissions.project.editPermission;
   const { members, permissions, isLoading } = useSelector(
     (state: RootState) => state.permissions
   );
@@ -232,11 +234,13 @@ export default function HeaderProject(props: IHeaderProject) {
                 })}
               </>
             </Avatar.Group>
-            <Button
-              shape="circle"
-              onClick={onClickOpenModal}
-              icon={<i className="fa-solid fa-user-plus"></i>}
-            />
+            {editPermission && (
+              <Button
+                shape="circle"
+                onClick={onClickOpenModal}
+                icon={<i className="fa-solid fa-user-plus"></i>}
+              />
+            )}
           </>
         )}
         {props.actionContent}

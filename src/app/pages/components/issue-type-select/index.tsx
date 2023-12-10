@@ -11,8 +11,8 @@ interface IIssueTypeSelectProps {
   onChangeIssueType: (e: MenuInfo) => void;
 }
 export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const [selectedKey, setSelectedKey] = useState<string>("");
 
@@ -35,7 +35,11 @@ export default function IssueTypeSelect(props: IIssueTypeSelectProps) {
 
   return (
     <Dropdown
-      disabled={props.isSubtask}
+      disabled={
+        props.isSubtask ||
+        (projectPermissions !== null &&
+          !projectPermissions.permissions.board.editPermission)
+      }
       trigger={["click"]}
       className="mr-2"
       overlay={

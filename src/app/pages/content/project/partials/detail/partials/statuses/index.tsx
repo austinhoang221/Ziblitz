@@ -28,8 +28,8 @@ export default function Statuses() {
     pageSize: 5,
     sort: ["name:asc"],
   };
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const [drawerForm] = Form.useForm();
 
@@ -42,7 +42,8 @@ export default function Statuses() {
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
   const [statusId, setStatusId] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
-
+  const editPermission =
+    projectPermissions && projectPermissions.permissions.project.editPermission;
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
@@ -94,9 +95,13 @@ export default function Statuses() {
             okText="Yes"
             cancelText="Cancel"
             onConfirm={() => onDeleteStatus(status.id)}
-            disabled={status.isMain}
+            disabled={status.isMain || !editPermission}
           >
-            <Button type="text" shape="circle" disabled={status.isMain}>
+            <Button
+              type="text"
+              shape="circle"
+              disabled={status.isMain || !editPermission}
+            >
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"
@@ -151,11 +156,13 @@ export default function Statuses() {
   };
 
   const onOpenModal = (mode: string, item?: IStatus) => {
-    setIsModalOpen(true);
-    setMode(mode);
-    if (mode === "edit") {
-      drawerForm.setFieldsValue(item);
-      setStatusId(item?.id!);
+    if (editPermission) {
+      setIsModalOpen(true);
+      setMode(mode);
+      if (mode === "edit") {
+        drawerForm.setFieldsValue(item);
+        setStatusId(item?.id!);
+      }
     }
   };
 
@@ -170,9 +177,11 @@ export default function Statuses() {
         isFixedHeader={false}
         onSearch={onSearch}
         actionContent={
-          <Button type="primary" onClick={() => onOpenModal("create")}>
-            Create status
-          </Button>
+          editPermission && (
+            <Button type="primary" onClick={() => onOpenModal("create")}>
+              Create status
+            </Button>
+          )
         }
       ></HeaderProject>
       <Table

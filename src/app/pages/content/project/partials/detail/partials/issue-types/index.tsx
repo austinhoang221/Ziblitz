@@ -40,9 +40,11 @@ export default function IssueTypes() {
     pageSize: 5,
     sort: ["name:asc"],
   };
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
+  const editPermission =
+    projectPermissions && projectPermissions.permissions.project.editPermission;
   const [drawerForm] = Form.useForm();
   const images = [
     "10300",
@@ -126,9 +128,13 @@ export default function IssueTypes() {
             okText="Yes"
             cancelText="Cancel"
             onConfirm={() => onDeleteIssueType(issueType.id)}
-            disabled={issueType.isMain}
+            disabled={issueType.isMain || !editPermission}
           >
-            <Button type="text" shape="circle" disabled={issueType.isMain}>
+            <Button
+              type="text"
+              shape="circle"
+              disabled={issueType.isMain || !editPermission}
+            >
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"
@@ -222,12 +228,14 @@ export default function IssueTypes() {
   };
 
   const onOpenModal = (mode: string, item?: IIssueType) => {
-    setIsModalOpen(true);
-    setMode(mode);
-    if (mode === "edit") {
-      drawerForm.setFieldsValue(item);
-      setIssueTypeKey(item?.icon ? item?.icon : item?.name!);
-      setIssueTypeId(item?.id!);
+    if (editPermission) {
+      setIsModalOpen(true);
+      setMode(mode);
+      if (mode === "edit") {
+        drawerForm.setFieldsValue(item);
+        setIssueTypeKey(item?.icon ? item?.icon : item?.name!);
+        setIssueTypeId(item?.id!);
+      }
     }
   };
 
@@ -242,9 +250,11 @@ export default function IssueTypes() {
         isFixedHeader={false}
         onSearch={onSearch}
         actionContent={
-          <Button type="primary" onClick={() => onOpenModal("create")}>
-            Create issue type
-          </Button>
+          editPermission && (
+            <Button type="primary" onClick={() => onOpenModal("create")}>
+              Create issue type
+            </Button>
+          )
         }
       ></HeaderProject>
       <Table

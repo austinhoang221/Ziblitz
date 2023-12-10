@@ -21,8 +21,8 @@ export default function IssueAddParent(props: IIssueAddParent) {
     setIssue(props.issue);
   }, [props.issue]);
 
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const dispatch = useAppDispatch();
   const onChangeField = (e: any) => {
@@ -55,6 +55,10 @@ export default function IssueAddParent(props: IIssueAddParent) {
       className="mr-2"
     >
       <Dropdown
+        disabled={
+          projectPermissions !== null &&
+          !projectPermissions.permissions.board.editPermission
+        }
         trigger={["click"]}
         overlayStyle={{
           margin: "20px",

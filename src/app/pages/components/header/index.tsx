@@ -10,10 +10,16 @@ import {
 } from "antd";
 import Search from "antd/es/input/Search";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../../redux/slices/authenticationSlice";
+import {
+  getMembers,
+  getPermissions,
+} from "../../../../redux/slices/permissionSlice";
 import { RootState } from "../../../../redux/store";
+import { useAppDispatch } from "../../../customHooks/dispatch";
+import { IProject } from "../../../models/IProject";
 import CreateProjectDrawer from "../../content/project/partials/create";
 import ButtonIcon from "../button-icon";
 import "./index.scss";
@@ -24,7 +30,7 @@ export default function Header() {
   const [defaultTabIndex, setDefaultTabIndex] = useState<string>("1");
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const user = JSON.parse(localStorage.getItem("user")!);
 
   const projects = useSelector((state: RootState) => state.projects);
@@ -83,8 +89,10 @@ export default function Header() {
   const goToProject = () => {
     navigate("project");
   };
-  const goToDetailProject = (code: string) => {
-    navigate(`project/${code}`);
+  const goToDetailProject = (project: IProject) => {
+    dispatch(getPermissions(project?.id));
+    dispatch(getMembers(project?.id));
+    navigate(`project/${project?.code}/board`);
   };
   const goToCreateProject = () => {
     setIsDrawerOpen(true);
@@ -134,7 +142,7 @@ export default function Header() {
                       return (
                         <Menu.Item
                           key={project.id}
-                          onClick={() => goToDetailProject(project.code)}
+                          onClick={() => goToDetailProject(project)}
                         >
                           <div className="d-flex align-center">
                             <img

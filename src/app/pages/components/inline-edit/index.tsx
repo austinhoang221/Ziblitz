@@ -33,8 +33,8 @@ interface IInlineEditProps {
   onSaveIssue: (issue?: IIssue) => void;
 }
 export default function InlineEdit(props: IInlineEditProps) {
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const users = useSelector((state: RootState) => state.users);
   const [isEditing, setIsEditing] = useState(false);
@@ -54,7 +54,13 @@ export default function InlineEdit(props: IInlineEditProps) {
     setEditedValue(props.initialValue);
   }, [props.initialValue]);
   const onEdit = () => {
-    setIsEditing(true);
+    if (
+      projectPermissions &&
+      (projectPermissions.permissions.board.editPermission ||
+        projectPermissions.permissions.backlog.editPermission)
+    ) {
+      setIsEditing(true);
+    }
   };
 
   const onSave = (value?: any) => {

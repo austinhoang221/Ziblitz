@@ -17,6 +17,7 @@ import { IIssue } from "../../../../../../../models/IIssue";
 import Search from "antd/es/input/Search";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
+import { useIsFirstRender } from "../../../../../../../customHooks/useIsFirstRender";
 export default function BoardProject(props: any) {
   const params = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -30,10 +31,13 @@ export default function BoardProject(props: any) {
   const [sprintOptions, setSprintOptions] = useState<any>([]);
   const [checkedSprints, setCheckedSprints] = useState<CheckboxValueType[]>([]);
   const [ordered, setOrdered] = useState<IIssueOnBoard>();
-  const { project, isLoading: isLoadingProject } = useSelector(
-    (state: RootState) => state.projectDetail
-  );
+  const {
+    project,
+    isLoading: isLoadingProject,
+    projectPermissions,
+  } = useSelector((state: RootState) => state.projectDetail);
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
+  const isFirstRender = useIsFirstRender();
 
   const { isCombineEnabled, useClone, containerHeight, withScrollableColumns } =
     props;
@@ -61,8 +65,8 @@ export default function BoardProject(props: any) {
     setIsLoading(true);
     const payload = {
       epicIds: checkedEpics,
-      issueTypeId: null,
-      sprintId: null,
+      issueTypeIds: checkedTypes,
+      sprintIds: checkedSprints,
       searchKey: searchValue,
     };
     await SprintService.getAllIssue(project?.id!, payload).then((res) => {
@@ -72,7 +76,14 @@ export default function BoardProject(props: any) {
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params?.sprintId, project?.id, searchValue]);
+  }, [
+    params?.sprintId,
+    project?.id,
+    searchValue,
+    checkedEpics,
+    checkedSprints,
+    checkedTypes,
+  ]);
 
   useEffect(() => {
     if (project?.id && project?.epics) {
@@ -112,6 +123,22 @@ export default function BoardProject(props: any) {
   }, [sprintOptions]);
 
   useEffect(() => {
+    if (isFirstRender && project?.id) {
+      fetchData();
+    } else if (!isFirstRender && project?.id) {
+      fetchData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    isFirstRender,
+    project?.id,
+    searchValue,
+    checkedEpics,
+    checkedTypes,
+    checkedSprints,
+  ]);
+
+  useEffect(() => {
     if (searchEpicValue) {
       const options = epicOptions.filter((epic: any) =>
         epic.label.toLowerCase().includes(searchEpicValue.toLowerCase())
@@ -121,13 +148,6 @@ export default function BoardProject(props: any) {
       setSearchEpicOptions(epicOptions);
     }
   }, [epicOptions, searchEpicValue]);
-
-  useEffect(() => {
-    if (project?.id) {
-      fetchData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [project?.id, searchValue, checkedEpics, checkedTypes, checkedSprints]);
 
   const onCheckAllEpicChange = (e: CheckboxChangeEvent) => {
     setCheckedEpics(
@@ -355,6 +375,10 @@ export default function BoardProject(props: any) {
             direction="horizontal"
             ignoreContainerClipping={Boolean(containerHeight)}
             isCombineEnabled={isCombineEnabled}
+            isDropDisabled={
+              projectPermissions !== null &&
+              !projectPermissions.permissions.board.editPermission
+            }
           >
             {(provided) => (
               <Container ref={provided.innerRef} {...provided.droppableProps}>

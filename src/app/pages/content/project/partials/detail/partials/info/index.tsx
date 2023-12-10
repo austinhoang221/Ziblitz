@@ -33,8 +33,8 @@ export default function InfoProject() {
 
   const [isLoadingButtonSave, setIsLoadingButtonSave] =
     useState<boolean>(false);
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const users = useSelector((state: RootState) => state.users);
   const dispatch = useDispatch();
@@ -44,7 +44,8 @@ export default function InfoProject() {
     infoForm.resetFields();
   }, [project]);
   const [messageApi, contextHolder] = message.useMessage();
-
+  const editPermission =
+    projectPermissions && projectPermissions.permissions.project.editPermission;
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
@@ -133,9 +134,11 @@ export default function InfoProject() {
         <div className="text-center">
           <img src={project?.avatarUrl} alt="" width="100px" height="60px" />
           <br />
-          <Button type="default" className="m-2 mb-4 text-center">
-            Change image
-          </Button>
+          {editPermission && (
+            <Button type="default" className="m-2 mb-4 text-center">
+              Change image
+            </Button>
+          )}
         </div>
         <Form
           form={infoForm}
@@ -151,7 +154,7 @@ export default function InfoProject() {
             initialValue={project?.name}
             rules={[{ required: true, message: "Please enter project name" }]}
           >
-            <Input placeholder="Name" />
+            <Input placeholder="Name" disabled={!editPermission} />
           </Form.Item>
           <Form.Item
             label="Key"
@@ -194,6 +197,7 @@ export default function InfoProject() {
             initialValue={project?.projectConfiguration?.defaultAssigneeId}
           >
             <Select
+              disabled={!editPermission}
               onChange={handleFormChange}
               options={users.map((user) => {
                 return {
@@ -203,16 +207,18 @@ export default function InfoProject() {
               })}
             ></Select>
           </Form.Item>
-          <div className="mt-4">
-            <Button
-              type="primary"
-              htmlType="submit"
-              disabled={!isFormDirty}
-              loading={isLoadingButtonSave}
-            >
-              Save
-            </Button>
-          </div>
+          {editPermission && (
+            <div className="mt-4">
+              <Button
+                type="primary"
+                htmlType="submit"
+                disabled={!isFormDirty}
+                loading={isLoadingButtonSave}
+              >
+                Save
+              </Button>
+            </div>
+          )}
         </Form>
       </div>
       {contextHolder}

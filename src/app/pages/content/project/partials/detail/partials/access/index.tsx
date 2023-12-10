@@ -6,15 +6,13 @@ import {
   Form,
   Input,
   message,
-  Modal,
-  Pagination,
   Popconfirm,
   Table,
   Tooltip,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { ColumnsType } from "antd/es/table";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getPermissions } from "../../../../../../../../redux/slices/permissionSlice";
 import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
@@ -23,28 +21,16 @@ import { PermissionService } from "../../../../../../../../services/permissionSe
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
 import usePermissionData from "../../../../../../../customHooks/fetchPermission";
 import { checkResponseStatus } from "../../../../../../../helpers";
-import { IPagination } from "../../../../../../../models/IPagination";
-import {
-  IPermissionGroup,
-  IPermissions,
-  IProjectPermissions,
-} from "../../../../../../../models/IPermission";
+import { IPermissionGroup } from "../../../../../../../models/IPermission";
 import HeaderProject from "../header";
 
 export default function AccessProject() {
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
-  const initialRequestParam: IPagination = {
-    pageNum: 1,
-    pageSize: 5,
-    sort: ["name:asc"],
-  };
-
-  const [requestParam, setRequestParam] =
-    useState<IPagination>(initialRequestParam);
-  const { listPermission, totalCount, refreshData, isLoading } =
-    usePermissionData(project?.id!, requestParam);
+  const { permissions, isLoading } = useSelector(
+    (state: RootState) => state.permissions
+  );
   const [drawerForm] = Form.useForm();
 
   const dispatch = useAppDispatch();
@@ -54,7 +40,8 @@ export default function AccessProject() {
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
   const [permissionId, setPermissionId] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
-
+  const editPermission =
+    projectPermissions && projectPermissions.permissions.project.editPermission;
   const initialPermissionsData = {
     timeline: ["viewPermission", "editPermission"],
     backlog: ["viewPermission", "editPermission"],
@@ -108,18 +95,9 @@ export default function AccessProject() {
     setSearchValue(value);
   };
 
-  const onChangePagination = (page: number, size: number) => {
-    setRequestParam({
-      pageNum: page,
-      pageSize: size,
-      sort: requestParam.sort,
-    });
-  };
-
   const onDeletePermission = async (id: string) => {
     await PermissionService.delete(project?.id!, id).then((res) => {
       if (checkResponseStatus(res)) {
-        refreshData();
         dispatch(getPermissions(project?.id!));
         showSuccessMessage();
       }
@@ -260,8 +238,9 @@ export default function AccessProject() {
             okText="Yes"
             cancelText="Cancel"
             onConfirm={() => onDeletePermission(id)}
+            disabled={!editPermission}
           >
-            <Button type="text" shape="circle">
+            <Button type="text" shape="circle" disabled={!editPermission}>
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"
@@ -328,17 +307,15 @@ export default function AccessProject() {
       let response;
       if (mode === "create") {
         response = await PermissionService.create(project?.id!, payload);
-        dispatch(getPermissions(project?.id!));
       } else {
         response = await PermissionService.update(
           project?.id!,
           permissionId,
           payload
         );
-        dispatch(getPermissions(project?.id!));
       }
       if (checkResponseStatus(response)) {
-        refreshData();
+        dispatch(getPermissions(project?.id!));
         dispatch(getProjectByCode(project?.code!));
         showSuccessMessage();
         setIsModalOpen(false);
@@ -356,32 +333,26 @@ export default function AccessProject() {
         isFixedHeader={true}
         onSearch={onSearch}
         actionContent={
-          <Button
-            className="ml-2"
-            type="primary"
-            onClick={() => onOpenModal("create")}
-          >
-            Create group
-          </Button>
+          editPermission && (
+            <Button
+              className="ml-2"
+              type="primary"
+              onClick={() => onOpenModal("create")}
+            >
+              Create group
+            </Button>
+          )
         }
       ></HeaderProject>
       <Table
         className="mt-3"
         columns={columns}
-        dataSource={listPermission}
+        dataSource={permissions}
         rowKey={(record) => record.id}
         pagination={false}
         loading={isLoading}
       />
-      {totalCount > 0 && (
-        <Pagination
-          className="mt-2 float-right"
-          current={requestParam.pageNum}
-          pageSize={requestParam.pageSize}
-          total={totalCount}
-          onChange={(page, size) => onChangePagination(page, size)}
-        />
-      )}
+
       {contextHolder}
       <Drawer
         title={mode === "edit" ? "Update" : "Create"}

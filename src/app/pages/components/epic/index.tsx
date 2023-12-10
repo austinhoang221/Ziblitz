@@ -19,8 +19,8 @@ export default function Epic() {
   const [isCreating, setCreating] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
   const ref = useRef<InputRef>(null);
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const navigate = useNavigate();
@@ -95,31 +95,32 @@ export default function Epic() {
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
         )}
-
-        {!isCreating ? (
-          <Button
-            type="text"
-            className=" mr-2 w-100 mt-2"
-            style={{ backgroundColor: "#f1f2f4" }}
-            onClick={() => {
-              setCreating(true);
-              ref.current?.focus();
-            }}
-          >
-            <i className="fa-solid fa-plus mr-2"></i>
-            <span>Create epic</span>
-          </Button>
-        ) : (
-          <Input
-            ref={ref}
-            onPressEnter={(e) => onCreateEpic(e)}
-            onBlur={() => setCreating(false)}
-            onKeyDownCapture={(e) => {
-              if (e.key === "Escape") setCreating(false);
-            }}
-            suffix={isLoading ? <LoadingOutlined /> : <></>}
-          ></Input>
-        )}
+        {projectPermissions &&
+          projectPermissions.permissions.board.editPermission &&
+          (!isCreating ? (
+            <Button
+              type="text"
+              className="mr-2 w-100 mt-2"
+              style={{ backgroundColor: "#f1f2f4" }}
+              onClick={() => {
+                setCreating(true);
+                ref.current?.focus();
+              }}
+            >
+              <i className="fa-solid fa-plus mr-2"></i>
+              <span>Create epic</span>
+            </Button>
+          ) : (
+            <Input
+              ref={ref}
+              onPressEnter={(e) => onCreateEpic(e)}
+              onBlur={() => setCreating(false)}
+              onKeyDownCapture={(e) => {
+                if (e.key === "Escape") setCreating(false);
+              }}
+              suffix={isLoading ? <LoadingOutlined /> : <></>}
+            />
+          ))}
       </div>
     </div>
   );

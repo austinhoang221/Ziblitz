@@ -25,14 +25,15 @@ import HeaderProject from "../header";
 
 export default function MembersProject() {
   const dispatch = useAppDispatch();
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const [searchValue, setSearchValue] = useState<string>("");
   const { members, permissions, isLoading } = useSelector(
     (state: RootState) => state.permissions
   );
-
+  const editPermission =
+    projectPermissions && projectPermissions.permissions.project.editPermission;
   const [messageApi, contextHolder] = message.useMessage();
 
   const showSuccessMessage = () => {
@@ -134,8 +135,9 @@ export default function MembersProject() {
             okText="Yes"
             cancelText="Cancel"
             onConfirm={() => onDeleteMember(id)}
+            disabled={!editPermission}
           >
-            <Button type="text" shape="circle">
+            <Button type="text" shape="circle" disabled={!editPermission}>
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"

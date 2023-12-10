@@ -53,8 +53,8 @@ export default function IssueModal(props: any) {
   const [isOpenIssueModal, setIsOpenIssueModal] = useState<boolean>(false);
   const [issue, setIssue] = useState<IIssue | null>(null);
   const dispatch = useAppDispatch();
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const [messageApi, contextHolder] = message.useMessage();
   const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
@@ -370,24 +370,27 @@ export default function IssueModal(props: any) {
                 >
                   Copy issue key
                 </Menu.Item>
-                <Menu.Item>
-                  <Popconfirm
-                    title="Delete"
-                    description="Are you sure to delete this issue?"
-                    okText="Yes"
-                    cancelText="Cancel"
-                    onConfirm={() =>
-                      onDeleteIssue(
-                        issue?.backlogId ?? issue?.sprintId!,
-                        issue?.id!
-                      )
-                    }
-                  >
-                    <div onClick={(e) => e.stopPropagation()}>
-                      Move to trash
-                    </div>
-                  </Popconfirm>
-                </Menu.Item>
+                {projectPermissions !== null &&
+                  projectPermissions.permissions.board.editPermission && (
+                    <Menu.Item>
+                      <Popconfirm
+                        title="Delete"
+                        description="Are you sure to delete this issue?"
+                        okText="Yes"
+                        cancelText="Cancel"
+                        onConfirm={() =>
+                          onDeleteIssue(
+                            issue?.backlogId ?? issue?.sprintId!,
+                            issue?.id!
+                          )
+                        }
+                      >
+                        <div onClick={(e) => e.stopPropagation()}>
+                          Move to trash
+                        </div>
+                      </Popconfirm>
+                    </Menu.Item>
+                  )}
               </Menu>
             }
             trigger={["click"]}

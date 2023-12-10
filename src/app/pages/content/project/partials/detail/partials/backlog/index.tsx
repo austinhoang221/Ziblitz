@@ -44,8 +44,8 @@ import IssueAddParent from "../../../../../../components/issue-add-parent";
 import EditSprintModal from "../../../../../../components/edit-sprint-modal";
 
 const Backlog: React.FC = () => {
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const backlogIssues = useSelector(
     (state: RootState) => state.projectDetail.backlogIssues
@@ -163,19 +163,23 @@ const Backlog: React.FC = () => {
                   onSaveIssue={onSaveIssue}
                 ></EditIssueInput>
               </div>
+
               <div className="align-child-space-between align-center">
-                <IssueAddParent
-                  issue={issue}
-                  periodId={issue.backlogId ?? issue.sprintId!}
-                  type={
-                    issue?.backlogId
-                      ? "backlog"
-                      : issue?.sprintId
-                      ? "sprint"
-                      : "epic"
-                  }
-                  onSaveIssue={showSuccessMessage}
-                ></IssueAddParent>
+                {projectPermissions &&
+                  projectPermissions.permissions.board.editPermission && (
+                    <IssueAddParent
+                      issue={issue}
+                      periodId={issue.backlogId ?? issue.sprintId!}
+                      type={
+                        issue?.backlogId
+                          ? "backlog"
+                          : issue?.sprintId
+                          ? "sprint"
+                          : "epic"
+                      }
+                      onSaveIssue={showSuccessMessage}
+                    ></IssueAddParent>
+                  )}
 
                 <IssueStatusSelect
                   type={type}
@@ -208,19 +212,24 @@ const Backlog: React.FC = () => {
                           ></SelectUser>
                         </Menu.Item>
                       </SubMenu>
-                      <Menu.Item>
-                        <Popconfirm
-                          title="Delete"
-                          description="Are you sure to delete this issue?"
-                          okText="Yes"
-                          cancelText="Cancel"
-                          onConfirm={() => onDeleteIssue(parentId, issue?.id)}
-                        >
-                          <div onClick={(e) => e.stopPropagation()}>
-                            Move to trash
-                          </div>
-                        </Popconfirm>
-                      </Menu.Item>
+                      {projectPermissions !== null &&
+                        projectPermissions.permissions.board.editPermission && (
+                          <Menu.Item>
+                            <Popconfirm
+                              title="Delete"
+                              description="Are you sure to delete this issue?"
+                              okText="Yes"
+                              cancelText="Cancel"
+                              onConfirm={() =>
+                                onDeleteIssue(parentId, issue?.id)
+                              }
+                            >
+                              <div onClick={(e) => e.stopPropagation()}>
+                                Move to trash
+                              </div>
+                            </Popconfirm>
+                          </Menu.Item>
+                        )}
                     </Menu>
                   }
                   trigger={["click"]}
@@ -378,73 +387,78 @@ const Backlog: React.FC = () => {
                       </div>
                     }
                     extra={
-                      <>
-                        {sprint.issues?.length > 0 &&
-                          !sprint.isComplete &&
-                          sprint.isStart && (
-                            <Button
-                              onClick={(e: any) =>
-                                onClickCompleteSprint(e, sprint)
-                              }
-                              type="default"
-                              className="mr-2"
-                            >
-                              Complete sprint
-                            </Button>
-                          )}
+                      projectPermissions &&
+                      projectPermissions.permissions.board.editPermission && (
+                        <>
+                          {sprint.issues?.length > 0 &&
+                            !sprint.isComplete &&
+                            sprint.isStart && (
+                              <Button
+                                onClick={(e: any) =>
+                                  onClickCompleteSprint(e, sprint)
+                                }
+                                type="default"
+                                className="mr-2"
+                              >
+                                Complete sprint
+                              </Button>
+                            )}
 
-                        {sprint.issues?.length > 0 &&
-                          !sprint.isComplete &&
-                          !sprint.isStart && (
-                            <Button
-                              onClick={(e: any) =>
-                                onClickStartSprint(e, sprint)
-                              }
-                              type="default"
-                              className="mr-2"
-                            >
-                              Start sprint
-                            </Button>
-                          )}
+                          {sprint.issues?.length > 0 &&
+                            !sprint.isComplete &&
+                            !sprint.isStart && (
+                              <Button
+                                onClick={(e: any) =>
+                                  onClickStartSprint(e, sprint)
+                                }
+                                type="default"
+                                className="mr-2"
+                              >
+                                Start sprint
+                              </Button>
+                            )}
 
-                        <Dropdown
-                          className="c-backlog-action"
-                          overlay={
-                            <Menu key={sprint.id}>
-                              <Menu.Item key="edit">
-                                <div
-                                  onClick={(e) => onClickEditSprint(e, sprint)}
-                                >
-                                  Edit
-                                </div>
-                              </Menu.Item>
-                              <Menu.Item key="delete">
-                                <Popconfirm
-                                  title="Delete"
-                                  description="Are you sure to delete this sprint?"
-                                  okText="Yes"
-                                  cancelText="Cancel"
-                                  onConfirm={(e) =>
-                                    onDeleteSprint(e, sprint?.id)
-                                  }
-                                >
-                                  <div onClick={(e) => e.stopPropagation()}>
-                                    Move to trash
+                          <Dropdown
+                            className="c-backlog-action"
+                            overlay={
+                              <Menu key={sprint.id}>
+                                <Menu.Item key="edit">
+                                  <div
+                                    onClick={(e) =>
+                                      onClickEditSprint(e, sprint)
+                                    }
+                                  >
+                                    Edit
                                   </div>
-                                </Popconfirm>
-                              </Menu.Item>
-                            </Menu>
-                          }
-                          trigger={["click"]}
-                        >
-                          <Button
-                            type="text"
-                            onClick={(e) => e.stopPropagation()}
+                                </Menu.Item>
+                                <Menu.Item key="delete">
+                                  <Popconfirm
+                                    title="Delete"
+                                    description="Are you sure to delete this sprint?"
+                                    okText="Yes"
+                                    cancelText="Cancel"
+                                    onConfirm={(e) =>
+                                      onDeleteSprint(e, sprint?.id)
+                                    }
+                                  >
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                      Move to trash
+                                    </div>
+                                  </Popconfirm>
+                                </Menu.Item>
+                              </Menu>
+                            }
+                            trigger={["click"]}
                           >
-                            <i className="fa-solid fa-ellipsis"></i>
-                          </Button>
-                        </Dropdown>
-                      </>
+                            <Button
+                              type="text"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <i className="fa-solid fa-ellipsis"></i>
+                            </Button>
+                          </Dropdown>
+                        </>
+                      )
                     }
                   >
                     {onRenderSprintContent(sprint)}
@@ -465,12 +479,15 @@ const Backlog: React.FC = () => {
                   </div>
                 }
                 extra={
-                  <Button
-                    onClick={(e: any) => onClickCreateSprint(e)}
-                    type="default"
-                  >
-                    Create sprint
-                  </Button>
+                  projectPermissions &&
+                  projectPermissions.permissions.board.editPermission && (
+                    <Button
+                      onClick={(e: any) => onClickCreateSprint(e)}
+                      type="default"
+                    >
+                      Create sprint
+                    </Button>
+                  )
                 }
               >
                 {onRenderBacklogContent}

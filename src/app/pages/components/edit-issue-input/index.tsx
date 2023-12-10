@@ -24,8 +24,8 @@ const EditIssueInput = (props: IEditIssueInput) => {
   const dispatch = useAppDispatch();
   const ref = useRef<InputRef>(null);
   const navigate = useNavigate();
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
 
@@ -106,13 +106,17 @@ const EditIssueInput = (props: IEditIssueInput) => {
               {editedValue}
             </span>
           </Tooltip>
-          <Button
-            type="text"
-            className="c-backlog-edit ml-2"
-            onClick={() => onEditIssue()}
-          >
-            <i className="fa-solid fa-pencil"></i>
-          </Button>
+          {projectPermissions &&
+            (projectPermissions.permissions.board.editPermission ||
+              projectPermissions.permissions.backlog.editPermission) && (
+              <Button
+                type="text"
+                className="c-backlog-edit ml-2"
+                onClick={() => onEditIssue()}
+              >
+                <i className="fa-solid fa-pencil"></i>
+              </Button>
+            )}
         </div>
       )}
     </div>

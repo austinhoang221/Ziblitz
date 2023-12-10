@@ -39,9 +39,11 @@ export default function Priorities() {
     pageSize: 5,
     sort: ["name:asc"],
   };
-  const project = useSelector(
-    (state: RootState) => state.projectDetail.project
+  const { project, projectPermissions } = useSelector(
+    (state: RootState) => state.projectDetail
   );
+  const editPermission =
+    projectPermissions && projectPermissions.permissions.project.editPermission;
   const [drawerForm] = Form.useForm();
 
   const [requestParam, setRequestParam] =
@@ -110,9 +112,13 @@ export default function Priorities() {
             okText="Yes"
             cancelText="Cancel"
             onConfirm={() => onDeletePriority(priority.id)}
-            disabled={priority.isMain}
+            disabled={priority.isMain || !editPermission}
           >
-            <Button type="text" shape="circle" disabled={priority.isMain}>
+            <Button
+              type="text"
+              shape="circle"
+              disabled={priority.isMain || !editPermission}
+            >
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"
@@ -172,12 +178,14 @@ export default function Priorities() {
   };
 
   const onOpenModal = (mode: string, item?: IPriority) => {
-    setIsModalOpen(true);
-    setMode(mode);
-    if (mode === "edit") {
-      drawerForm.setFieldsValue(item);
-      setColorValue(item?.color);
-      setPriorityId(item?.id!);
+    if (editPermission) {
+      setIsModalOpen(true);
+      setMode(mode);
+      if (mode === "edit") {
+        drawerForm.setFieldsValue(item);
+        setColorValue(item?.color);
+        setPriorityId(item?.id!);
+      }
     }
   };
 
@@ -192,9 +200,11 @@ export default function Priorities() {
         isFixedHeader={false}
         onSearch={onSearch}
         actionContent={
-          <Button type="primary" onClick={() => onOpenModal("create")}>
-            Create priority
-          </Button>
+          editPermission && (
+            <Button type="primary" onClick={() => onOpenModal("create")}>
+              Create priority
+            </Button>
+          )
         }
       ></HeaderProject>
       <Table
