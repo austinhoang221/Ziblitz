@@ -16,4 +16,30 @@ export class UserService {
       console.error("Error making POST request:", error);
     }
   };
+
+  public static update = async (userId: string, payload: any) => {
+    try {
+      const response: IResponse<IUser> = await axiosInstance.put(
+        Endpoint.getAllUser + userId,
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static changePassword = async (userId: string, payload: any) => {
+    try {
+      const response: IResponse<IUser> = await axiosInstance.put(
+        Endpoint.getAllUser + userId,
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
 }

@@ -18,6 +18,7 @@ import NotificationProject from "./app/pages/content/project/partials/detail/par
 import Priorities from "./app/pages/content/project/partials/detail/partials/priorities";
 import Statuses from "./app/pages/content/project/partials/detail/partials/statuses";
 import TimelineProject from "./app/pages/content/project/partials/detail/partials/timeline";
+import User from "./app/pages/content/user";
 import { PrivateRoute } from "./app/routes/private-route";
 
 function App() {
@@ -36,6 +37,8 @@ function App() {
           <Route>
             <Route path="dashboard" element={<Dashboard />}></Route>
             <Route path="project" element={<Project />}></Route>
+            <Route path="user/:userId" element={<User />} />
+
             <Route path="project/:code" element={<DetailProject />}>
               <Route path="timeline" element={<TimelineProject />}>
                 <Route
