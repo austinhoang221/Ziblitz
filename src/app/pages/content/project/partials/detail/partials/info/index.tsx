@@ -43,9 +43,9 @@ export default function InfoProject() {
     infoForm.setFieldsValue(project);
     infoForm.resetFields();
   }, [project]);
-  const [messageApi, contextHolder] = message.useMessage();
   const editPermission =
     projectPermissions && projectPermissions.permissions.project.editPermission;
+  const [messageApi, contextHolder] = message.useMessage();
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",

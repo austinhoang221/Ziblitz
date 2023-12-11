@@ -35,6 +35,7 @@ export default function MembersProject() {
   const editPermission =
     projectPermissions && projectPermissions.permissions.project.editPermission;
   const [messageApi, contextHolder] = message.useMessage();
+  const userId = JSON.parse(localStorage.getItem("user")!)?.id;
 
   const showSuccessMessage = () => {
     messageApi.open({
@@ -91,6 +92,7 @@ export default function MembersProject() {
       render: (member: IMember) => {
         return (
           <Select
+            disabled={project?.leader.id !== userId}
             loading={isLoading}
             style={{ width: "150px" }}
             defaultValue={member.permissionGroupId}
