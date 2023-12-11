@@ -61,29 +61,32 @@ export default function BoardProject(props: any) {
     min-width: 100vw;
   `;
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    const payload = {
-      epicIds: checkedEpics,
-      issueTypeIds: checkedTypes,
-      sprintIds: checkedSprints,
-      searchKey: searchValue,
-    };
-    await SprintService.getAllIssue(project?.id!, payload).then((res) => {
-      if (checkResponseStatus(res)) {
-        setOrdered(res?.data!);
-        setIsLoading(false);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    params?.sprintId,
-    project?.id,
-    searchValue,
-    checkedEpics,
-    checkedSprints,
-    checkedTypes,
-  ]);
+  const fetchData = useCallback(
+    async (request: any) => {
+      setIsLoading(true);
+      const payload = {
+        epicIds: request.checkedEpics,
+        issueTypeIds: request.checkedTypes,
+        sprintIds: request.checkedSprints,
+        searchKey: searchValue,
+      };
+      await SprintService.getAllIssue(project?.id!, payload).then((res) => {
+        if (checkResponseStatus(res)) {
+          setOrdered(res?.data!);
+          setIsLoading(false);
+        }
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [
+      params?.sprintId,
+      project?.id,
+      searchValue,
+      checkedEpics,
+      checkedSprints,
+      checkedTypes,
+    ]
+  );
 
   useEffect(() => {
     if (project?.id && project?.epics) {
@@ -111,32 +114,15 @@ export default function BoardProject(props: any) {
   }, [project?.id]);
 
   useEffect(() => {
-    setCheckedEpics([...epicOptions.map((item: any) => item.value)]);
-  }, [epicOptions]);
-
-  useEffect(() => {
-    setCheckedTypes([...typeOptions.map((item: any) => item.value)]);
-  }, [typeOptions]);
-
-  useEffect(() => {
-    setCheckedSprints([...sprintOptions.map((item: any) => item.value)]);
-  }, [sprintOptions]);
-
-  useEffect(() => {
-    if (isFirstRender && project?.id) {
-      fetchData();
-    } else if (!isFirstRender && project?.id) {
-      fetchData();
+    if (project?.id) {
+      fetchData({
+        checkedEpics: checkedEpics,
+        checkedSprints: checkedSprints,
+        checkedTypes: checkedTypes,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    isFirstRender,
-    project?.id,
-    searchValue,
-    checkedEpics,
-    checkedTypes,
-    checkedSprints,
-  ]);
+  }, [isFirstRender, project?.id, searchValue]);
 
   useEffect(() => {
     if (searchEpicValue) {
@@ -153,30 +139,66 @@ export default function BoardProject(props: any) {
     setCheckedEpics(
       e.target.checked ? epicOptions.map((option: any) => option.value) : []
     );
+    fetchData({
+      checkedEpics: e.target.checked
+        ? epicOptions.map((option: any) => option.value)
+        : [],
+      checkedSprints: checkedSprints,
+      checkedTypes: checkedTypes,
+    });
   };
 
   const onCheckedEpicChange = (list: CheckboxValueType[]) => {
     setCheckedEpics(list);
+    fetchData({
+      checkedEpics: list,
+      checkedSprints: checkedSprints,
+      checkedTypes: checkedTypes,
+    });
   };
 
   const onCheckAllTypeChange = (e: CheckboxChangeEvent) => {
     setCheckedTypes(
       e.target.checked ? typeOptions.map((option: any) => option.value) : []
     );
+    fetchData({
+      checkedEpics: checkedEpics,
+      checkedSprints: checkedSprints,
+      checkedTypes: e.target.checked
+        ? typeOptions.map((option: any) => option.value)
+        : [],
+    });
   };
 
   const onCheckedTypeChange = (list: CheckboxValueType[]) => {
     setCheckedTypes(list);
+    fetchData({
+      checkedEpics: checkedEpics,
+      checkedSprints: checkedSprints,
+      checkedTypes: list,
+    });
   };
 
   const onCheckAllSprintChange = (e: CheckboxChangeEvent) => {
     setCheckedSprints(
       e.target.checked ? sprintOptions.map((option: any) => option.value) : []
     );
+    fetchData({
+      checkedEpics: checkedEpics,
+      checkedSprints: checkedSprints,
+      checkedTypes: e.target.checked
+        ? typeOptions.map((option: any) => option.value)
+        : [],
+    });
   };
 
   const onCheckedSprintChange = (list: CheckboxValueType[]) => {
     setCheckedSprints(list);
+    fetchData({
+      checkedEpics: checkedEpics,
+      checkedSprints: list,
+      checkedTypes: checkedTypes,
+    });
   };
 
   const onSearch = (value: string) => {
