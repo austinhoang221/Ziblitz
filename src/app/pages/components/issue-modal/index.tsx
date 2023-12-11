@@ -1,4 +1,3 @@
-import { red } from "@ant-design/colors";
 import {
   Button,
   Card,
@@ -10,15 +9,12 @@ import {
   Modal,
   Popconfirm,
   Row,
-  Table,
   Tabs,
   TabsProps,
   Tooltip,
   UploadFile,
   UploadProps,
 } from "antd";
-import { ColumnsType } from "antd/es/table";
-import { RcFile } from "antd/es/upload";
 import Upload from "antd/es/upload/Upload";
 import dayjs from "dayjs";
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
@@ -26,12 +22,9 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
-import { FileService } from "../../../../services/fileService";
 import { IssueService } from "../../../../services/issueService";
-import Endpoint from "../../../api/endpoint";
 import { useAppDispatch } from "../../../customHooks/dispatch";
-import { byteToMb, checkResponseStatus, getFileIcon } from "../../../helpers";
-import { IFile } from "../../../models/IFile";
+import { checkResponseStatus } from "../../../helpers";
 import { IIssue } from "../../../models/IIssue";
 import ChildIssues from "../child-issues";
 import CreateIssueInput from "../create-issue-input";
@@ -42,6 +35,7 @@ import IssueHistory from "../issue-history";
 import IssueStatusSelect from "../issue-status-select";
 import IssueType from "../issue-type";
 import IssueTypeSelect from "../issue-type-select";
+import Attachments from "./attachments";
 import "./index.scss";
 import IssueModalSkeleton from "./skeleton";
 
@@ -49,7 +43,6 @@ export default function IssueModal(props: any) {
   const params = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
   const [isOpenIssueModal, setIsOpenIssueModal] = useState<boolean>(false);
   const [issue, setIssue] = useState<IIssue | null>(null);
   const dispatch = useAppDispatch();
@@ -57,121 +50,8 @@ export default function IssueModal(props: any) {
     (state: RootState) => state.projectDetail
   );
   const [messageApi, contextHolder] = message.useMessage();
-  const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
-  const [fileList, setFileList] = useState<IFile[]>([]);
+
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
-
-  const uploadProps: UploadProps = {
-    multiple: true,
-    beforeUpload(file: UploadFile) {
-      setUploadFileList((prevUploadFileList) => [...prevUploadFileList, file]);
-      return false;
-    },
-  };
-
-  React.useEffect(() => {
-    if (uploadFileList.length > 0) {
-      handleUpload();
-    }
-  }, [uploadFileList]);
-
-  const handleUpload = useCallback(() => {
-    const formData = new FormData();
-    uploadFileList.forEach((file) => {
-      formData.append("files", file as RcFile, file.name); // Note: The third argument is the filename
-    });
-
-    setIsUploadFile(true);
-    const user = localStorage.getItem("user");
-    fetch(
-      `https://task-manager-service.azurewebsites.net/api/issues/${issue?.id}/attachments`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "text/plain",
-          Authorization: `Bearer ${JSON.parse(user!).token}`,
-        },
-        body: formData,
-      }
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        setFileList((prevFileList) => [...prevFileList, ...result?.data]);
-        setUploadFileList([]);
-      })
-      .catch(() => {})
-      .finally(() => {
-        setIsUploadFile(false);
-      });
-  }, [uploadFileList]);
-
-  const onClickDeleteFile = async (id: string) => {
-    await FileService.delete(issue?.id!, id).then((res) => {
-      if (checkResponseStatus(res)) {
-        const newFileList = fileList.filter((file) => file.id !== res?.data);
-        setFileList(newFileList);
-        showSuccessMessage();
-      }
-    });
-  };
-
-  const columns: ColumnsType<IFile> = [
-    {
-      title: "Name",
-      key: "title",
-      width: "auto",
-      ellipsis: true,
-      render: (file: IFile) => (
-        <div className="d-flex align-center">
-          <span className="font-sz16 mr-2">{getFileIcon(file.type)}</span>
-          <Tooltip title={file.name}>
-            <span className="text-truncate">{file.name}</span>
-          </Tooltip>
-        </div>
-      ),
-    },
-    {
-      title: "Date added",
-      dataIndex: "modificationTime",
-      key: "modificationTime",
-      width: "20%",
-      render: (text: string) => {
-        return <span>{dayjs(text).format("MMM D, YYYY")}</span>;
-      },
-    },
-    {
-      title: "Size",
-      dataIndex: "size",
-      key: "size",
-      width: "15%",
-      render: (size: number) => {
-        return <span>{byteToMb(size)} MB</span>;
-      },
-    },
-    {
-      title: "",
-      key: "action",
-      width: "50px",
-      render: (file: IFile) => {
-        return (
-          <Popconfirm
-            title="Delete the file"
-            description="Are you sure to delete this file?"
-            okText="Yes"
-            cancelText="Cancel"
-            onConfirm={() => onClickDeleteFile(file?.id)}
-          >
-            <Button type="text" shape="circle">
-              <i
-                style={{ color: red.primary }}
-                className="fa-solid fa-trash-can"
-              ></i>
-            </Button>
-          </Popconfirm>
-        );
-      },
-    },
-  ];
 
   const showSuccessMessage = (issue?: IIssue) => {
     messageApi.open({
@@ -187,12 +67,6 @@ export default function IssueModal(props: any) {
     await IssueService.getById(params?.issueId!).then((res) => {
       if (checkResponseStatus(res)) {
         setIssue(res?.data!);
-        setIsLoading(false);
-      }
-    });
-    await FileService.getByIssueId(params?.issueId!).then((res) => {
-      if (checkResponseStatus(res)) {
-        setFileList(res?.data!);
         setIsLoading(false);
       }
     });
@@ -436,18 +310,9 @@ export default function IssueModal(props: any) {
                 periodId={issue?.sprintId ?? issue?.backlogId!}
                 issueId={issue?.id!}
               ></InlineEdit>
-              <div className="mt-2 mb-4">
-                <Upload {...uploadProps}>
-                  <Button
-                    type="text"
-                    className=" mr-2"
-                    style={{ backgroundColor: "#f1f2f4" }}
-                  >
-                    <i className="fa-solid fa-paperclip mr-2"></i>
-                    Attach
-                  </Button>
-                </Upload>
-              </div>
+
+              <Attachments issue={issue!} onSaveSuccess={showSuccessMessage} />
+
               <span className="font-weight-bold ml-2 mt-4 mb-2">
                 Description
               </span>
@@ -462,20 +327,7 @@ export default function IssueModal(props: any) {
                   onSaveIssue={(issue?: IIssue) => showSuccessMessage(issue)}
                 ></InlineEdit>
               </div>
-              {fileList?.length > 0 && (
-                <>
-                  <span className="font-weight-bold ml-2 mt-4 mb-2">
-                    Attachments
-                  </span>
-                  <Table
-                    columns={columns}
-                    dataSource={fileList}
-                    rowKey={(record) => record.id}
-                    pagination={false}
-                    loading={isUploadFile}
-                  />
-                </>
-              )}
+
               <span className="font-weight-bold ml-2 mt-4 mb-4">
                 Child issues
               </span>

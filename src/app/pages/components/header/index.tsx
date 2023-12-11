@@ -34,6 +34,9 @@ export default function Header() {
   const user = JSON.parse(localStorage.getItem("user")!);
 
   const projects = useSelector((state: RootState) => state.projects);
+  const currentProject = useSelector(
+    (state: RootState) => state.projectDetail.project
+  );
   const filterItems: MenuProps["items"] = [
     {
       key: "1",
@@ -97,6 +100,10 @@ export default function Header() {
   const goToCreateProject = () => {
     setIsDrawerOpen(true);
   };
+
+  const onNavigateUser = (id: string) => {
+    navigate(`user/${id}`);
+  };
   return (
     <>
       <nav className="c-header">
@@ -137,7 +144,10 @@ export default function Header() {
               <Dropdown
                 trigger={["click"]}
                 overlay={
-                  <Menu title="Recent">
+                  <Menu
+                    title="Recent"
+                    selectedKeys={[currentProject?.id ?? ""]}
+                  >
                     {projects.map((project) => {
                       return (
                         <Menu.Item
@@ -220,7 +230,7 @@ export default function Header() {
             trigger={["click"]}
             overlay={
               <Menu title="Account">
-                <Menu.Item>
+                <Menu.Item onClick={() => onNavigateUser(user?.id)}>
                   <div className="d-flex align-center">
                     <Avatar
                       size={40}
