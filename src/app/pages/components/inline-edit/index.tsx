@@ -21,6 +21,8 @@ import { IIssue } from "../../../models/IIssue";
 import SelectPriority from "../issue-priority-select";
 import IssuePriority from "../issue-priority";
 import { LoadingOutlined } from "@ant-design/icons";
+import SelectLabel from "../labelSelect";
+import { ILabel } from "../../../models/ILabel";
 
 interface IInlineEditProps {
   type: string;
@@ -181,6 +183,18 @@ export default function InlineEdit(props: IInlineEditProps) {
             onBlur={() => setIsEditing(false)}
           ></SprintSelect>
         );
+      case "labelSelect":
+        return (
+          <SelectLabel
+            className="w-100"
+            type={props.periodType}
+            periodId={props.periodId}
+            onSaveIssue={(issue?: IIssue) => props.onSaveIssue(issue)}
+            issueId={props.issueId}
+            selectedId={props.initialValue!}
+            onBlur={() => setIsEditing(false)}
+          ></SelectLabel>
+        );
       case "storyPointEstimate":
         return (
           <InputNumber
@@ -283,6 +297,42 @@ export default function InlineEdit(props: IInlineEditProps) {
                     project?.sprints.find((sprint) => sprint.id === editedValue)
                       ?.name
                   }
+                </span>
+              ) : (
+                <span className="ml-2">None</span>
+              )}
+            </div>
+          </>
+        );
+      case "labelSelect":
+        return (
+          <>
+            <div
+              className={
+                "edit-content" +
+                (props.fieldName === "name"
+                  ? " font-sz24 font-weight-medium"
+                  : "")
+              }
+              onClick={onEdit}
+            >
+              {editedValue ? (
+                <span className="ml-2">
+                  {editedValue.map((value: ILabel) => {
+                    return (
+                      <span
+                        key={value.id}
+                        className="p-2"
+                        style={{
+                          backgroundColor: value.color,
+                          borderRadius: "3px",
+                        }}
+                      >
+                        <i className="fa-solid fa-tags mr-2"></i>
+                        {value.name}
+                      </span>
+                    );
+                  })}
                 </span>
               ) : (
                 <span className="ml-2">None</span>

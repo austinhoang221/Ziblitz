@@ -399,9 +399,9 @@ export default function IssueModal(props: any) {
                       periodType={getPeriodType(issue!)}
                       periodId={issue?.sprintId ?? issue?.backlogId!}
                       initialValue={issue?.sprintId ?? null}
-                      type="sprintSelect"
+                      type="labelSelect"
                       issueId={issue?.id!}
-                      fieldName="sprintId"
+                      fieldName="labelId"
                       onSaveIssue={(issue?: IIssue) =>
                         showSuccessMessage(issue)
                       }

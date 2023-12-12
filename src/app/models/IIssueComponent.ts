@@ -5,7 +5,7 @@ export interface IIssueComponentProps {
   type: string;
   periodId: string;
   issueId: string;
-  selectedId: string;
+  selectedId: string | string[];
   className?: string;
   style?: DropdownProps["overlayStyle"];
   onSaveIssue: (issue?: IIssue) => void;

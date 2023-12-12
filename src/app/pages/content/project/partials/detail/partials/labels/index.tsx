@@ -83,7 +83,7 @@ export default function Labels() {
       key: "color",
       width: "30%",
       render: (text: string) => {
-        return <span>{text}</span>;
+        return <ColorPicker value={text} disabled={true} />;
       },
     },
     {
