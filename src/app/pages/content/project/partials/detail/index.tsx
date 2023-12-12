@@ -124,6 +124,14 @@ export default function DetailProject() {
           ),
         },
         {
+          key: "labels",
+          label: (
+            <span>
+              <i className="fa-solid fa-tags mr-2"></i>Labels
+            </span>
+          ),
+        },
+        {
           key: "notifications",
           label: (
             <span>

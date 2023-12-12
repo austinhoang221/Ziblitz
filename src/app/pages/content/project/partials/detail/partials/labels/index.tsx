@@ -1,6 +1,8 @@
 import { red } from "@ant-design/colors";
 import {
   Button,
+  ColorPicker,
+  ColorPickerProps,
   Form,
   Input,
   message,
@@ -14,15 +16,15 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
-import { StatusService } from "../../../../../../../../services/statusService";
+import { LabelService } from "../../../../../../../../services/labelService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
-import useStatusData from "../../../../../../../customHooks/fetchStatus";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import { IPagination } from "../../../../../../../models/IPagination";
-import { IStatus } from "../../../../../../../models/IStatus";
+import { ILabel } from "../../../../../../../models/ILabel";
 import HeaderProject from "../header";
+import useLabelData from "../../../../../../../customHooks/fetchLabel";
 
-export default function Statuses() {
+export default function Labels() {
   const initialRequestParam: IPagination = {
     pageNum: 1,
     pageSize: 5,
@@ -40,8 +42,10 @@ export default function Statuses() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mode, setMode] = useState<string>("");
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
-  const [statusId, setStatusId] = useState<string>("");
+  const [labelId, setLabelId] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
+  const [colorValue, setColorValue] =
+    useState<ColorPickerProps["value"]>("#1677ff");
   const editPermission =
     projectPermissions && projectPermissions.permissions.project.editPermission;
   const showSuccessMessage = () => {
@@ -50,13 +54,13 @@ export default function Statuses() {
       content: "Successfully",
     });
   };
-  const { listStatus, totalCount, refreshData, isLoading } = useStatusData(
+  const { listLabel, totalCount, refreshData, isLoading } = useLabelData(
     project?.id!,
     requestParam
   );
 
-  const onDeleteStatus = async (id: string) => {
-    await StatusService.delete(project?.id!, id).then((res) => {
+  const onDeleteLabel = async (id: string) => {
+    await LabelService.delete(project?.id!, id).then((res) => {
       if (checkResponseStatus(res)) {
         refreshData();
         dispatch(getProjectByCode(project?.code!));
@@ -65,12 +69,21 @@ export default function Statuses() {
     });
   };
 
-  const columns: ColumnsType<IStatus> = [
+  const columns: ColumnsType<ILabel> = [
     {
       title: "Name",
       key: "name",
-      render: (status: IStatus) => {
-        return <a onClick={() => onOpenModal("edit", status)}>{status.name}</a>;
+      render: (label: ILabel) => {
+        return <a onClick={() => onOpenModal("edit", label)}>{label.name}</a>;
+      },
+    },
+    {
+      title: "Color",
+      dataIndex: "color",
+      key: "color",
+      width: "30%",
+      render: (text: string) => {
+        return <span>{text}</span>;
       },
     },
     {
@@ -87,21 +100,17 @@ export default function Statuses() {
       dataIndex: "id",
       key: "action",
       width: "40px",
-      render: (status: IStatus) => {
+      render: (label: ILabel) => {
         return (
           <Popconfirm
-            title="Delete the status"
-            description="Are you sure to delete this status?"
+            title="Delete the label"
+            description="Are you sure to delete this label?"
             okText="Yes"
             cancelText="Cancel"
-            onConfirm={() => onDeleteStatus(status.id)}
-            disabled={status.isMain || !editPermission}
+            onConfirm={() => onDeleteLabel(label.id)}
+            disabled={!editPermission}
           >
-            <Button
-              type="text"
-              shape="circle"
-              disabled={status.isMain || !editPermission}
-            >
+            <Button type="text" shape="circle" disabled={!editPermission}>
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"
@@ -128,15 +137,16 @@ export default function Statuses() {
       await drawerForm.validateFields();
       setIsLoadingButtonSave(true);
 
-      const payload: IStatus = {
+      const payload: ILabel = {
         ...drawerFormValue,
+        color: colorValue,
         projectId: project?.id,
       };
       let response;
       if (mode === "create") {
-        response = await StatusService.create(project?.id!, payload);
+        response = await LabelService.create(project?.id!, payload);
       } else {
-        response = await StatusService.update(project?.id!, statusId, payload);
+        response = await LabelService.update(project?.id!, labelId, payload);
       }
       if (checkResponseStatus(response)) {
         refreshData();
@@ -155,13 +165,14 @@ export default function Statuses() {
     drawerForm.resetFields();
   };
 
-  const onOpenModal = (mode: string, item?: IStatus) => {
+  const onOpenModal = (mode: string, item?: ILabel) => {
     if (editPermission) {
       setIsModalOpen(true);
       setMode(mode);
       if (mode === "edit") {
         drawerForm.setFieldsValue(item);
-        setStatusId(item?.id!);
+        setColorValue(item?.color);
+        setLabelId(item?.id!);
       }
     }
   };
@@ -173,13 +184,13 @@ export default function Statuses() {
   return (
     <div className="issue-types">
       <HeaderProject
-        title="Statuses"
+        title="Labels"
         isFixedHeader={false}
         onSearch={onSearch}
         actionContent={
           editPermission && (
             <Button type="primary" onClick={() => onOpenModal("create")}>
-              Create status
+              Create label
             </Button>
           )
         }
@@ -187,7 +198,7 @@ export default function Statuses() {
       <Table
         className="mt-3"
         columns={columns}
-        dataSource={listStatus}
+        dataSource={listLabel}
         rowKey={(record) => record.id}
         pagination={false}
         loading={isLoading}
@@ -227,11 +238,27 @@ export default function Statuses() {
             rules={[
               {
                 required: true,
-                message: "Please enter your status name",
+                message: "Please enter your label name",
               },
             ]}
           >
             <Input placeholder="Name" />
+          </Form.Item>
+
+          <Form.Item
+            label="Color"
+            required={true}
+            rules={[
+              {
+                required: true,
+                message: "Please enter your color",
+              },
+            ]}
+          >
+            <ColorPicker
+              value={colorValue}
+              onChangeComplete={(value) => setColorValue(value.toHexString())}
+            />
           </Form.Item>
 
           <Form.Item

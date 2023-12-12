@@ -13,6 +13,7 @@ import CodeProject from "./app/pages/content/project/partials/detail/partials/co
 import FeatureProject from "./app/pages/content/project/partials/detail/partials/feature";
 import InfoProject from "./app/pages/content/project/partials/detail/partials/info";
 import IssueTypes from "./app/pages/content/project/partials/detail/partials/issue-types";
+import Labels from "./app/pages/content/project/partials/detail/partials/labels";
 import MembersProject from "./app/pages/content/project/partials/detail/partials/members";
 import NotificationProject from "./app/pages/content/project/partials/detail/partials/notification";
 import Priorities from "./app/pages/content/project/partials/detail/partials/priorities";
@@ -56,6 +57,7 @@ function App() {
               <Route path="issueTypes" element={<IssueTypes />} />
               <Route path="priorities" element={<Priorities />} />
               <Route path="statuses" element={<Statuses />} />
+              <Route path="labels" element={<Labels />} />
               <Route path="notifications" element={<NotificationProject />} />
               <Route path="access" element={<AccessProject />} />
               <Route path="members" element={<MembersProject />} />

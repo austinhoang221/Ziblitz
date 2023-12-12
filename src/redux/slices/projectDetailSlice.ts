@@ -27,7 +27,7 @@ const initialProjectDetailState: IProjectDetail = {
   priorities: [],
   projectPermissions: null,
   issueOnBoard: null,
-  isShowEpic: false,
+  isShowEpic: true,
   isLoading: false,
 };
 

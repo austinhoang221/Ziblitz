@@ -7,6 +7,8 @@ import { IWatcher } from "./IWatcher";
 export interface IIssue {
   id: string;
   code: string;
+  projectCode: string;
+  projectName: string;
   parentId: string | null;
   parentName: string | null;
   sprintId: string | null;

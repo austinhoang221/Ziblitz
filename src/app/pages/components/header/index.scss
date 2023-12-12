@@ -1,15 +1,21 @@
-.c-header{
+.c-header {
     border-bottom: 1px solid rgb(242, 243, 244);
     height: 56px;
     display: flex;
     flex-shrink: 0;
-    width: 100%;    
+    width: 100%;
     align-items: center;
     justify-content: space-between;
-    &.-dropdown-item{
+
+    &.-dropdown-item {
         height: 100%;
-        &:focus{
+
+        &:focus {
             background-color: red;
         }
+    }
+
+    .ant-dropdown {
+        width: 300px;
     }
 }

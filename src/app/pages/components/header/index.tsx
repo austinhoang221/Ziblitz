@@ -24,7 +24,6 @@ import CreateProjectDrawer from "../../content/project/partials/create";
 import ButtonIcon from "../button-icon";
 import "./index.scss";
 import AssignToMeTask from "./partials/assign-to-me-task";
-import Board from "./partials/board";
 import RecentTask from "./partials/recent-task";
 export default function Header() {
   const [defaultTabIndex, setDefaultTabIndex] = useState<string>("1");
@@ -79,11 +78,6 @@ export default function Header() {
       label: "Recent",
       children: <RecentTask />,
     },
-    {
-      key: "3",
-      label: "Board",
-      children: <Board />,
-    },
   ];
   const onClickLogout = () => {
     dispatch(logout());
@@ -95,7 +89,7 @@ export default function Header() {
   const goToDetailProject = (project: IProject) => {
     dispatch(getPermissions(project?.id));
     dispatch(getMembers(project?.id));
-    navigate(`project/${project?.code}/board`);
+    navigate(`project/${project?.code}/backlog`);
   };
   const goToCreateProject = () => {
     setIsDrawerOpen(true);
@@ -122,6 +116,7 @@ export default function Header() {
                 overlayStyle={{
                   margin: "20px",
                   inset: "35px auto auto 62px",
+                  width: "300px",
                 }}
                 overlay={
                   <Menu>
