@@ -22,8 +22,8 @@ function useLabelData(projectId: string, requestParam: IPagination) {
       requestParam.sort
     ).then((res) => {
       if (checkResponseStatus(res)) {
-        setListOfData(res?.data?.content!);
-        setTotalCount(res?.data?.totalCount!);
+        setListOfData(res?.data.content!);
+        // setTotalCount(res?.data?.totalCount!);
         setLoading(false);
       }
     });
