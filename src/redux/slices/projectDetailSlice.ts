@@ -36,13 +36,15 @@ const userId = JSON.parse(localStorage.getItem("user")!)?.id;
 export const getProjectByCode = createAsyncThunk(
   "getByCode",
   async (code: string) => {
-    let response: IDetailProject | null = null;
-    await ProjectService.getByCode(userId, code).then((res) => {
-      if (checkResponseStatus(res)) {
-        response = res?.data!;
-      }
-    });
-    return response;
+    if (userId) {
+      let response: IDetailProject | null = null;
+      await ProjectService.getByCode(userId, code).then((res) => {
+        if (checkResponseStatus(res)) {
+          response = res?.data!;
+        }
+      });
+      return response;
+    }
   }
 );
 

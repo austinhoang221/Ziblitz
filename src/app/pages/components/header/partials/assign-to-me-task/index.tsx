@@ -1,10 +1,11 @@
-import { Avatar, List, Skeleton } from "antd";
+import { List, Skeleton } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../redux/store";
 import { SprintService } from "../../../../../../services/sprintService";
 import { checkResponseStatus } from "../../../../../helpers";
 import { IIssueOnBoard } from "../../../../../models/IProject";
+import IssueType from "../../../issue-type";
 
 export default function AssignToMeTask() {
   const [ordered, setOrdered] = useState<IIssueOnBoard>();
@@ -54,7 +55,11 @@ export default function AssignToMeTask() {
                   renderItem={(item, index) => (
                     <List.Item>
                       <List.Item.Meta
-                        avatar={<Avatar src={``} />}
+                        avatar={
+                          <IssueType
+                            issueTypeKey={item.issueType.icon}
+                          ></IssueType>
+                        }
                         title={
                           <a
                             href={`/project/${item.projectCode}/backlog/${item.id}`}

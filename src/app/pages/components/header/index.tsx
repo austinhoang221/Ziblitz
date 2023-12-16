@@ -40,10 +40,12 @@ export default function Header() {
     {
       key: "1",
       label: "View all filters",
+      onClick: () => navigate("/filters"),
     },
     {
       key: "2",
-      label: "Create filter",
+      label: "View all issues",
+      onClick: () => navigate("/issues/filter"),
     },
   ];
   const dashboardItems: MenuProps["items"] = [

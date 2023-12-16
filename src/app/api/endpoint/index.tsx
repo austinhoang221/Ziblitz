@@ -34,6 +34,7 @@ export default class Endpoint {
   public static getFiles: string = this.baseUrl + "issues/";
   public static getIssueHistories: string = this.baseUrl + "issues/";
   public static getIssueComment: string = this.baseUrl + "issues/";
+  public static getFilters: string = this.baseUrl + "filters/";
   public static deleteIssue: string = this.baseUrl + "sprints/";
   public static editSprintIssue: string = this.baseUrl + "sprints/";
   public static editBacklogIssue: string = this.baseUrl + "backlogs/";

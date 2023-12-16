@@ -8,7 +8,7 @@ import { PermissionService } from "../../services/permissionService";
 import { RootState } from "../store";
 const requestParam: IPagination = {
   pageNum: 1,
-  pageSize: 9999,
+  pageSize: 20,
   sort: ["name:asc"],
 };
 interface IPermissionState {

@@ -22,14 +22,10 @@ import {
 import {
   getProjectByCode,
   getProjectPriorities,
-  setIsShowEpic,
 } from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
 import { ProjectService } from "../../../../../../../../services/projectService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
-import useMemberData from "../../../../../../../customHooks/fetchMember";
-import usePermissionData from "../../../../../../../customHooks/fetchPermission";
-import useRoleData from "../../../../../../../customHooks/fetchRole";
 import useUserData from "../../../../../../../customHooks/fetchUser";
 import {
   checkResponseStatus,

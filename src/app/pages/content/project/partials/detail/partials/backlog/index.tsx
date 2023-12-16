@@ -37,13 +37,14 @@ import dayjs from "dayjs";
 import { IssueService } from "../../../../../../../../services/issueService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
 import IssueStatusSelect from "../../../../../../components/issue-status-select";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import IssueModal from "../../../../../../components/issue-modal";
 import Epic from "../../../../../../components/epic";
 import IssueAddParent from "../../../../../../components/issue-add-parent";
 import EditSprintModal from "../../../../../../components/edit-sprint-modal";
 
 const Backlog: React.FC = () => {
+  const params = useParams();
   const { project, projectPermissions } = useSelector(
     (state: RootState) => state.projectDetail
   );
@@ -64,10 +65,10 @@ const Backlog: React.FC = () => {
   const [isShowSprintModal, setShowSprintModal] = useState<boolean>(false);
 
   useEffect(() => {
-    if (project?.code) {
-      dispatch(getProjectByCode(project?.code!));
+    if (params?.code) {
+      dispatch(getProjectByCode(params?.code!));
     }
-  }, [project?.code]);
+  }, [params?.code]);
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",

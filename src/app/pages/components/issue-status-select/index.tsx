@@ -118,7 +118,7 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
       overlay={
         <Menu
           onClick={(e) => onChangeIssueStatus(e)}
-          selectedKeys={[props.selectedId ?? ""]}
+          selectedKeys={[props.selectedId.toString() ?? ""]}
         >
           {project?.statuses
             .filter((status) => status.id !== props.issueId)

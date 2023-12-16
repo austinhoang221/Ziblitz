@@ -2,6 +2,7 @@ import { IBacklog } from "./IBacklog";
 import { IProjectConfiguration } from "./IIProjectConfiguration";
 import { IIssue } from "./IIssue";
 import { IIssueType } from "./IIssueType";
+import { ILabel } from "./ILabel";
 import { IPermissionGroup } from "./IPermission";
 import { IIssueOnBoard } from "./IProject";
 import { ISprint } from "./ISprint";
@@ -25,4 +26,5 @@ export interface IDetailProject {
   issueOnBoard: IIssueOnBoard;
   userPermissionGroup: IPermissionGroup;
   projectConfiguration: IProjectConfiguration;
+  labels: ILabel[];
 }

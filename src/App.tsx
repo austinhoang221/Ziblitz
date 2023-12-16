@@ -10,6 +10,8 @@ import AccessProject from "./app/pages/content/project/partials/detail/partials/
 import BacklogProject from "./app/pages/content/project/partials/detail/partials/backlog";
 import BoardProject from "./app/pages/content/project/partials/detail/partials/board";
 import CodeProject from "./app/pages/content/project/partials/detail/partials/code";
+import CustomFilterIssues from "./app/pages/content/project/partials/detail/partials/custom-filter/issues";
+import CustomFilterList from "./app/pages/content/project/partials/detail/partials/custom-filter/issues/list";
 import FeatureProject from "./app/pages/content/project/partials/detail/partials/feature";
 import InfoProject from "./app/pages/content/project/partials/detail/partials/info";
 import IssueTypes from "./app/pages/content/project/partials/detail/partials/issue-types";
@@ -39,6 +41,8 @@ function App() {
             <Route path="dashboard" element={<Dashboard />}></Route>
             <Route path="project" element={<Project />}></Route>
             <Route path="user/:userId" element={<User />} />
+            <Route path="filters" element={<CustomFilterList />} />
+            <Route path="issues/:filter" element={<CustomFilterIssues />} />
 
             <Route path="project/:code" element={<DetailProject />}>
               <Route path="timeline" element={<TimelineProject />}>

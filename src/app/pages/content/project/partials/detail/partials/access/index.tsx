@@ -19,7 +19,6 @@ import { getProjectByCode } from "../../../../../../../../redux/slices/projectDe
 import { RootState } from "../../../../../../../../redux/store";
 import { PermissionService } from "../../../../../../../../services/permissionService";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
-import usePermissionData from "../../../../../../../customHooks/fetchPermission";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import { IPermissionGroup } from "../../../../../../../models/IPermission";
 import HeaderProject from "../header";

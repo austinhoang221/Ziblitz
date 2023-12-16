@@ -398,7 +398,7 @@ export default function IssueModal(props: any) {
                     <InlineEdit
                       periodType={getPeriodType(issue!)}
                       periodId={issue?.sprintId ?? issue?.backlogId!}
-                      initialValue={issue?.sprintId ?? null}
+                      initialValue={issue?.issueDetail.labels ?? []}
                       type="labelSelect"
                       issueId={issue?.id!}
                       fieldName="labelId"

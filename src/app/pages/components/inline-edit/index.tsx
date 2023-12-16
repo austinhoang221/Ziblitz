@@ -1,4 +1,4 @@
-import { Avatar, Button, DatePicker, Input, InputNumber } from "antd";
+import { Avatar, Button, DatePicker, Input, InputNumber, Tag } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import { useSelector } from "react-redux";
@@ -21,7 +21,7 @@ import { IIssue } from "../../../models/IIssue";
 import SelectPriority from "../issue-priority-select";
 import IssuePriority from "../issue-priority";
 import { LoadingOutlined } from "@ant-design/icons";
-import SelectLabel from "../labelSelect";
+import SelectLabel from "../label-select";
 import { ILabel } from "../../../models/ILabel";
 
 interface IInlineEditProps {
@@ -191,7 +191,9 @@ export default function InlineEdit(props: IInlineEditProps) {
             periodId={props.periodId}
             onSaveIssue={(issue?: IIssue) => props.onSaveIssue(issue)}
             issueId={props.issueId}
-            selectedId={props.initialValue!}
+            selectedId={
+              props.initialValue?.map((item: ILabel) => item.id) ?? []
+            }
             onBlur={() => setIsEditing(false)}
           ></SelectLabel>
         );
@@ -306,39 +308,33 @@ export default function InlineEdit(props: IInlineEditProps) {
         );
       case "labelSelect":
         return (
-          <>
-            <div
-              className={
-                "edit-content" +
-                (props.fieldName === "name"
-                  ? " font-sz24 font-weight-medium"
-                  : "")
-              }
-              onClick={onEdit}
-            >
-              {editedValue ? (
-                <span className="ml-2">
-                  {editedValue.map((value: ILabel) => {
-                    return (
-                      <span
-                        key={value.id}
-                        className="p-2"
-                        style={{
-                          backgroundColor: value.color,
-                          borderRadius: "3px",
-                        }}
-                      >
-                        <i className="fa-solid fa-tags mr-2"></i>
-                        {value.name}
-                      </span>
-                    );
-                  })}
-                </span>
-              ) : (
-                <span className="ml-2">None</span>
-              )}
-            </div>
-          </>
+          <div
+            className={
+              "edit-content" +
+              (props.fieldName === "name"
+                ? " font-sz24 font-weight-medium"
+                : "")
+            }
+            onClick={onEdit}
+          >
+            {editedValue ? (
+              <span className="ml-2">
+                {editedValue.map((value: ILabel) => {
+                  return (
+                    <Tag
+                      icon={<i className="fa-solid fa-tags mr-2"></i>}
+                      key={value.id}
+                      color={value.color}
+                    >
+                      {value.name}
+                    </Tag>
+                  );
+                })}
+              </span>
+            ) : (
+              <span className="ml-2">None</span>
+            )}
+          </div>
         );
       case "prioritySelect":
         return (
