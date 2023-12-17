@@ -3,11 +3,17 @@ import Checkbox, { CheckboxChangeEvent } from "antd/es/checkbox";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import Search from "antd/es/input/Search";
 import React, { useEffect, useState } from "react";
+import { LoadingOutlined } from "@ant-design/icons";
+import "./index.scss";
 interface IIssueFilterSelect {
   initialOption: any[];
   label: string;
   isLoading: boolean;
   isShowSearch?: boolean;
+  isHaveOtherOption?: boolean;
+  otherOptionLabel?: string;
+  otherOptionValue?: string | boolean;
+  onCheckOtherOptionChange?: (option: any) => void;
   onChangeOption: (options: any[]) => void;
 }
 export default function IssueFilterSelect(props: IIssueFilterSelect) {
@@ -17,6 +23,10 @@ export default function IssueFilterSelect(props: IIssueFilterSelect) {
     isLoading,
     label,
     isShowSearch = true,
+    isHaveOtherOption = false,
+    otherOptionLabel,
+    otherOptionValue,
+    onCheckOtherOptionChange,
   } = props;
   const [searchValue, setSearchValue] = useState<string>("");
   const [options, setOptions] = useState<any[]>(initialOption);
@@ -63,6 +73,7 @@ export default function IssueFilterSelect(props: IIssueFilterSelect) {
   return (
     <Dropdown
       className="mr-1"
+      overlayStyle={{ width: "200", minHeight: "150px" }}
       overlay={
         !isLoading ? (
           <Menu>
@@ -73,11 +84,20 @@ export default function IssueFilterSelect(props: IIssueFilterSelect) {
                     <Search
                       className="mb-2"
                       placeholder="Search filters..."
-                      style={{ width: "250px" }}
+                      style={{ width: "100%" }}
                       onChange={(event: any) => onSearch(event.target.value)}
                     />
                     <br></br>
                   </>
+                )}
+                {isHaveOtherOption && (
+                  <Checkbox
+                    value={otherOptionValue}
+                    onChange={onCheckOtherOptionChange}
+                    className="w-100"
+                  >
+                    {otherOptionLabel}
+                  </Checkbox>
                 )}
                 <Checkbox
                   value="all"
@@ -98,13 +118,42 @@ export default function IssueFilterSelect(props: IIssueFilterSelect) {
             </Menu.Item>
           </Menu>
         ) : (
-          <Spin size="large" />
+          <Menu
+            className="text-center"
+            style={{ minHeight: "150px", lineHeight: "150px" }}
+          >
+            <Spin
+              className="text-center"
+              indicator={<LoadingOutlined style={{ fontSize: 30 }} spin />}
+            />
+          </Menu>
         )
       }
       trigger={["click"]}
     >
       <Button type="default" className="ml-2">
-        <span>{label}</span> <i className="fa-solid fa-chevron-down ml-2"></i>
+        {checked?.length === 0 && (
+          <>
+            <span>{label}</span>{" "}
+            <i className="fa-solid fa-chevron-down ml-2"></i>
+          </>
+        )}
+        {checked?.length === 1 && (
+          <span style={{ color: "#1677FF" }}>
+            {label}:{" "}
+            {options.find((option) => option.value === checked?.[0])?.label ??
+              ""}
+            <i className="fa-solid fa-chevron-down ml-2"></i>
+          </span>
+        )}
+
+        {checked?.length > 1 && (
+          <span style={{ color: "#1677FF" }}>
+            {label}:{" "}
+            <span className="many-options">+ {checked?.length ?? ""}</span>
+            <i className="fa-solid fa-chevron-down ml-2"></i>
+          </span>
+        )}
       </Button>
     </Dropdown>
   );

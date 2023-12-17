@@ -84,7 +84,6 @@ export default function Statuses() {
     },
     {
       title: "",
-      dataIndex: "id",
       key: "action",
       width: "40px",
       render: (status: IStatus) => {

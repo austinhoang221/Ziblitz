@@ -952,7 +952,7 @@ a.text-dark:focus {
 }
 
 .flex-wrap {
-  flex: wrap;
+  flex-wrap: wrap;
 }
 
 .card-kibana {
@@ -1157,6 +1157,10 @@ app-survey-record-detail {
 .align-child-flex-start {
   display: flex;
   align-items: flex-start;
+}
+
+.align-baseline {
+  align-items: baseline;
 }
 
 

@@ -6,10 +6,10 @@ import { IPaginateResponse } from "../app/models/IPaginateResponse";
 import { IResponse } from "../app/models/IResponse";
 
 export class FilterService {
-  public static getAll = async (projectId: string) => {
+  public static create = async (projectId: string) => {
     try {
       const response: IPaginateResponse<IIssue[]> = await axiosInstance.get(
-        Endpoint.getFilters + projectId + "/issues"
+        Endpoint.getFilters
       );
       console.log("POST response:", response.data.content);
       return response;
@@ -18,10 +18,10 @@ export class FilterService {
     }
   };
 
-  public static getAllIssue = async (payload: IFilter) => {
+  public static getAllIssue = async (payload: any) => {
     try {
       const response: IResponse<IIssue[]> = await axiosInstance.post(
-        Endpoint.getFilters,
+        Endpoint.getFilters + "/get-issues",
         payload
       );
       console.log("POST response:", response.data);

@@ -97,7 +97,6 @@ export default function Labels() {
     },
     {
       title: "",
-      dataIndex: "id",
       key: "action",
       width: "40px",
       render: (label: ILabel) => {

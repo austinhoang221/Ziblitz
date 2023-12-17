@@ -4,6 +4,7 @@ import { IIssue } from "./IIssue";
 import { IIssueType } from "./IIssueType";
 import { ILabel } from "./ILabel";
 import { IPermissionGroup } from "./IPermission";
+import { IPriority } from "./IPriority";
 import { IIssueOnBoard } from "./IProject";
 import { ISprint } from "./ISprint";
 import { IStatus } from "./IStatus";
@@ -27,4 +28,5 @@ export interface IDetailProject {
   userPermissionGroup: IPermissionGroup;
   projectConfiguration: IProjectConfiguration;
   labels: ILabel[];
+  priorities: IPriority[];
 }

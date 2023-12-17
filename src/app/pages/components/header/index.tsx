@@ -45,7 +45,7 @@ export default function Header() {
     {
       key: "2",
       label: "View all issues",
-      onClick: () => navigate("/issues/filter"),
+      onClick: () => navigate("/issues/new"),
     },
   ];
   const dashboardItems: MenuProps["items"] = [

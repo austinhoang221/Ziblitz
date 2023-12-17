@@ -50,7 +50,7 @@ export default function CreateIssueInput(props: any, identifier: string) {
   };
 
   const onSaveIssue = (e: any) => {
-    if (e?.target.value) {
+    if (e?.target.value && !isLoading) {
       setLoading(true);
       const payload: any = {
         name: e.target.value,

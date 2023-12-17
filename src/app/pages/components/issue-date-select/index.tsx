@@ -8,23 +8,22 @@ import {
   Menu,
   Radio,
   RadioChangeEvent,
-  RadioGroupProps,
   Row,
   Select,
   Space,
-  Spin,
 } from "antd";
+import dayjs from "dayjs";
 import React from "react";
 import { useState } from "react";
 interface IIssueDateSelect {
   label: string;
-  onSaveOption: (options: any[]) => void;
+  onSaveOption: (options: any) => void;
 }
 export default function IssueDateSelect(props: IIssueDateSelect) {
   const { onSaveOption, label } = props;
   const [value, setValue] = useState<string>("moreThan");
   const [quantity, setQuantity] = useState<number>(1);
-  const [unit, setUnit] = useState<string>("");
+  const [unit, setUnit] = useState<string>("Minutes");
   const [date, setDate] = useState<any[]>([]);
   const { RangePicker } = DatePicker;
 
@@ -46,6 +45,20 @@ export default function IssueDateSelect(props: IIssueDateSelect) {
       value: "Weeks",
     },
   ];
+
+  const onSave = () => {
+    if (value === "moreThan") {
+      props.onSaveOption({
+        quantity: quantity,
+        unit: unit,
+      });
+    } else {
+      props.onSaveOption({
+        startDate: date?.[0] ? dayjs(date?.[0]).toISOString() : null,
+        endDate: date?.[1] ? dayjs(date?.[1]).toISOString() : null,
+      });
+    }
+  };
   return (
     <Dropdown
       className="mr-1"
@@ -98,7 +111,7 @@ export default function IssueDateSelect(props: IIssueDateSelect) {
           </Menu.Item>
           <Divider className="mb-0 mt-0"></Divider>
           <Menu.Item>
-            <Button type="primary">
+            <Button type="primary" onClick={onSave}>
               <span>Update</span>
             </Button>
           </Menu.Item>

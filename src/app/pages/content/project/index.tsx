@@ -138,7 +138,6 @@ export default function Project() {
   const onClickDeleteProject = (id: string) => {
     ProjectService.delete(userId, id!).then((res) => {
       if (checkResponseStatus(res)) {
-        navigate("/project/backlog");
         refreshData();
         showSuccessMessage();
         dispatch(deleteProject(id));

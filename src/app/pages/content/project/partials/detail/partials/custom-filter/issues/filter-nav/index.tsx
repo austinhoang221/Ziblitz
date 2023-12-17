@@ -1,9 +1,10 @@
 import { Menu } from "antd";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function CustomFilterIssueNav() {
   const navigate = useNavigate();
+  const params = useParams();
   const menuItems = [
     {
       key: "new",
@@ -40,8 +41,8 @@ export default function CustomFilterIssueNav() {
   };
   return (
     <>
-      <h4 className="ml-4">Filter</h4>
-      <Menu mode="inline" title="Filter">
+      <h3 className="ml-4">Filter</h3>
+      <Menu mode="inline" title="Filter" selectedKeys={[params?.filter!]}>
         {menuItems.map((item) => {
           return (
             <>

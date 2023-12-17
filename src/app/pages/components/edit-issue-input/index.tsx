@@ -44,7 +44,7 @@ const EditIssueInput = (props: IEditIssueInput) => {
   };
 
   const onSaveIssue = (e: any) => {
-    if (e?.target.value) {
+    if (e?.target.value && !isLoading) {
       setIsLoading(true);
       if (props.type === "backlog") {
         IssueService.editBacklogIssue(props.periodId, props.issueId, {

@@ -25,6 +25,7 @@ import { IPagination } from "../../../../../../../models/IPagination";
 import IssuePriority from "../../../../../../components/issue-priority";
 import HeaderProject from "../header";
 import type { ColorPickerProps } from "antd/es/color-picker";
+import { useEffect } from "react";
 export default function Priorities() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mode, setMode] = useState<string>("");
@@ -101,7 +102,6 @@ export default function Priorities() {
     },
     {
       title: "",
-      dataIndex: "id",
       key: "action",
       width: "40px",
       render: (priority: IPriority) => {

@@ -185,9 +185,9 @@ export default function HeaderProject(props: IHeaderProject) {
       <div className="align-child-space-between align-center">
         <h1 className="mb-0 mt-2">{props.title}</h1>
       </div>
-      <div className="d-flex align-center mt-2">
+      <div className="d-flex mt-2 flex-wrap align-baseline">
         <Search
-          className="mr-2"
+          className="mr-2 mb-2"
           placeholder="Search..."
           style={{ width: 200 }}
           onSearch={(value) => onSearch(value)}

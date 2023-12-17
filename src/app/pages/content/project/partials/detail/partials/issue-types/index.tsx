@@ -117,7 +117,6 @@ export default function IssueTypes() {
     },
     {
       title: "",
-      dataIndex: "id",
       key: "action",
       width: "40px",
       render: (issueType: IIssueType) => {
