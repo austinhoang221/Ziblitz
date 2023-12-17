@@ -41,7 +41,9 @@ export default function CustomFilterIssueNav() {
   };
   return (
     <>
-      <h3 className="ml-4">Filter</h3>
+      <h3 className="ml-4" style={{ color: "#1677FF" }}>
+        Filter
+      </h3>
       <Menu mode="inline" title="Filter" selectedKeys={[params?.filter!]}>
         {menuItems.map((item) => {
           return (

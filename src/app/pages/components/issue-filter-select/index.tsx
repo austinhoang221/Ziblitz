@@ -5,8 +5,10 @@ import Search from "antd/es/input/Search";
 import React, { useEffect, useState } from "react";
 import { LoadingOutlined } from "@ant-design/icons";
 import "./index.scss";
+import { useParams } from "react-router-dom";
 interface IIssueFilterSelect {
   initialOption: any[];
+  initialChecked?: any[];
   label: string;
   isLoading: boolean;
   isShowSearch?: boolean;
@@ -22,12 +24,14 @@ export default function IssueFilterSelect(props: IIssueFilterSelect) {
     onChangeOption,
     isLoading,
     label,
+    initialChecked,
     isShowSearch = true,
     isHaveOtherOption = false,
     otherOptionLabel,
     otherOptionValue,
     onCheckOtherOptionChange,
   } = props;
+  const params = useParams();
   const [searchValue, setSearchValue] = useState<string>("");
   const [options, setOptions] = useState<any[]>(initialOption);
   const [searchOptions, setSearchOptions] = useState<any>([]);
@@ -40,6 +44,15 @@ export default function IssueFilterSelect(props: IIssueFilterSelect) {
     setOptions(initialOption);
     setSearchOptions(initialOption);
   }, [initialOption]);
+
+  useEffect(() => {
+    if (initialChecked && initialChecked?.length !== 0) {
+      setChecked(initialChecked);
+    } else {
+      setChecked([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params?.filter, initialChecked]);
 
   useEffect(() => {
     if (searchValue) {

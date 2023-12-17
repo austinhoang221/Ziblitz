@@ -185,7 +185,7 @@ export default function HeaderProject(props: IHeaderProject) {
       <div className="align-child-space-between align-center">
         <h1 className="mb-0 mt-2">{props.title}</h1>
       </div>
-      <div className="d-flex mt-2 flex-wrap align-baseline">
+      <div className="d-flex mt-2 flex-wrap ">
         <Search
           className="mr-2 mb-2"
           placeholder="Search..."

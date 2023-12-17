@@ -3,7 +3,7 @@ import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 import { setProjectDetail } from "../../../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../../../redux/store";
 import { FilterService } from "../../../../../../../../../../services/filterService";
@@ -23,6 +23,7 @@ export default function CustomFilterList() {
   const { project, isLoading: isLoadingProject } = useSelector(
     (state: RootState) => state.projectDetail
   );
+  const params = useParams();
   const dispatch = useAppDispatch();
   const { projects } = useSelector((state: RootState) => state);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -95,11 +96,15 @@ export default function CustomFilterList() {
         return (
           <>
             {/* <img src={record.avatarUrl} alt="" />{" "} */}
-            <UserAvatar
-              userIds={[issue?.issueDetail.assigneeId]}
-              isMultiple={false}
-              isShowName={true}
-            ></UserAvatar>
+            {issue?.issueDetail.assigneeId ? (
+              <UserAvatar
+                userIds={[issue?.issueDetail.assigneeId]}
+                isMultiple={false}
+                isShowName={true}
+              ></UserAvatar>
+            ) : (
+              <span>Unassigned</span>
+            )}
           </>
         );
       },
@@ -196,27 +201,51 @@ export default function CustomFilterList() {
     setSprintValue([]);
     setStatusValue([]);
     setTypeValue([]);
+    setReporterValue([]);
     setAssigneeValue([]);
     setLabelValue([]);
   };
 
   useEffect(() => {
     if (!projectId && projects?.length > 0) {
-      resetFilter();
       setProjectId(projects?.[0].id);
     }
   }, [projects]);
 
   useEffect(() => {
+    resetFilter();
     if (projectId) {
       fetchData();
     }
+    switch (params?.filter) {
+      case "myOpen":
+        setAssigneeValue([userId]);
+        break;
+      case "reported":
+        setReporterValue([userId]);
+        break;
+      case "all":
+        resetFilter();
+        break;
+      case "done":
+        const doneId = project?.statuses.find(
+          (status) => status.name === "DONE"
+        )?.id;
+        setStatusValue([doneId]);
+        break;
+      case "open":
+        const openId = project?.statuses.find(
+          (status) => status.name === "TO DO"
+        )?.id;
+        setStatusValue([openId]);
+        break;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId]);
+  }, [projectId, params?.filter]);
 
-  const fetchData = useCallback(() => {
+  const fetchData = useCallback(async () => {
     if (projectId) {
-      fetchProjectData(projectId);
+      await fetchProjectData(projectId);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -343,6 +372,16 @@ export default function CustomFilterList() {
     setUpdatedDate(value);
   };
 
+  const onRenderMember = () => {
+    const members = [
+      ...(assigneeOptions.map((member) => {
+        return { label: member.name, value: member.id };
+      }) ?? []),
+      { label: project?.leader.name, value: project?.leader.id },
+    ];
+    return members;
+  };
+
   const onRenderAction: React.ReactNode = (
     <>
       <Select
@@ -388,6 +427,7 @@ export default function CustomFilterList() {
               }) ?? []
             }
             label="Status"
+            initialChecked={statusValue}
             isLoading={isLoadingProject || isLoading}
             onChangeOption={setStatusValue}
           />
@@ -406,22 +446,16 @@ export default function CustomFilterList() {
             otherOptionLabel="Unassigned"
             otherOptionValue={unassignedValue}
             onCheckOtherOptionChange={setUnAssignedValue}
-            initialOption={
-              assigneeOptions.map((member) => {
-                return { label: member.name, value: member.id };
-              }) ?? []
-            }
+            initialOption={onRenderMember()}
+            initialChecked={assigneeValue}
             label="Assignee"
             isLoading={isLoadingProject || isLoading}
             onChangeOption={setAssigneeValue}
           />
           <IssueFilterSelect
-            initialOption={
-              assigneeOptions.map((member) => {
-                return { label: member.name, value: member.id };
-              }) ?? []
-            }
+            initialOption={onRenderMember()}
             label="Reporter"
+            initialChecked={reporterValue}
             isLoading={isLoadingProject || isLoading}
             onChangeOption={setReporterValue}
           />
@@ -459,9 +493,10 @@ export default function CustomFilterList() {
           onChangeDueDate(value);
         }}
       />
-      <Divider type="vertical" />
 
-      <a>Save filter</a>
+      <a className="ml-2" style={{ lineHeight: "32px" }}>
+        Save filter
+      </a>
     </>
   );
 

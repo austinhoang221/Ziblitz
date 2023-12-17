@@ -21,7 +21,7 @@ interface IIssueDateSelect {
 }
 export default function IssueDateSelect(props: IIssueDateSelect) {
   const { onSaveOption, label } = props;
-  const [value, setValue] = useState<string>("moreThan");
+  const [value, setValue] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [unit, setUnit] = useState<string>("Minutes");
   const [date, setDate] = useState<any[]>([]);
@@ -120,7 +120,25 @@ export default function IssueDateSelect(props: IIssueDateSelect) {
       trigger={["click"]}
     >
       <Button type="default" className="ml-2">
-        <span>{label}</span> <i className="fa-solid fa-chevron-down ml-2"></i>
+        {value === "moreThan" && (
+          <span style={{ color: "#1677FF" }}>
+            {label}: More than {quantity} {unit}
+          </span>
+        )}
+        {value === "between" && (
+          <span style={{ color: "#1677FF" }}>
+            {label}:{" "}
+            {dayjs(date?.[0]).format("DD/MM/YYYY") +
+              " - " +
+              dayjs(date?.[1]).format("DD/MM/YYYY")}
+          </span>
+        )}
+        {!value && (
+          <>
+            <span>{label}</span>{" "}
+            <i className="fa-solid fa-chevron-down ml-2"></i>
+          </>
+        )}
       </Button>
     </Dropdown>
   );
