@@ -14,9 +14,11 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import React from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 interface IIssueDateSelect {
   label: string;
+  projectId: string;
   onSaveOption: (options: any) => void;
 }
 export default function IssueDateSelect(props: IIssueDateSelect) {
@@ -46,6 +48,9 @@ export default function IssueDateSelect(props: IIssueDateSelect) {
     },
   ];
 
+  useEffect(() => {
+    setValue("");
+  }, [props.projectId]);
   const onSave = () => {
     if (value === "moreThan") {
       props.onSaveOption({

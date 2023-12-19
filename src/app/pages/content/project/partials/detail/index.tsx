@@ -155,14 +155,6 @@ export default function DetailProject() {
             </span>
           ),
         },
-        {
-          key: "features",
-          label: (
-            <span>
-              <i className="fa-solid fa-elementor mr-2"></i>Features
-            </span>
-          ),
-        },
       ],
     },
   ];

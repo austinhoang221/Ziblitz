@@ -62,7 +62,7 @@ export default function Project() {
         return (
           <>
             {/* <img src={record.avatarUrl} alt="" />{" "} */}
-            <Link to={text}>{text}</Link>
+            <Link to={`${text}/board`}>{text}</Link>
           </>
         );
       },

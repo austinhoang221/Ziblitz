@@ -9,6 +9,7 @@ import { RootState } from "../../../../../../../../../../redux/store";
 import { FilterService } from "../../../../../../../../../../services/filterService";
 import { ProjectService } from "../../../../../../../../../../services/projectService";
 import { useAppDispatch } from "../../../../../../../../../customHooks/dispatch";
+import { useIsFirstRender } from "../../../../../../../../../customHooks/useIsFirstRender";
 import { checkResponseStatus } from "../../../../../../../../../helpers";
 import { IFilter } from "../../../../../../../../../models/IFilter";
 import { IIssue } from "../../../../../../../../../models/IIssue";
@@ -55,6 +56,7 @@ export default function CustomFilterList() {
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const isFirstRender = useIsFirstRender();
 
   const showSuccessMessage = () => {
     messageApi.open({
@@ -217,19 +219,21 @@ export default function CustomFilterList() {
     setReporterValue([]);
     setAssigneeValue([]);
     setLabelValue([]);
+    setDueDateValue("");
+    setCreatedDateValue("");
+    setUpdatedDate("");
   };
 
   useEffect(() => {
-    if (!projectId && projects?.length > 0) {
+    if (!projectId && projects?.length > 0 && params?.filterId === "new") {
       setProjectId(projects?.[0].id);
     }
-  }, [projects]);
+  }, [projects, params?.filterId]);
 
   useEffect(() => {
-    resetFilter();
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId, params?.filterId]);
+  }, [projectId]);
 
   const fetchData = useCallback(async () => {
     if (projectId) {
@@ -249,6 +253,8 @@ export default function CustomFilterList() {
 
     ProjectService.getByCode(userId, code!).then((res) => {
       if (checkResponseStatus(res)) {
+        resetFilter();
+
         setSprintOptions(res?.data.sprints!);
         setTypeOptions(res?.data.issueTypes!);
         setstatusOptions(res?.data.statuses!);
@@ -330,7 +336,6 @@ export default function CustomFilterList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchValue,
-    projectId,
     sprintValue,
     typeValue,
     statusValue,
@@ -350,7 +355,6 @@ export default function CustomFilterList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchValue,
-    projectId,
     sprintValue,
     typeValue,
     statusValue,
@@ -410,6 +414,7 @@ export default function CustomFilterList() {
             }
           ></Select>
           <IssueFilterSelect
+            projectId={projectId}
             initialOption={
               sprintOptions?.map((sprint) => ({
                 label: sprint.name,
@@ -421,6 +426,7 @@ export default function CustomFilterList() {
             onChangeOption={setSprintValue}
           />
           <IssueFilterSelect
+            projectId={projectId}
             initialOption={
               typeOptions?.map((type) => ({
                 label: type.name,
@@ -432,6 +438,7 @@ export default function CustomFilterList() {
             onChangeOption={setTypeValue}
           />
           <IssueFilterSelect
+            projectId={projectId}
             initialOption={
               statusOptions?.map((status) => ({
                 label: status.name,
@@ -444,6 +451,7 @@ export default function CustomFilterList() {
             onChangeOption={setStatusValue}
           />
           <IssueFilterSelect
+            projectId={projectId}
             initialOption={
               priorityOptions.map((priority) => ({
                 label: priority.name,
@@ -455,6 +463,7 @@ export default function CustomFilterList() {
             onChangeOption={setPriorityValue}
           />
           <IssueFilterSelect
+            projectId={projectId}
             isHaveOtherOption={true}
             otherOptionLabel="Unassigned"
             otherOptionValue={unassignedValue}
@@ -466,6 +475,7 @@ export default function CustomFilterList() {
             onChangeOption={setAssigneeValue}
           />
           <IssueFilterSelect
+            projectId={projectId}
             initialOption={onRenderMember()}
             label="Reporter"
             initialChecked={reporterValue}
@@ -474,6 +484,7 @@ export default function CustomFilterList() {
           />
 
           <IssueFilterSelect
+            projectId={projectId}
             initialOption={
               labelOptions.map((label) => ({
                 label: label.name,
@@ -487,26 +498,29 @@ export default function CustomFilterList() {
 
           <IssueDateSelect
             label="Created date"
+            projectId={projectId}
             onSaveOption={(value: any) => onChangeCreatedDate(value)}
           />
           <IssueDateSelect
             label="Updated date"
+            projectId={projectId}
             onSaveOption={(value: any) => onChangeUpdatedDate(value)}
           />
           <IssueDateSelect
             label="Due date"
+            projectId={projectId}
             onSaveOption={(value: any) => onChangeDueDate(value)}
           />
+          <a
+            className="ml-2"
+            style={{ lineHeight: "32px" }}
+            onClick={() => setIsOpenModal(true)}
+          >
+            Save filter
+          </a>
         </>
       )}
 
-      <a
-        className="ml-2"
-        style={{ lineHeight: "32px" }}
-        onClick={() => setIsOpenModal(true)}
-      >
-        Save filter
-      </a>
       <CustomFilterModal
         payload={getPayload()}
         isOpen={isOpenModal}

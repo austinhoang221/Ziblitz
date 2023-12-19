@@ -28,7 +28,7 @@ export default function CustomFilter() {
     {
       title: <i className="fa-solid fa-star"></i>,
       key: "isFavourite",
-      width: "40px",
+      width: "100px",
       align: "center",
       render: () => <ButtonIcon iconClass={"fa-solid fa-star"}></ButtonIcon>,
     },
@@ -70,8 +70,13 @@ export default function CustomFilter() {
             okText="Yes"
             cancelText="Cancel"
             onConfirm={() => onDeleteFilter(filter.id)}
+            disabled={filter.type === "DEFAULT FILTERS"}
           >
-            <Button type="text" shape="circle">
+            <Button
+              type="text"
+              shape="circle"
+              disabled={filter.type === "DEFAULT FILTERS"}
+            >
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"

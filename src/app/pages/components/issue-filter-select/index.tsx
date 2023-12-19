@@ -15,6 +15,7 @@ interface IIssueFilterSelect {
   isHaveOtherOption?: boolean;
   otherOptionLabel?: string;
   otherOptionValue?: string | boolean;
+  projectId?: string;
   onCheckOtherOptionChange?: (option: any) => void;
   onChangeOption: (options: any[]) => void;
 }
@@ -30,6 +31,7 @@ export default function IssueFilterSelect(props: IIssueFilterSelect) {
     otherOptionLabel,
     otherOptionValue,
     onCheckOtherOptionChange,
+    projectId,
   } = props;
   const params = useParams();
   const [searchValue, setSearchValue] = useState<string>("");
@@ -52,7 +54,7 @@ export default function IssueFilterSelect(props: IIssueFilterSelect) {
       setChecked([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params?.filter, initialChecked]);
+  }, [params?.filterId, initialChecked, projectId]);
 
   useEffect(() => {
     if (searchValue) {
