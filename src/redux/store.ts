@@ -5,6 +5,7 @@ import users from "./slices/userSlice";
 import projectDetail from "./slices/projectDetailSlice";
 import roles from "./slices/roleSlice";
 import permissions from "./slices/permissionSlice";
+import filters from "./slices/filterSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     projectDetail,
     roles,
     permissions,
+    filters,
   },
 });
 

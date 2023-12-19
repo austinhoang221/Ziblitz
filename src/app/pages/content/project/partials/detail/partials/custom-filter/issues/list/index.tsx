@@ -1,15 +1,16 @@
-import { Divider, Select, Table, Tooltip } from "antd";
+import { message, Select, Table, Tooltip } from "antd";
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, Outlet, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { setProjectDetail } from "../../../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../../../redux/store";
 import { FilterService } from "../../../../../../../../../../services/filterService";
 import { ProjectService } from "../../../../../../../../../../services/projectService";
 import { useAppDispatch } from "../../../../../../../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../../../../../../../helpers";
+import { IFilter } from "../../../../../../../../../models/IFilter";
 import { IIssue } from "../../../../../../../../../models/IIssue";
 import IssueDateSelect from "../../../../../../../../components/issue-date-select";
 import IssueFilterSelect from "../../../../../../../../components/issue-filter-select";
@@ -18,6 +19,7 @@ import IssueStatusSelect from "../../../../../../../../components/issue-status-s
 import IssueType from "../../../../../../../../components/issue-type";
 import UserAvatar from "../../../../../../../../components/user-avatar";
 import HeaderProject from "../../../header";
+import CustomFilterModal from "./create-modal";
 
 export default function CustomFilterList() {
   const { project, isLoading: isLoadingProject } = useSelector(
@@ -26,6 +28,9 @@ export default function CustomFilterList() {
   const params = useParams();
   const dispatch = useAppDispatch();
   const { projects } = useSelector((state: RootState) => state);
+  const { filters, isLoading: isFilterLoading } = useSelector(
+    (state: RootState) => state.filters
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [projectId, setProjectId] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
@@ -48,7 +53,15 @@ export default function CustomFilterList() {
   const [dueDateValue, setDueDateValue] = useState<any>();
   const [updatedDate, setUpdatedDate] = useState<any>();
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
+  const showSuccessMessage = () => {
+    messageApi.open({
+      type: "success",
+      content: "Successfully",
+    });
+  };
   const columns: ColumnsType<IIssue> = [
     {
       title: "",
@@ -214,34 +227,9 @@ export default function CustomFilterList() {
 
   useEffect(() => {
     resetFilter();
-    if (projectId) {
-      fetchData();
-    }
-    switch (params?.filter) {
-      case "myOpen":
-        setAssigneeValue([userId]);
-        break;
-      case "reported":
-        setReporterValue([userId]);
-        break;
-      case "all":
-        resetFilter();
-        break;
-      case "done":
-        const doneId = project?.statuses.find(
-          (status) => status.name === "DONE"
-        )?.id;
-        setStatusValue([doneId]);
-        break;
-      case "open":
-        const openId = project?.statuses.find(
-          (status) => status.name === "TO DO"
-        )?.id;
-        setStatusValue([openId]);
-        break;
-    }
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId, params?.filter]);
+  }, [projectId, params?.filterId]);
 
   const fetchData = useCallback(async () => {
     if (projectId) {
@@ -273,46 +261,55 @@ export default function CustomFilterList() {
     });
   };
 
-  const fetchIssueData = useCallback(() => {
-    if (projectId) {
-      const payload = {
-        name: searchValue,
-        project: {
-          projectIds: [projectId],
-        },
+  const onCreateFilter = () => {
+    showSuccessMessage();
+    setIsOpenModal(false);
+  };
+
+  const getPayload = () => {
+    return {
+      name: searchValue,
+      project: {
+        projectIds: [projectId],
         sprint: {
           sprintIds: sprintValue,
         },
-        type: {
-          issueTypeId: typeValue,
-        },
-        status: {
-          statusId: statusValue,
-        },
-        assignee: {
-          unassigned: unassignedValue,
-          userIds: assigneeValue,
-        },
-        created: {
-          ...createdDateValue,
-        },
-        dueDate: {
-          ...dueDateValue,
-        },
-        updated: {
-          ...updatedDate,
-        },
-        labels: {
-          labelIds: labelValue,
-        },
-        priority: {
-          priorityIds: priorityValue,
-        },
-        reporter: {
-          unassigned: false,
-          userIds: reporterValue,
-        },
-      };
+      },
+      type: {
+        issueTypeId: typeValue,
+      },
+      status: {
+        statusId: statusValue,
+      },
+      assignee: {
+        unassigned: unassignedValue,
+        userIds: assigneeValue,
+      },
+      created: {
+        ...createdDateValue,
+      },
+      dueDate: {
+        ...dueDateValue,
+      },
+      updated: {
+        ...updatedDate,
+      },
+      labels: {
+        labelIds: labelValue,
+      },
+      priority: {
+        priorityIds: priorityValue,
+      },
+      reporter: {
+        unassigned: false,
+        userIds: reporterValue,
+      },
+    };
+  };
+
+  const fetchIssueData = useCallback(() => {
+    if (params?.filterId === "new") {
+      const payload = getPayload();
       setIsLoading(true);
       FilterService.getAllIssue(payload).then((res) => {
         if (checkResponseStatus(res)) {
@@ -320,7 +317,17 @@ export default function CustomFilterList() {
         }
         setIsLoading(false);
       });
+    } else {
+      setIsLoading(true);
+      FilterService.getByFilterId(params?.filterId!).then((res) => {
+        if (checkResponseStatus(res)) {
+          setListIssue(res?.data!);
+        }
+        setIsLoading(false);
+      });
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchValue,
     projectId,
@@ -335,6 +342,7 @@ export default function CustomFilterList() {
     labelValue,
     priorityValue,
     reporterValue,
+    params?.filterId,
   ]);
 
   useEffect(() => {
@@ -354,6 +362,7 @@ export default function CustomFilterList() {
     labelValue,
     priorityValue,
     reporterValue,
+    params?.filterId,
   ]);
 
   const onChangeProject = (id: string) => {
@@ -384,27 +393,28 @@ export default function CustomFilterList() {
 
   const onRenderAction: React.ReactNode = (
     <>
-      <Select
-        value={projectId}
-        style={{ width: "150px" }}
-        className="mr-1"
-        onChange={(e) => onChangeProject(e)}
-        options={
-          projects.map((project) => {
-            return {
-              label: project.name,
-              value: project.id,
-            };
-          }) ?? []
-        }
-      ></Select>
-      {projectId && (
+      {params?.filterId === "new" && projectId && (
         <>
+          <Select
+            value={projectId}
+            style={{ width: "150px" }}
+            className="mr-1"
+            onChange={(e) => onChangeProject(e)}
+            options={
+              projects.map((project) => {
+                return {
+                  label: project.name,
+                  value: project.id,
+                };
+              }) ?? []
+            }
+          ></Select>
           <IssueFilterSelect
             initialOption={
-              sprintOptions?.map((sprint) => {
-                return { label: sprint.name, value: sprint.id };
-              }) ?? []
+              sprintOptions?.map((sprint) => ({
+                label: sprint.name,
+                value: sprint.id,
+              })) ?? []
             }
             label="Sprint"
             isLoading={isLoadingProject || isLoading}
@@ -412,9 +422,10 @@ export default function CustomFilterList() {
           />
           <IssueFilterSelect
             initialOption={
-              typeOptions?.map((type) => {
-                return { label: type.name, value: type.id };
-              }) ?? []
+              typeOptions?.map((type) => ({
+                label: type.name,
+                value: type.id,
+              })) ?? []
             }
             label="Type"
             isLoading={isLoadingProject || isLoading}
@@ -422,9 +433,10 @@ export default function CustomFilterList() {
           />
           <IssueFilterSelect
             initialOption={
-              statusOptions?.map((status) => {
-                return { label: status.name, value: status.id };
-              }) ?? []
+              statusOptions?.map((status) => ({
+                label: status.name,
+                value: status.id,
+              })) ?? []
             }
             label="Status"
             initialChecked={statusValue}
@@ -433,9 +445,10 @@ export default function CustomFilterList() {
           />
           <IssueFilterSelect
             initialOption={
-              priorityOptions.map((priority) => {
-                return { label: priority.name, value: priority.id };
-              }) ?? []
+              priorityOptions.map((priority) => ({
+                label: priority.name,
+                value: priority.id,
+              })) ?? []
             }
             label="Priority"
             isLoading={isLoadingProject || isLoading}
@@ -462,46 +475,50 @@ export default function CustomFilterList() {
 
           <IssueFilterSelect
             initialOption={
-              labelOptions.map((label) => {
-                return {
-                  label: label.name,
-                  value: label.id,
-                };
-              }) ?? []
+              labelOptions.map((label) => ({
+                label: label.name,
+                value: label.id,
+              })) ?? []
             }
             label="Label"
             isLoading={isLoadingProject || isLoading}
             onChangeOption={setLabelOptions}
           />
+
+          <IssueDateSelect
+            label="Created date"
+            onSaveOption={(value: any) => onChangeCreatedDate(value)}
+          />
+          <IssueDateSelect
+            label="Updated date"
+            onSaveOption={(value: any) => onChangeUpdatedDate(value)}
+          />
+          <IssueDateSelect
+            label="Due date"
+            onSaveOption={(value: any) => onChangeDueDate(value)}
+          />
         </>
       )}
-      <IssueDateSelect
-        label="Created date"
-        onSaveOption={(value: any) => {
-          onChangeCreatedDate(value);
-        }}
-      />
-      <IssueDateSelect
-        label="Updated date"
-        onSaveOption={(value: any) => {
-          onChangeUpdatedDate(value);
-        }}
-      />
-      <IssueDateSelect
-        label="Due date"
-        onSaveOption={(value: any) => {
-          onChangeDueDate(value);
-        }}
-      />
 
-      <a className="ml-2" style={{ lineHeight: "32px" }}>
+      <a
+        className="ml-2"
+        style={{ lineHeight: "32px" }}
+        onClick={() => setIsOpenModal(true)}
+      >
         Save filter
       </a>
+      <CustomFilterModal
+        payload={getPayload()}
+        isOpen={isOpenModal}
+        onCancel={() => setIsOpenModal(false)}
+        onSave={() => onCreateFilter()}
+      />
     </>
   );
 
   return (
     <>
+      {contextHolder}
       <HeaderProject
         title="Issues"
         isFixedHeader={false}

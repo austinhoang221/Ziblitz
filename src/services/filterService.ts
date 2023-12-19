@@ -2,16 +2,40 @@ import Endpoint from "../app/api/endpoint";
 import { axiosInstance } from "../app/middleware";
 import { IFilter } from "../app/models/IFilter";
 import { IIssue } from "../app/models/IIssue";
-import { IPaginateResponse } from "../app/models/IPaginateResponse";
 import { IResponse } from "../app/models/IResponse";
 
 export class FilterService {
-  public static create = async (projectId: string) => {
+  public static getALl = async (userId: string) => {
     try {
-      const response: IPaginateResponse<IIssue[]> = await axiosInstance.get(
-        Endpoint.getFilters
+      const response: IResponse<IFilter[]> = await axiosInstance.get(
+        Endpoint.getAllUser + userId + "/filters"
       );
-      console.log("POST response:", response.data.content);
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static getByFilterId = async (filterId: string) => {
+    try {
+      const response: IResponse<IIssue[]> = await axiosInstance.get(
+        Endpoint.getFilterById + filterId + "/issues"
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static create = async (payload: any) => {
+    try {
+      const response: IResponse<IFilter> = await axiosInstance.post(
+        Endpoint.getFilters,
+        payload
+      );
+      console.log("POST response:", response.data);
       return response;
     } catch (error) {
       console.error("Error making POST request:", error);

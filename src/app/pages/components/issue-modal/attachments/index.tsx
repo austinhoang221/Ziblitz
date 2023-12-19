@@ -149,9 +149,6 @@ export default function Attachments(props: IAttachments) {
       render: (file: IFile) => {
         return (
           <div className="d-flex">
-            <Button type="text" shape="circle" className="mr-1">
-              <i className="fa-solid fa-eye"></i>
-            </Button>
             <Button
               type="text"
               shape="circle"
