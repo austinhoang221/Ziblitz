@@ -32,8 +32,8 @@ export class StatusService {
 
   public static getCategories = async () => {
     try {
-      const response: IResponse<IStatus> = await axiosInstance.get(
-        Endpoint.getStatus + projectId + "/statuses/" + id
+      const response: IResponse<IStatus[]> = await axiosInstance.get(
+        Endpoint.getStatusCategories
       );
       console.log("POST response:", response.data);
       return response;

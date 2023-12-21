@@ -7,10 +7,12 @@ import {
   Modal,
   Pagination,
   Popconfirm,
+  Select,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
@@ -41,6 +43,7 @@ export default function Statuses() {
   const [mode, setMode] = useState<string>("");
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
   const [statusId, setStatusId] = useState<string>("");
+  const [statusCategories, setStatusCategories] = useState<IStatus[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const editPermission =
     projectPermissions && projectPermissions.permissions.project.editPermission;
@@ -54,6 +57,14 @@ export default function Statuses() {
     project?.id!,
     requestParam
   );
+
+  useEffect(() => {
+    StatusService.getCategories().then((res) => {
+      if (checkResponseStatus(res)) {
+        setStatusCategories(res?.data!);
+      }
+    });
+  }, []);
 
   const onDeleteStatus = async (id: string) => {
     await StatusService.delete(project?.id!, id).then((res) => {
@@ -232,7 +243,29 @@ export default function Statuses() {
           >
             <Input placeholder="Name" />
           </Form.Item>
-
+          <Form.Item
+            label="Category"
+            required={true}
+            name="statusCategoryId"
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+            rules={[
+              {
+                required: true,
+                message: "Please enter your status category",
+              },
+            ]}
+          >
+            <Select
+              placeholder="Select category"
+              options={statusCategories.map((category) => {
+                return {
+                  label: category.name,
+                  value: category.id,
+                };
+              })}
+            ></Select>
+          </Form.Item>
           <Form.Item
             label="Description"
             name="description"
