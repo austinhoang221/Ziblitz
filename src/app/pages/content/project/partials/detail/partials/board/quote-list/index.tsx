@@ -30,8 +30,8 @@ const Wrapper = styled.divBox`
   user-select: none;
   width: 250px;
   overflow-y: scroll;
-  height: 60vh;
-  max-height: 60vh;
+  height: 56vh;
+  max-height: 56vh;
   &::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.5); /* Set color of the thumb */
     border-radius: 6px; /* Round the corners of the thumb */

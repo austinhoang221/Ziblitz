@@ -41,7 +41,7 @@ export default function BoardProject(props: any) {
 
   const Container = styled.divBox`
     background-color: #fff;
-    max-height: 80vh;
+    max-height: 75vh;
     display: inline-flex;
     min-width: 100vw;
   `;
@@ -190,7 +190,7 @@ export default function BoardProject(props: any) {
   );
 
   return (
-    <>
+    <div style={{ overflowX: "scroll" }}>
       <HeaderProject
         title="Board"
         isFixedHeader={false}
@@ -253,6 +253,6 @@ export default function BoardProject(props: any) {
 
       <IssueModal></IssueModal>
       <Outlet></Outlet>
-    </>
+    </div>
   );
 }
