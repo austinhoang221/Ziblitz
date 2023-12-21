@@ -341,22 +341,6 @@ const Backlog: React.FC = () => {
                 <i className="fa-solid fa-chevron-down ml-2"></i>
               </Button>
             </Dropdown>
-            <Dropdown
-              overlay={
-                <Menu>
-                  <Menu.Item>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      Manage custom filter
-                    </div>
-                  </Menu.Item>
-                </Menu>
-              }
-              trigger={["click"]}
-            >
-              <Button type="text" onClick={(e) => e.preventDefault()}>
-                <i className="fa-solid fa-ellipsis"></i>
-              </Button>
-            </Dropdown>
           </>
         }
       ></HeaderProject>

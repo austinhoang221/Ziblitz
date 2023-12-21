@@ -1,6 +1,7 @@
 import {
   Avatar,
   Button,
+  Divider,
   Dropdown,
   Menu,
   MenuProps,
@@ -9,16 +10,18 @@ import {
   TabsProps,
 } from "antd";
 import Search from "antd/es/input/Search";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../../redux/slices/authenticationSlice";
+import { getFilterIssue } from "../../../../redux/slices/filterSlice";
 import {
   getMembers,
   getPermissions,
 } from "../../../../redux/slices/permissionSlice";
 import { RootState } from "../../../../redux/store";
 import { useAppDispatch } from "../../../customHooks/dispatch";
+import { IFilter } from "../../../models/IFilter";
 import { IProject } from "../../../models/IProject";
 import CreateProjectDrawer from "../../content/project/partials/create";
 import ButtonIcon from "../button-icon";
@@ -33,21 +36,11 @@ export default function Header() {
   const user = JSON.parse(localStorage.getItem("user")!);
 
   const projects = useSelector((state: RootState) => state.projects);
+  const { filters } = useSelector((state: RootState) => state.filters);
   const currentProject = useSelector(
     (state: RootState) => state.projectDetail.project
   );
-  const filterItems: MenuProps["items"] = [
-    {
-      key: "1",
-      label: "View all filters",
-      onClick: () => navigate("/filters"),
-    },
-    {
-      key: "2",
-      label: "View all issues",
-      onClick: () => navigate("/issues/new"),
-    },
-  ];
+
   const dashboardItems: MenuProps["items"] = [
     {
       key: "1",
@@ -81,6 +74,13 @@ export default function Header() {
       children: <RecentTask />,
     },
   ];
+
+  useEffect(() => {
+    if (!filters || filters?.length === 0) {
+      dispatch(getFilterIssue());
+    }
+  }, []);
+
   const onClickLogout = () => {
     dispatch(logout());
     navigate("login");
@@ -92,6 +92,10 @@ export default function Header() {
     dispatch(getPermissions(project?.id));
     dispatch(getMembers(project?.id));
     navigate(`project/${project?.code}/backlog`);
+  };
+
+  const goToDetailFilter = (filter: IFilter) => {
+    navigate("/issues/" + filter.id);
   };
   const goToCreateProject = () => {
     setIsDrawerOpen(true);
@@ -166,6 +170,8 @@ export default function Header() {
                         </Menu.Item>
                       );
                     })}
+
+                    <Divider className="mb-0 mt-0"></Divider>
                     <Menu.Item onClick={goToProject}>
                       <span>View all projects</span>
                     </Menu.Item>
@@ -183,7 +189,28 @@ export default function Header() {
             </div>
             <div className="c-header-dropdown-item">
               <Dropdown
-                overlay={<Menu items={filterItems}></Menu>}
+                overlay={
+                  <Menu>
+                    {filters.slice(0, 3)?.map((filter) => {
+                      return (
+                        <Menu.Item
+                          key={filter.id}
+                          onClick={() => goToDetailFilter(filter)}
+                        >
+                          <span>{filter.name}</span>
+                        </Menu.Item>
+                      );
+                    })}
+                    <Divider className="mb-0 mt-0"></Divider>
+
+                    <Menu.Item onClick={() => navigate("/filters")}>
+                      <span>View all filter</span>
+                    </Menu.Item>
+                    <Menu.Item onClick={() => navigate("/issues/new")}>
+                      <span>View all issue</span>
+                    </Menu.Item>
+                  </Menu>
+                }
                 trigger={["click"]}
               >
                 <Button type="text" onClick={(e) => e.preventDefault()}>
@@ -214,9 +241,9 @@ export default function Header() {
                 </Button>
               </Dropdown>
             </div>
-            <Button type="primary" className="ml-2">
+            {/* <Button type="primary" className="ml-2">
               Create
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className="c-header-config">

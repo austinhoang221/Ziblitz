@@ -66,6 +66,7 @@ const Content = styled.divBox`
 const ParentName = styled.divBox`
   border-radius: 3px;
   background-color: #dfd8fd;
+  padding: 2px 8px;
   color: #172b4d;
 `;
 
@@ -113,7 +114,7 @@ function QuoteItem(props: any) {
         <span className="text-black text-truncate">{quote.name}</span>
         <div className="align-child-space-between align-center w-100 mb-2">
           <div className="d-flex">
-            <ParentName>{quote?.parentName}</ParentName>
+            {quote?.parentName && <ParentName>{quote?.parentName}</ParentName>}
           </div>
 
           <IssuePriority priorityId={quote.priorityId}></IssuePriority>

@@ -23,6 +23,7 @@ export default class Endpoint {
   public static getSprintById: string = this.baseUrl + "projects/";
   public static updateSprint: string = this.baseUrl + "projects/";
   public static deleteSprint: string = this.baseUrl + "projects/";
+  public static getNotification: string = this.baseUrl + "projects/";
   public static createBacklogIssue: string = this.baseUrl + "backlogs/";
   public static createSprintIssue: string = this.baseUrl + "sprints/";
   public static createEpic: string = this.baseUrl + "projects/";
@@ -39,6 +40,8 @@ export default class Endpoint {
   public static deleteIssue: string = this.baseUrl + "sprints/";
   public static editSprintIssue: string = this.baseUrl + "sprints/";
   public static editBacklogIssue: string = this.baseUrl + "backlogs/";
+  public static getIssueEvent: string = this.baseUrl + "issueevents/";
+  public static getNotificationEvent: string = this.baseUrl + "notifications/";
   public static loginUrl: string = this.baseUrl + "users/signin";
   public static signUpUrl: string = this.baseUrl + "users/signup";
 }

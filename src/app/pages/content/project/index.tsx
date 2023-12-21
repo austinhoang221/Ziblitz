@@ -98,41 +98,6 @@ export default function Project() {
         );
       },
     },
-    {
-      title: "",
-      width: "40px",
-      render: (project: IProject) => {
-        return (
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item>
-                  <div>Project settings</div>
-                </Menu.Item>
-                <Menu.Item>
-                  <Popconfirm
-                    title="Delete the project"
-                    description="Are you sure to delete this project?"
-                    okText="Yes"
-                    cancelText="Cancel"
-                    onConfirm={() => onClickDeleteProject(project?.id)}
-                  >
-                    <div onClick={(e) => e.stopPropagation()}>
-                      Move to trash
-                    </div>
-                  </Popconfirm>
-                </Menu.Item>
-              </Menu>
-            }
-            trigger={["click"]}
-          >
-            <Button type="text" onClick={(e) => e.preventDefault()}>
-              <i className="fa-solid fa-ellipsis"></i>
-            </Button>
-          </Dropdown>
-        );
-      },
-    },
   ];
 
   const onClickDeleteProject = (id: string) => {

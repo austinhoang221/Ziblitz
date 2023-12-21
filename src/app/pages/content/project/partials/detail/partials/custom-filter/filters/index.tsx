@@ -114,7 +114,7 @@ export default function CustomFilter() {
       <div className="c-content">
         <div className="align-child-space-between align-center">
           <h2>Filter</h2>
-          <Button type="primary" onClick={() => navigate("/issues")}>
+          <Button type="primary" onClick={() => navigate("/issues/new")}>
             Create filter
           </Button>
         </div>
