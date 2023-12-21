@@ -493,7 +493,7 @@ export default function CustomFilterList() {
             }
             label="Label"
             isLoading={isLoadingProject || isLoading}
-            onChangeOption={setLabelOptions}
+            onChangeOption={setLabelValue}
           />
 
           <IssueDateSelect

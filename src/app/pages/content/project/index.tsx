@@ -18,7 +18,7 @@ import { deleteProject } from "../../../../redux/slices/projectSlice";
 export default function Project() {
   const initialRequestParam: IPagination = {
     pageNum: 1,
-    pageSize: 3,
+    pageSize: 5,
     sort: ["name:asc"],
   };
 
@@ -43,13 +43,15 @@ export default function Project() {
   const columns: ColumnsType<IProject> = [
     {
       title: <i className="fa-solid fa-star"></i>,
-      dataIndex: "isFavourite",
       key: "isFavourite",
       width: "40px",
       align: "center",
-      render: (isFavourite: boolean) => (
+      render: (project: IProject) => (
         <ButtonIcon
-          iconClass={isFavourite ? "fa-solid fa-star" : "fa-regular fa-star"}
+          onClick={() => onClickAddFavourite(project.isFavourite, project.id)}
+          iconClass={
+            project.isFavourite ? "fa-solid fa-star" : "fa-regular fa-star"
+          }
         ></ButtonIcon>
       ),
     },
@@ -99,6 +101,14 @@ export default function Project() {
       },
     },
   ];
+
+  const onClickAddFavourite = async (isFavourite: boolean, id: string) => {
+    const payload = {
+      isFavourite: !isFavourite,
+    };
+    await ProjectService.patch(userId, payload, id!);
+    refreshData();
+  };
 
   const onClickDeleteProject = (id: string) => {
     ProjectService.delete(userId, id!).then((res) => {

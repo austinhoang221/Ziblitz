@@ -18,18 +18,15 @@ import Search from "antd/es/input/Search";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { useIsFirstRender } from "../../../../../../../customHooks/useIsFirstRender";
+import IssueFilterSelect from "../../../../../../components/issue-filter-select";
 export default function BoardProject(props: any) {
-  const params = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [searchEpicValue, setSearchEpicValue] = useState<string>("");
-  const [epicOptions, setEpicOptions] = useState<any>([]);
-  const [searchEpicOptions, setSearchEpicOptions] = useState<any>([]);
+
   const [checkedEpics, setCheckedEpics] = useState<CheckboxValueType[]>([]);
-  const [typeOptions, setTypeOptions] = useState<any>([]);
   const [checkedTypes, setCheckedTypes] = useState<CheckboxValueType[]>([]);
-  const [sprintOptions, setSprintOptions] = useState<any>([]);
   const [checkedSprints, setCheckedSprints] = useState<CheckboxValueType[]>([]);
+  const [checkedLabels, setCheckedLabels] = useState<CheckboxValueType[]>([]);
   const [ordered, setOrdered] = useState<IIssueOnBoard>();
   const {
     project,
@@ -42,18 +39,6 @@ export default function BoardProject(props: any) {
   const { isCombineEnabled, useClone, containerHeight, withScrollableColumns } =
     props;
 
-  const checkAllEpic = epicOptions.length === checkedEpics.length;
-  const indeterminateEpic =
-    checkedEpics.length > 0 && checkedEpics.length < epicOptions.length;
-
-  const checkAllType = typeOptions.length === checkedTypes.length;
-  const indeterminateType =
-    checkedTypes.length > 0 && checkedTypes.length < typeOptions.length;
-
-  const checkAllSprint = sprintOptions.length === checkedSprints.length;
-  const indeterminateSprint =
-    checkedSprints.length > 0 && checkedSprints.length < sprintOptions.length;
-
   const Container = styled.divBox`
     background-color: #fff;
     max-height: 80vh;
@@ -61,152 +46,47 @@ export default function BoardProject(props: any) {
     min-width: 100vw;
   `;
 
-  const fetchData = useCallback(
-    async (request: any) => {
-      setIsLoading(true);
-      const payload = {
-        epicIds: request.checkedEpics,
-        issueTypeIds: request.checkedTypes,
-        sprintIds: request.checkedSprints,
-        searchKey: searchValue,
-      };
-      await SprintService.getAllIssue(project?.id!, payload).then((res) => {
-        if (checkResponseStatus(res)) {
-          setOrdered(res?.data!);
-          setIsLoading(false);
-        }
-      });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    },
-    [
-      params?.sprintId,
-      project?.id,
-      searchValue,
-      checkedEpics,
-      checkedSprints,
-      checkedTypes,
-    ]
-  );
-
-  useEffect(() => {
-    if (project?.id && project?.epics) {
-      let epics = project?.epics.map((epic) => ({
-        label: epic.name,
-        value: epic.id,
-      }));
-      setEpicOptions([...epics]);
-    }
-    if (project?.id && project?.issueTypes) {
-      let types = project?.issueTypes.map((type) => ({
-        label: type.name,
-        value: type.id,
-      }));
-      setTypeOptions([...types]);
-    }
-    if (project?.id && project?.sprints) {
-      let sprints = project?.sprints.map((sprint) => ({
-        label: sprint.name,
-        value: sprint.id,
-      }));
-      setSprintOptions([...sprints]);
-    }
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    const payload = {
+      epicIds: checkedEpics,
+      issueTypeIds: checkedTypes,
+      sprintIds: checkedSprints,
+      labelIds: checkedLabels,
+      searchKey: searchValue,
+    };
+    await SprintService.getAllIssue(project?.id!, payload).then((res) => {
+      if (checkResponseStatus(res)) {
+        setOrdered(res?.data!);
+        setIsLoading(false);
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [project?.id]);
+  }, [
+    project?.id,
+    searchValue,
+    checkedEpics,
+    checkedSprints,
+    checkedTypes,
+    checkedLabels,
+  ]);
 
   useEffect(() => {
     if (project?.id) {
-      fetchData({
-        checkedEpics: checkedEpics,
-        checkedSprints: checkedSprints,
-        checkedTypes: checkedTypes,
-      });
+      fetchData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFirstRender, project?.id, searchValue]);
-
-  useEffect(() => {
-    if (searchEpicValue) {
-      const options = epicOptions.filter((epic: any) =>
-        epic.label.toLowerCase().includes(searchEpicValue.toLowerCase())
-      );
-      setSearchEpicOptions(options);
-    } else {
-      setSearchEpicOptions(epicOptions);
-    }
-  }, [epicOptions, searchEpicValue]);
-
-  const onCheckAllEpicChange = (e: CheckboxChangeEvent) => {
-    setCheckedEpics(
-      e.target.checked ? epicOptions.map((option: any) => option.value) : []
-    );
-    fetchData({
-      checkedEpics: e.target.checked
-        ? epicOptions.map((option: any) => option.value)
-        : [],
-      checkedSprints: checkedSprints,
-      checkedTypes: checkedTypes,
-    });
-  };
-
-  const onCheckedEpicChange = (list: CheckboxValueType[]) => {
-    setCheckedEpics(list);
-    fetchData({
-      checkedEpics: list,
-      checkedSprints: checkedSprints,
-      checkedTypes: checkedTypes,
-    });
-  };
-
-  const onCheckAllTypeChange = (e: CheckboxChangeEvent) => {
-    setCheckedTypes(
-      e.target.checked ? typeOptions.map((option: any) => option.value) : []
-    );
-    fetchData({
-      checkedEpics: checkedEpics,
-      checkedSprints: checkedSprints,
-      checkedTypes: e.target.checked
-        ? typeOptions.map((option: any) => option.value)
-        : [],
-    });
-  };
-
-  const onCheckedTypeChange = (list: CheckboxValueType[]) => {
-    setCheckedTypes(list);
-    fetchData({
-      checkedEpics: checkedEpics,
-      checkedSprints: checkedSprints,
-      checkedTypes: list,
-    });
-  };
-
-  const onCheckAllSprintChange = (e: CheckboxChangeEvent) => {
-    setCheckedSprints(
-      e.target.checked ? sprintOptions.map((option: any) => option.value) : []
-    );
-    fetchData({
-      checkedEpics: checkedEpics,
-      checkedSprints: checkedSprints,
-      checkedTypes: e.target.checked
-        ? typeOptions.map((option: any) => option.value)
-        : [],
-    });
-  };
-
-  const onCheckedSprintChange = (list: CheckboxValueType[]) => {
-    setCheckedSprints(list);
-    fetchData({
-      checkedEpics: checkedEpics,
-      checkedSprints: list,
-      checkedTypes: checkedTypes,
-    });
-  };
+  }, [
+    project?.id,
+    searchValue,
+    checkedEpics,
+    checkedSprints,
+    checkedTypes,
+    checkedLabels,
+  ]);
 
   const onSearch = (value: string) => {
     setSearchValue(value);
-  };
-
-  const onSearchEpic = (value: string) => {
-    setSearchEpicValue(value);
   };
 
   const onDragEnd = async (result: any) => {
@@ -258,106 +138,54 @@ export default function BoardProject(props: any) {
 
   const onRenderAction: React.ReactNode = (
     <>
-      <Dropdown
-        className="mr-2"
-        overlay={
-          <Menu>
-            <Menu.Item>
-              <div onClick={(e) => e.stopPropagation()}>
-                <Search
-                  className="mb-2"
-                  placeholder="Search filters..."
-                  style={{ width: "250px" }}
-                  onChange={(event: any) => onSearchEpic(event.target.value)}
-                />
-                <br></br>
-                <Checkbox
-                  value="all"
-                  indeterminate={indeterminateEpic}
-                  checked={checkAllEpic}
-                  onChange={onCheckAllEpicChange}
-                  className="w-100"
-                >
-                  All
-                </Checkbox>
-                <Checkbox.Group
-                  className="d-flex d-flex-direction-column"
-                  options={searchEpicOptions}
-                  value={checkedEpics}
-                  onChange={onCheckedEpicChange}
-                />
-              </div>
-            </Menu.Item>
-          </Menu>
+      <IssueFilterSelect
+        projectId={project?.id}
+        initialOption={
+          project?.epics?.map((epic) => ({
+            label: epic.name,
+            value: epic.id,
+          })) ?? []
         }
-        trigger={["click"]}
-      >
-        <Button type="text" className="ml-2">
-          <span>Epic</span> <i className="fa-solid fa-chevron-down ml-2"></i>
-        </Button>
-      </Dropdown>
-      <Dropdown
-        className="mr-2"
-        overlay={
-          <Menu>
-            <Menu.Item>
-              <div onClick={(e) => e.stopPropagation()}>
-                <Checkbox
-                  value="all"
-                  indeterminate={indeterminateType}
-                  checked={checkAllType}
-                  onChange={onCheckAllTypeChange}
-                  className="w-100"
-                >
-                  All
-                </Checkbox>
-                <Checkbox.Group
-                  className="d-flex d-flex-direction-column"
-                  options={typeOptions}
-                  value={checkedTypes}
-                  onChange={onCheckedTypeChange}
-                />
-              </div>
-            </Menu.Item>
-          </Menu>
+        label="Epic"
+        isLoading={isLoadingProject || isLoading}
+        onChangeOption={setCheckedEpics}
+      />
+      <IssueFilterSelect
+        projectId={project?.id}
+        initialOption={
+          project?.issueTypes?.map((type) => ({
+            label: type.name,
+            value: type.id,
+          })) ?? []
         }
-        trigger={["click"]}
-      >
-        <Button type="text" className="ml-2">
-          <span>Type</span> <i className="fa-solid fa-chevron-down ml-2"></i>
-        </Button>
-      </Dropdown>
-      <Dropdown
-        className="mr-2"
-        overlay={
-          <Menu>
-            <Menu.Item>
-              <div onClick={(e) => e.stopPropagation()}>
-                <Checkbox
-                  value="all"
-                  indeterminate={indeterminateSprint}
-                  checked={checkAllSprint}
-                  onChange={onCheckAllSprintChange}
-                  className="w-100"
-                >
-                  All
-                </Checkbox>
-                <Checkbox.Group
-                  className="d-flex d-flex-direction-column"
-                  options={sprintOptions}
-                  value={checkedSprints}
-                  onChange={onCheckedSprintChange}
-                />
-              </div>
-            </Menu.Item>
-          </Menu>
+        label="Issue type"
+        isLoading={isLoadingProject || isLoading}
+        onChangeOption={setCheckedTypes}
+      />
+      <IssueFilterSelect
+        projectId={project?.id}
+        initialOption={
+          project?.sprints?.map((sprint) => ({
+            label: sprint.name,
+            value: sprint.id,
+          })) ?? []
         }
-        trigger={["click"]}
-      >
-        <Button type="text" className="ml-2">
-          <span>Sprint</span> <i className="fa-solid fa-chevron-down ml-2"></i>
-        </Button>
-      </Dropdown>
+        label="Sprint"
+        isLoading={isLoadingProject || isLoading}
+        onChangeOption={setCheckedSprints}
+      />
+      <IssueFilterSelect
+        projectId={project?.id}
+        initialOption={
+          project?.labels?.map((label) => ({
+            label: label.name,
+            value: label.id,
+          })) ?? []
+        }
+        label="Label"
+        isLoading={isLoadingProject || isLoading}
+        onChangeOption={setCheckedLabels}
+      />
     </>
   );
 

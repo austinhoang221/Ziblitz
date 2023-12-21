@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../redux/store";
 import { IProjectPermissions } from "../../../../../models/IPermission";
 import { useIsFirstRender } from "../../../../../customHooks/useIsFirstRender";
+import { useRef } from "react";
 export default function DetailProject() {
   const params = useParams();
   const pathname = window.location.pathname;
@@ -23,11 +24,20 @@ export default function DetailProject() {
     (state: RootState) => state.projectDetail
   );
 
-  const isFirstRender = useIsFirstRender();
+  const isTriggerChange = useRef(false);
 
   useEffect(() => {
-    dispatch(getProjectByCode(params?.code!));
+    if (project?.code && params?.code !== project?.code) {
+      isTriggerChange.current = true;
+      dispatch(getProjectByCode(params?.code!));
+    }
   }, [dispatch, params?.code]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      isTriggerChange.current = false;
+    }
+  }, [isLoading]);
 
   const menuItems = [
     {
@@ -237,7 +247,7 @@ export default function DetailProject() {
             zIndex: 1, // Optional: Adjust the z-index if needed
           }}
         >
-          {isLoading && isFirstRender ? (
+          {isLoading && isTriggerChange.current ? (
             <>
               <Skeleton.Input active block className="mb-2 mt-2" />
               <Skeleton.Input

@@ -294,6 +294,9 @@ export default function NotificationProject() {
             onSubmit={onSubmit}
             mode={mode}
             isLoadingButtonSave={isLoadingButtonSave}
+            disabled={
+              !allWatcher && !currentAssignee && !projectLead && !reporter
+            }
           />
         }
       >
@@ -398,6 +401,7 @@ function Footer(props: any) {
           onClick={props.onSubmit}
           htmlType="submit"
           loading={props.isLoadingButtonSave}
+          disabled={props.disabled}
         >
           Create
         </Button>

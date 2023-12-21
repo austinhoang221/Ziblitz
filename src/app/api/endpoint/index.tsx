@@ -15,6 +15,7 @@ export default class Endpoint {
   public static getMembers: string = this.baseUrl + "projects/";
   public static getPermission: string = this.baseUrl + "projects/";
   public static getStatus: string = this.baseUrl + "projects/";
+  public static getStatusCategories: string = this.baseUrl + "projects/";
   public static getLabel: string = this.baseUrl + "projects/";
   public static getPriority: string = this.baseUrl + "projects/";
   public static createSprint: string = this.baseUrl + "projects/";

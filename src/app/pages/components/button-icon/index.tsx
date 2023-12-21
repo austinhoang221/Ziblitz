@@ -9,6 +9,7 @@ export default function ButtonIcon(props: any) {
         shape={props.shape ?? "circle"}
         type="text"
         className="c-button-icon"
+        onClick={props.onClick}
       >
         <i className={props.iconClass}></i>
       </Button>

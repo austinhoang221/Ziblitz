@@ -16,7 +16,7 @@ export interface IDetailProject {
   code: string;
   description: string;
   avatarUrl: string;
-  isFavorite: boolean;
+  isFavourite: boolean;
   leader: IUser;
   members: IUser[];
   epics: IIssue[];

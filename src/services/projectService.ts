@@ -78,6 +78,23 @@ export class ProjectService {
     }
   };
 
+  public static patch = async (
+    userId: string,
+    payload: any,
+    projectId: string
+  ) => {
+    try {
+      const response: IResponse<IDetailProject> = await axiosInstance.patch(
+        Endpoint.updateProject + userId + "/projects/" + projectId,
+        payload
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
   public static delete = async (userId: string, projectId: string) => {
     try {
       const response: IResponse<IDetailProject> = await axiosInstance.delete(

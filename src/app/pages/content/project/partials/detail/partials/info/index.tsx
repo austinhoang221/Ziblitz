@@ -36,7 +36,6 @@ export default function InfoProject() {
   const { project, projectPermissions } = useSelector(
     (state: RootState) => state.projectDetail
   );
-  const users = useSelector((state: RootState) => state.users);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
@@ -102,6 +101,12 @@ export default function InfoProject() {
         dispatch(setBacklogIssues([]));
       }
     });
+  };
+
+  const onRenderMember = () => {
+    const members = [...project?.members!];
+    members.unshift(project?.leader!);
+    return members;
   };
   return (
     <>
@@ -180,7 +185,7 @@ export default function InfoProject() {
               disabled={true}
               defaultValue={project?.leader?.id}
               onChange={handleFormChange}
-              options={users.map((user) => {
+              options={onRenderMember().map((user) => {
                 return {
                   label: getOptionLabel(user),
                   value: user.id,
@@ -199,7 +204,7 @@ export default function InfoProject() {
             <Select
               disabled={!editPermission}
               onChange={handleFormChange}
-              options={users.map((user) => {
+              options={onRenderMember().map((user) => {
                 return {
                   label: getOptionLabel(user),
                   value: user.id,

@@ -144,6 +144,7 @@ export default function Header() {
             <div className="c-header-dropdown-item">
               <Dropdown
                 trigger={["click"]}
+                overlayStyle={{ width: "200px" }}
                 overlay={
                   <Menu
                     title="Recent"
@@ -163,9 +164,18 @@ export default function Header() {
                               src={project.avatarUrl}
                               alt=""
                             />
-                            <span>
-                              {project.name} ({project.code})
-                            </span>
+                            <div>
+                              <div className="text-truncate">
+                                <span>
+                                  {project.name} ({project.code})
+                                </span>
+                              </div>
+                              {project.isFavourite && (
+                                <span className="align-end ">
+                                  <i className="fa-solid fa-star"></i>
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </Menu.Item>
                       );
