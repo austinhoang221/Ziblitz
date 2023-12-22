@@ -7,9 +7,9 @@ import { IssueService } from "../../../../services/issueService";
 import { useAppDispatch } from "../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../helpers";
 import { IIssueComponentProps } from "../../../models/IIssueComponent";
-import { BaseSelectRef } from "rc-select";
 import { IPagination } from "../../../models/IPagination";
 import usePriorityData from "../../../customHooks/fetchPriority";
+import { BaseSelectRef } from "rc-select";
 
 export default function SelectPriority(props: IIssueComponentProps) {
   const initialRequestParam: IPagination = {
@@ -31,6 +31,11 @@ export default function SelectPriority(props: IIssueComponentProps) {
     project?.id!,
     requestParam
   );
+
+  const ref = useRef<BaseSelectRef>(null);
+  useEffect(() => {
+    ref?.current?.focus();
+  });
 
   const onChangePriority = async (e: any) => {
     setIsLoadingSave(true);
@@ -61,6 +66,7 @@ export default function SelectPriority(props: IIssueComponentProps) {
 
   return (
     <Select
+      ref={ref}
       style={{ width: "150px" }}
       className={props.className}
       showSearch

@@ -214,6 +214,7 @@ const Backlog: React.FC = () => {
                             onSaveIssue={onSaveIssue}
                             issueId={issue?.id}
                             selectedId={issue?.issueDetail?.assigneeId}
+                            isUseListUser={false}
                           ></SelectUser>
                         </Menu.Item>
                       </SubMenu>

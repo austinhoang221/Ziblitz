@@ -100,7 +100,8 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
                 fontSize: "12px",
               }}
             >
-              #<i className="fa-solid fa-angle-down ml-2"></i>
+              {statusName}
+              <i className="fa-solid fa-angle-down ml-2"></i>
             </Button>
           </div>
         );

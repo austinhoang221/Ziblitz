@@ -13,6 +13,7 @@ import { IUser } from "../../../models/IUser";
 
 interface ISelectUserProps extends IIssueComponentProps {
   fieldName: string;
+  isUseListUser: boolean;
 }
 export default function SelectUser(props: ISelectUserProps) {
   const initialRequestUserParam = {
@@ -78,21 +79,37 @@ export default function SelectUser(props: ISelectUserProps) {
     }
   };
 
+  const onRenderMember = () => {
+    const members = [...project?.members!];
+    members.unshift(project?.leader!);
+    return members;
+  };
+
   return (
     <>
       <Select
         style={{ width: "150px" }}
         showSearch
         ref={ref}
+        className={props.className}
         onSearch={(e) => onSearch(e)}
         loading={loading}
         defaultValue={props.selectedId}
-        options={listUser.map((user) => {
-          return {
-            label: getOptionLabel(user),
-            value: user.id,
-          };
-        })}
+        options={
+          props.isUseListUser
+            ? listUser.map((user) => {
+                return {
+                  label: getOptionLabel(user),
+                  value: user.id,
+                };
+              })
+            : onRenderMember().map((user) => {
+                return {
+                  label: getOptionLabel(user),
+                  value: user.id,
+                };
+              })
+        }
         onChange={(e) => onChangeAssignUser(e)}
         onFocus={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}

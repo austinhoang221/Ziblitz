@@ -169,6 +169,8 @@ export default function InlineEdit(props: IInlineEditProps) {
             issueId={props.issueId}
             selectedId={props.initialValue!}
             onBlur={() => setIsEditing(false)}
+            isUseListUser={false}
+            className="w-100"
           ></SelectUser>
         );
       case "sprintSelect":
