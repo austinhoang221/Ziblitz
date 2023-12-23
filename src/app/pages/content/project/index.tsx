@@ -30,8 +30,6 @@ export default function Project() {
     requestParam
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const showSuccessMessage = () => {
     messageApi.open({
@@ -108,16 +106,6 @@ export default function Project() {
     };
     await ProjectService.patch(userId, payload, id!);
     refreshData();
-  };
-
-  const onClickDeleteProject = (id: string) => {
-    ProjectService.delete(userId, id!).then((res) => {
-      if (checkResponseStatus(res)) {
-        refreshData();
-        showSuccessMessage();
-        dispatch(deleteProject(id));
-      }
-    });
   };
 
   const onChangePagination = (page: number, size: number) => {

@@ -12,6 +12,12 @@ export default function User() {
       content: "Successfully",
     });
   };
+  const showFailedMessage = (message: string) => {
+    messageApi.open({
+      type: "error",
+      content: message,
+    });
+  };
   const items: TabsProps["items"] = [
     {
       key: "1",
@@ -21,7 +27,13 @@ export default function User() {
     {
       key: "2",
       label: "Security",
-      children: <UserPassword />,
+      children: (
+        <UserPassword
+          user={user}
+          onSaveSuccess={showSuccessMessage}
+          onFailed={showFailedMessage}
+        />
+      ),
     },
   ];
   return (

@@ -156,26 +156,30 @@ export default function Header() {
                           key={project.id}
                           onClick={() => goToDetailProject(project)}
                         >
-                          <div className="d-flex align-center">
-                            <img
-                              width="20px"
-                              height="20px"
-                              className="mr-2"
-                              src={project.avatarUrl}
-                              alt=""
-                            />
-                            <div>
+                          <div className="align-child-space-between align-center">
+                            <div className="d-flex">
+                              <img
+                                width="20px"
+                                height="20px"
+                                className="mr-2"
+                                src={project.avatarUrl}
+                                alt=""
+                              />
                               <div className="text-truncate">
                                 <span>
                                   {project.name} ({project.code})
                                 </span>
                               </div>
-                              {project.isFavourite && (
-                                <span className="align-end ">
-                                  <i className="fa-solid fa-star"></i>
-                                </span>
-                              )}
                             </div>
+                            {project.isFavourite && (
+                              <ButtonIcon
+                                iconClass={
+                                  project.isFavourite
+                                    ? "fa-solid fa-star"
+                                    : "fa-regular fa-star"
+                                }
+                              ></ButtonIcon>
+                            )}
                           </div>
                         </Menu.Item>
                       );

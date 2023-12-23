@@ -33,7 +33,7 @@ export class UserService {
   public static changePassword = async (userId: string, payload: any) => {
     try {
       const response: IResponse<IUser> = await axiosInstance.put(
-        Endpoint.getAllUser + userId,
+        Endpoint.getAllUser + userId + "/change-password",
         payload
       );
       console.log("POST response:", response.data);
