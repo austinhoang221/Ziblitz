@@ -1,6 +1,11 @@
 export default class Endpoint {
   public static get baseUrl(): string {
+    // return "http://localhost:5244/api/";
     return "https://task-manager-service.azurewebsites.net/api/";
+  }
+  public static get hubUrl(): string {
+    // return "http://localhost:5244/hubs/";
+    return "https://task-manager-service.azurewebsites.net/hubs/";
   }
   public static getAllRole: string = this.baseUrl + "roles/";
   public static editUserUrl: string = this.baseUrl + "user";
