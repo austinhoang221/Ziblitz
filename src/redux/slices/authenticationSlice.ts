@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IAuthentication } from "../../app/models/IAuthentication";
 import { RootState } from "../store";
+import PresenceService from "../../app/pages/signalr/presence.service";
+import NotificationService from "../../app/pages/signalr/notification.service";
 const initialState: IAuthentication = {
   id: "",
   name: "",
@@ -14,7 +16,7 @@ const initialState: IAuthentication = {
   token: ""
 }
 export const authenticationSlice = createSlice({
-    name: "authentication", 
+    name: "authentication",
     initialState,
     reducers: {
       login: (state: any, action: PayloadAction<IAuthentication>) => {
@@ -34,6 +36,10 @@ export const authenticationSlice = createSlice({
         return user;
       },
       logout: (state: any) => {
+        const user = JSON.parse(localStorage.getItem("user")!);
+        PresenceService.getInstance(user.token).stopHubConnection();
+        NotificationService.getInstance(user.token).stopHubConnection();
+
         localStorage.setItem("user", JSON.stringify(initialState));
         return initialState
       },
@@ -43,4 +49,3 @@ export const authenticationSlice = createSlice({
   export const selectAuthencation = (state: RootState) => state.authentication;
   export const {login, logout} = authenticationSlice.actions;
   export default authenticationSlice.reducer;
-  
