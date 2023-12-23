@@ -6,6 +6,7 @@ import { IIssue } from "../../../models/IIssue";
 import IssuePriority from "../issue-priority";
 import IssueStatusSelect from "../issue-status-select";
 import IssueType from "../issue-type";
+import IssueProgress from "../issues-progress";
 import UserAvatar from "../user-avatar";
 import "./index.scss";
 interface IChildIssuesProps {
@@ -26,7 +27,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "code",
-      width: "12%",
+      width: "15%",
       align: "left",
       render: (issue: IIssue) => {
         return (
@@ -109,6 +110,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
   ];
   return (
     <div className="child-issue">
+      <IssueProgress issues={props?.data ?? []}></IssueProgress>
       <Table
         pagination={false}
         className="mt-2"

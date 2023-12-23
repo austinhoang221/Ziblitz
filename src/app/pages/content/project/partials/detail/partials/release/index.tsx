@@ -22,6 +22,7 @@ import { VersionService } from "../../../../../../../../services/versionService"
 import useVersionData from "../../../../../../../customHooks/fetchVersion";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import { IVersion } from "../../../../../../../models/IVersion";
+import ChildIssues from "../../../../../../components/child-issues";
 import HeaderProject from "../header";
 
 export default function Release() {
@@ -34,6 +35,7 @@ export default function Release() {
   const [mode, setMode] = useState<string>("");
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
   const [versionId, setVersionId] = useState<string>("");
+  const [version, setVersion] = useState<IVersion>();
   const [drawerForm] = Form.useForm();
   const { RangePicker } = DatePicker;
   const [date, setDate] = useState<any[]>([]);
@@ -158,6 +160,7 @@ export default function Release() {
         const time = [dayjs(item?.startDate), dayjs(item?.releaseDate)];
         drawerForm.setFieldValue("time", time);
         setVersionId(item?.id!);
+        setVersion(item);
       }
     }
   };
@@ -248,7 +251,7 @@ export default function Release() {
         }
       >
         <Row gutter={24}>
-          <Col span={mode === "create" ? 24 : 16}>
+          <Col span={mode === "create" ? 24 : 14}>
             <Form form={drawerForm} className="form" onFinish={onSubmit}>
               <Form.Item
                 label="Name"
@@ -314,7 +317,9 @@ export default function Release() {
               </Form.Item>
             </Form>
           </Col>
-          <Col span={8}></Col>
+          <Col span={10}>
+            <ChildIssues data={version?.issues ?? []}></ChildIssues>
+          </Col>
         </Row>
       </Modal>
     </div>
