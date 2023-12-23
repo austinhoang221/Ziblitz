@@ -343,6 +343,7 @@ export default function IssueModal(props: any) {
                   ></CreateIssueInput>
                 </>
               )}
+              <br></br>
               <span className="font-weight-bold ml-2 mt-4">Activity</span>
               <Tabs
                 className="ml-2"
@@ -371,7 +372,11 @@ export default function IssueModal(props: any) {
                 ></IssueStatusSelect>
               </div>
 
-              <Card title="Details" className="mt-4">
+              <Card
+                title="Details"
+                className="mt-4"
+                style={{ maxHeight: "45vh", overflow: "hidden scroll" }}
+              >
                 <Row gutter={24} className="align-center">
                   <Col span={8}>
                     <span className="text-muted">Assignee</span>
@@ -402,6 +407,24 @@ export default function IssueModal(props: any) {
                       type="labelSelect"
                       issueId={issue?.id!}
                       fieldName="labelId"
+                      onSaveIssue={(issue?: IIssue) =>
+                        showSuccessMessage(issue)
+                      }
+                    ></InlineEdit>
+                  </Col>
+                </Row>
+                <Row gutter={24} className="align-center">
+                  <Col span={8}>
+                    <span className="text-muted">Version</span>
+                  </Col>
+                  <Col span={16}>
+                    <InlineEdit
+                      periodType={getPeriodType(issue!)}
+                      periodId={issue?.sprintId ?? issue?.backlogId!}
+                      initialValue={issue?.issueDetail.versions ?? []}
+                      type="versionSelect"
+                      issueId={issue?.id!}
+                      fieldName="versionId"
                       onSaveIssue={(issue?: IIssue) =>
                         showSuccessMessage(issue)
                       }

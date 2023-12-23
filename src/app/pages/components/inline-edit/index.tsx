@@ -23,6 +23,8 @@ import IssuePriority from "../issue-priority";
 import { LoadingOutlined } from "@ant-design/icons";
 import SelectLabel from "../label-select";
 import { ILabel } from "../../../models/ILabel";
+import IssueVersionSelect from "../issue-version-select";
+import { IVersion } from "../../../models/IVersion";
 
 interface IInlineEditProps {
   type: string;
@@ -199,6 +201,20 @@ export default function InlineEdit(props: IInlineEditProps) {
             onBlur={() => setIsEditing(false)}
           ></SelectLabel>
         );
+      case "versionSelect":
+        return (
+          <IssueVersionSelect
+            className="w-100"
+            type={props.periodType}
+            periodId={props.periodId}
+            onSaveIssue={(issue?: IIssue) => props.onSaveIssue(issue)}
+            issueId={props.issueId}
+            selectedId={
+              props.initialValue?.map((item: IVersion) => item.id) ?? []
+            }
+            onBlur={() => setIsEditing(false)}
+          ></IssueVersionSelect>
+        );
       case "storyPointEstimate":
         return (
           <InputNumber
@@ -331,6 +347,28 @@ export default function InlineEdit(props: IInlineEditProps) {
                       {value.name}
                     </Tag>
                   );
+                })}
+              </span>
+            ) : (
+              <span className="ml-2">None</span>
+            )}
+          </div>
+        );
+      case "versionSelect":
+        return (
+          <div
+            className={
+              "edit-content" +
+              (props.fieldName === "name"
+                ? " font-sz24 font-weight-medium"
+                : "")
+            }
+            onClick={onEdit}
+          >
+            {editedValue ? (
+              <span className="ml-2">
+                {editedValue.map((value: IVersion) => {
+                  return <Tag key={value.id}>{value.name}</Tag>;
                 })}
               </span>
             ) : (

@@ -8,6 +8,7 @@ import { IPriority } from "./IPriority";
 import { IIssueOnBoard } from "./IProject";
 import { ISprint } from "./ISprint";
 import { IStatus } from "./IStatus";
+import { IStatusCategory } from "./IStatusCategory";
 import { IUser } from "./IUser";
 
 export interface IDetailProject {
@@ -27,6 +28,7 @@ export interface IDetailProject {
   issueOnBoard: IIssueOnBoard;
   userPermissionGroup: IPermissionGroup;
   projectConfiguration: IProjectConfiguration;
+  statusCategories: IStatusCategory[];
   labels: ILabel[];
   priorities: IPriority[];
 }
