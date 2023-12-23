@@ -42,6 +42,7 @@ import IssueModal from "../../../../../../components/issue-modal";
 import Epic from "../../../../../../components/epic";
 import IssueAddParent from "../../../../../../components/issue-add-parent";
 import EditSprintModal from "../../../../../../components/edit-sprint-modal";
+import IssueFilterSelect from "../../../../../../components/issue-filter-select";
 
 const Backlog: React.FC = () => {
   const params = useParams();
@@ -305,7 +306,6 @@ const Backlog: React.FC = () => {
         actionContent={
           <>
             <Dropdown
-              className="mr-2"
               overlay={
                 <Menu>
                   <Menu.Item>
@@ -337,11 +337,26 @@ const Backlog: React.FC = () => {
               }
               trigger={["click"]}
             >
-              <Button type="text" className="ml-2">
+              <Button type="default" className="ml-2">
                 <span>Epic</span>{" "}
                 <i className="fa-solid fa-chevron-down ml-2"></i>
               </Button>
             </Dropdown>
+
+            <IssueFilterSelect
+              projectId={project?.id}
+              initialOption={
+                project?.issueTypes?.map((type) => ({
+                  label: type.name,
+                  value: type.id,
+                })) ?? []
+              }
+              label="Issue type"
+              isLoading={isLoading}
+              onChangeOption={function (options: any[]): void {
+                throw new Error("Function not implemented.");
+              }}
+            />
           </>
         }
       ></HeaderProject>

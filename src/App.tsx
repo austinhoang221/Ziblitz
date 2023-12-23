@@ -20,6 +20,7 @@ import Labels from "./app/pages/content/project/partials/detail/partials/labels"
 import MembersProject from "./app/pages/content/project/partials/detail/partials/members";
 import NotificationProject from "./app/pages/content/project/partials/detail/partials/notification";
 import Priorities from "./app/pages/content/project/partials/detail/partials/priorities";
+import Release from "./app/pages/content/project/partials/detail/partials/release";
 import Statuses from "./app/pages/content/project/partials/detail/partials/statuses";
 import TimelineProject from "./app/pages/content/project/partials/detail/partials/timeline";
 import User from "./app/pages/content/user";
@@ -47,10 +48,7 @@ function App() {
 
             <Route path="project/:code" element={<DetailProject />}>
               <Route path="timeline" element={<TimelineProject />}>
-                <Route
-                  path="timeline/:issueId"
-                  element={<TimelineProject />}
-                ></Route>
+                <Route path="timeline" element={<TimelineProject />}></Route>
               </Route>
               <Route path="backlog" element={<BacklogProject />}>
                 <Route path=":issueId"></Route>
@@ -58,6 +56,7 @@ function App() {
               <Route path="board" element={<BoardProject />}>
                 <Route path=":issueId"></Route>
               </Route>
+              <Route path="releases" element={<Release />} />
               <Route path="details" element={<InfoProject />} />
               <Route path="issueTypes" element={<IssueTypes />} />
               <Route path="priorities" element={<Priorities />} />
@@ -67,7 +66,6 @@ function App() {
               <Route path="access" element={<AccessProject />} />
               <Route path="members" element={<MembersProject />} />
               <Route path="features" element={<FeatureProject />} />
-              <Route path="code" element={<CodeProject />} />
             </Route>
           </Route>
         </Route>

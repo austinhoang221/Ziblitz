@@ -31,7 +31,7 @@ export default function DetailProject() {
       isTriggerChange.current = true;
       dispatch(getProjectByCode(params?.code!));
     }
-  }, [dispatch, params?.code]);
+  }, [dispatch, params?.code, project]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -84,10 +84,10 @@ export default function DetailProject() {
       ),
       children: [
         {
-          key: "code",
+          key: "releases",
           label: (
             <span>
-              <i className="fa-solid fa-code mr-2"></i>Code
+              <i className="fa-solid fa-code mr-2"></i>Releases
             </span>
           ),
         },
