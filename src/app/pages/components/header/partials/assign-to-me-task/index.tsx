@@ -37,11 +37,11 @@ export default function AssignToMeTask() {
   }, [project?.id]);
 
   return (
-    <div>
+    <div style={{ maxHeight: "20rem", overflow: "hidden scroll" }}>
       {project?.statuses?.map((status, index) => {
         return !isLoading ? (
           <>
-            {ordered?.[status.name].length! > 0 && (
+            {ordered?.[status.name]?.length! > 0 && (
               <>
                 <span
                   className="mt-2 mb-2 font-weight-bold font-sz12"

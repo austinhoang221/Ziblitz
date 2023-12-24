@@ -23,6 +23,7 @@ import useVersionData from "../../../../../../../customHooks/fetchVersion";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import { IVersion } from "../../../../../../../models/IVersion";
 import ChildIssues from "../../../../../../components/child-issues";
+import IssueProgress from "../../../../../../components/issues-progress";
 import HeaderProject from "../header";
 
 export default function Release() {
@@ -63,9 +64,7 @@ export default function Release() {
       title: "Progress",
       key: "name",
       render: (version: IVersion) => {
-        return (
-          <a onClick={() => onOpenModal("edit", version)}>{version.name}</a>
-        );
+        return <IssueProgress issues={version?.issues ?? []}></IssueProgress>;
       },
     },
     {
@@ -166,7 +165,7 @@ export default function Release() {
   };
 
   const onRenderMember = () => {
-    const members = [...project?.members!];
+    const members = [...(project?.members ?? [])];
     members.unshift(project?.leader!);
     return members;
   };
@@ -283,10 +282,10 @@ export default function Release() {
               >
                 <Select
                   placeholder="Select driver"
-                  options={onRenderMember().map((member) => {
+                  options={onRenderMember()?.map((member) => {
                     return {
-                      label: member.name,
-                      value: member.id,
+                      label: member?.name,
+                      value: member?.id,
                     };
                   })}
                 ></Select>
@@ -318,7 +317,9 @@ export default function Release() {
             </Form>
           </Col>
           <Col span={10}>
-            <ChildIssues data={version?.issues ?? []}></ChildIssues>
+            {mode === "edit" && (
+              <ChildIssues data={version?.issues ?? []}></ChildIssues>
+            )}
           </Col>
         </Row>
       </Modal>

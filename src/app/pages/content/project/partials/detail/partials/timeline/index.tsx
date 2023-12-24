@@ -28,13 +28,44 @@ export default function TimelineProject() {
               end: new Date(item.end),
             };
           });
-          setTasks(data.reverse());
           setIsLoading(false);
+          setTasks(sortTasksAndProjects(data));
         }
       });
     };
     if (project?.id) fetchData();
   }, [project?.id]);
+
+  const sortTasksAndProjects = (data: any[]) => {
+    // Separate projects and tasks
+    const projects = data.filter((item) => item.type === "project");
+    const tasks = data.filter((item) => item.type === "task");
+
+    // Sort projects by start date
+    projects.sort(
+      (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+    );
+
+    // Create a map to store tasks by their parent project ID
+    const tasksMap = tasks.reduce((map, task) => {
+      const parentId = task.project;
+      map[parentId] = map[parentId] || [];
+      map[parentId].push(task);
+      return map;
+    }, {});
+
+    // Flatten the result array with projects and their tasks
+    const sortedData = projects.reduce((result, project) => {
+      const parentId = project.id;
+      result.push(project);
+      if (tasksMap[parentId]) {
+        result.push(...tasksMap[parentId]);
+      }
+      return result;
+    }, []);
+
+    return sortedData;
+  };
 
   const onSearch = (value: string) => {
     setSearchValue(value);

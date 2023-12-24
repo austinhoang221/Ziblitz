@@ -176,13 +176,13 @@ export default function IssueModal(props: any) {
     <div className="issue-modal">
       <div className="align-child-space-between align-center">
         <div className="d-flex align-center">
-          {issue?.issueType.name === "Epic" ? (
+          {issue?.issueType?.name === "Epic" ? (
             <Button type="text">
-              <IssueType issueTypeKey={issue?.issueType.icon}></IssueType>
+              <IssueType issueTypeKey={issue?.issueType?.icon}></IssueType>
             </Button>
           ) : (
             <>
-              {issue?.issueType.icon !== "subtask" && (
+              {issue?.issueType?.icon !== "subtask" && (
                 <>
                   <IssueAddParent
                     type={getPeriodType(issue!)}

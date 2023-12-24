@@ -268,35 +268,38 @@ export default function InlineEdit(props: IInlineEditProps) {
       case "reporterSelect":
         return (
           <>
-            {editedValue && (
-              <div
-                className={
-                  "edit-content" +
-                  (props.fieldName === "name"
-                    ? " font-sz24 font-weight-medium"
-                    : "")
-                }
-                onClick={onEdit}
-              >
-                <Avatar
-                  style={{
-                    backgroundColor: getRandomColor(),
-                    verticalAlign: "middle",
-                  }}
-                  size={28}
-                  className="mr-2"
-                  alt=""
-                  src={users.find((user) => user.id === editedValue)?.avatarUrl}
+            {editedValue &&
+              editedValue !== "00000000-0000-0000-0000-000000000000" && (
+                <div
+                  className={
+                    "edit-content" +
+                    (props.fieldName === "name"
+                      ? " font-sz24 font-weight-medium"
+                      : "")
+                  }
+                  onClick={onEdit}
                 >
-                  {convertNameToInitials(
-                    users.find((user) => user.id === editedValue)?.name ?? ""
-                  )}
-                </Avatar>
-                <span>
-                  {users.find((user) => user.id === editedValue)?.name}
-                </span>
-              </div>
-            )}
+                  <Avatar
+                    style={{
+                      backgroundColor: getRandomColor(),
+                      verticalAlign: "middle",
+                    }}
+                    size={28}
+                    className="mr-2"
+                    alt=""
+                    src={
+                      users.find((user) => user.id === editedValue)?.avatarUrl
+                    }
+                  >
+                    {convertNameToInitials(
+                      users.find((user) => user.id === editedValue)?.name ?? ""
+                    )}
+                  </Avatar>
+                  <span>
+                    {users.find((user) => user.id === editedValue)?.name}
+                  </span>
+                </div>
+              )}
           </>
         );
       case "sprintSelect":
