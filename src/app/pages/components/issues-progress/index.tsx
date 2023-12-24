@@ -49,7 +49,9 @@ export default function IssueProgress(props: IIssueProgress) {
       </div>
       <Progress
         percent={(onCalculatePercent() as number) * 100}
-        status="active"
+        status={
+          (onCalculatePercent() as number) * 100 === 100 ? "success" : "active"
+        }
       />
     </>
   );

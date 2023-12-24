@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Badge,
   Button,
   Divider,
   Dropdown,
@@ -29,22 +28,8 @@ import ButtonIcon from "../button-icon";
 import "./index.scss";
 import AssignToMeTask from "./partials/assign-to-me-task";
 import RecentTask from "./partials/recent-task";
-import NotificationService from "../../signalr/notification.service";
-import PresenceService from "../../signalr/presence.service";
-import { Observable } from "rxjs";
 
-const useCustomHookForObservable = (initialObservable: Observable<any>) => {
-  const [storedQuotes, setQuotes] = useState(0);
-  const [observable, setObservable] = useState(initialObservable);
-  useEffect(() => {
-    let subscription = observable.subscribe((value: any) => {
-      setQuotes(value);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [observable]);
-  return {storedQuotes, setObservable}
-};
+import UserNotification from "../user-notification";
 
 export default function Header() {
   const [defaultTabIndex, setDefaultTabIndex] = useState<string>("1");
@@ -122,12 +107,6 @@ export default function Header() {
   const onNavigateUser = (id: string) => {
     navigate(`user/${id}`);
   };
-  const notificationService = NotificationService.getInstance(user.token);
-  const presenceService = PresenceService.getInstance(user.token);
-
-  const {storedQuotes, setObservable} =  useCustomHookForObservable(notificationService.unreadNotifyNum);
-
-  useEffect(() => {setObservable(notificationService.unreadNotifyNum)}, [notificationService.unreadNotifyNum]);
 
   return (
     <>
@@ -143,6 +122,7 @@ export default function Header() {
           <div className="d-flex align-center">
             <div className="c-header-dropdown-item">
               <Dropdown
+                arrow
                 trigger={["click"]}
                 overlayStyle={{
                   margin: "20px",
@@ -168,6 +148,7 @@ export default function Header() {
             </div>
             <div className="c-header-dropdown-item">
               <Dropdown
+                arrow
                 trigger={["click"]}
                 overlayStyle={{ width: "200px" }}
                 overlay={
@@ -228,6 +209,7 @@ export default function Header() {
             </div>
             <div className="c-header-dropdown-item">
               <Dropdown
+                arrow
                 overlay={
                   <Menu>
                     {filters.slice(0, 3)?.map((filter) => {
@@ -260,6 +242,7 @@ export default function Header() {
             </div>
             <div className="c-header-dropdown-item">
               <Dropdown
+                arrow
                 overlay={<Menu items={dashboardItems}></Menu>}
                 trigger={["click"]}
               >
@@ -271,6 +254,7 @@ export default function Header() {
             </div>
             <div className="c-header-dropdown-item">
               <Dropdown
+                arrow
                 overlay={<Menu items={teamItems}></Menu>}
                 trigger={["click"]}
               >
@@ -287,11 +271,9 @@ export default function Header() {
         </div>
         <div className="c-header-config">
           <Search placeholder="Search..." style={{ width: 200 }} />
-          <Badge count={storedQuotes} overflowCount={99}>
-            <ButtonIcon iconClass="fa-solid fa-bell"></ButtonIcon>
-          </Badge>
-          <ButtonIcon iconClass="fa-solid fa-gear"></ButtonIcon>
+          <UserNotification></UserNotification>
           <Dropdown
+            arrow
             trigger={["click"]}
             overlay={
               <Menu title="Account">

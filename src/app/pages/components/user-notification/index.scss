@@ -1,0 +1,17 @@
+.user-notification {
+
+
+
+    .ant-dropdown-menu-item {
+        background-color: #fff !important;
+
+        &:hover {
+            background-color: #f5f5f5 I !important;
+        }
+
+        &:hover .noti-name {
+            text-decoration: underline;
+        }
+    }
+
+}

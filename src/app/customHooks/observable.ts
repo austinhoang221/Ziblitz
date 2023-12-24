@@ -4,7 +4,7 @@ import { Observable } from "rxjs";
 export const useCustomHookForObservable = (
   initialObservable: Observable<any>
 ) => {
-  const [storedQuotes, setQuotes] = useState(0);
+  const [storedQuotes, setQuotes] = useState<any>();
   const [observable, setObservable] = useState(initialObservable);
   useEffect(() => {
     let subscription = observable.subscribe((value: any) => {

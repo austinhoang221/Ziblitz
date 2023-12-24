@@ -121,7 +121,7 @@ export default function IssueComment(props: IInlineEditProps) {
   };
 
   const onCreate = () => {
-    if (createValue !== "") {
+    if (createValue !== "<p><br></p>" && createValue !== "") {
       const payload = {
         creatorUserId: userId,
         isEdited: false,
