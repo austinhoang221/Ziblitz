@@ -70,5 +70,11 @@ export default class NotificationService {
       NotificationService.instance = new NotificationService(token);
     }
     return NotificationService.instance
-  } 
+  }
+
+  async readNotify(userNotificationId: string): Promise<any> {
+    return this.hubConnection
+      .invoke('ReadNotification', userNotificationId)
+      .catch((error) => console.log(error));
+  }
 }
