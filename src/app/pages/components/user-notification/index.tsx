@@ -50,6 +50,13 @@ export default function UserNotification() {
     setisUnRead(e);
   };
 
+  const onReadNotification = async (notification: IUserNotification) => {
+    await notificationService.readNotify(notification.id);
+    navigate(
+      `/project/${notification.projectCode}/backlog/${notification.issueId}`
+    );
+  };
+
   return (
     <Dropdown
       trigger={["click"]}
@@ -79,11 +86,7 @@ export default function UserNotification() {
                 return (
                   <Menu.Item
                     key={notification.id}
-                    onClick={() =>
-                      navigate(
-                        `/project/${notification.projectCode}/backlog/${notification.issueId}`
-                      )
-                    }
+                    onClick={() => onReadNotification(notification)}
                   >
                     <Row gutter={16}>
                       <Col span={3}>

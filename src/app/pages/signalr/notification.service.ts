@@ -25,40 +25,42 @@ export default class NotificationService {
 
     this.hubConnection.start().catch((error) => console.log(error));
 
-    this.hubConnection.on('NotificationList', (notifications) => {
+    this.hubConnection.on("NotificationList", (notifications) => {
       this.notificationsSource.next(notifications);
     });
 
-    this.hubConnection.on('UnreadNotificationNum', (count) => {
+    this.hubConnection.on("UnreadNotificationNum", (count) => {
       this.unreadNotifyNum.pipe(take(1)).subscribe(() => {
-        this.unreadNotificationNum.next(count)
-        this.notificationNum = count
-      }
-      );
+        this.unreadNotificationNum.next(count);
+        this.notificationNum = count;
+      });
     });
 
     this.hubConnection.on(
-      'NewNotification',
+      "NewNotification",
       (newNotification: IUserNotification) => {
         this.notifications.pipe(take(1)).subscribe((notifications) => {
           this.notificationsSource.next([...notifications, newNotification]);
           this.notificationNum = this.notificationNum + 1;
           this.unreadNotificationNum.next(this.notificationNum);
-          console.log(newNotification)
+          console.log(newNotification);
         });
       }
     );
 
-    this.hubConnection.on('ReadNotification', (readNotify: IUserNotification) => {
-      this.notifications.pipe(take(1)).subscribe((notifications) => {
-        const index = notifications.findIndex((n) => n.id === readNotify.id);
-        this.notificationsSource.next([
-          ...notifications.slice(0, index),
-          readNotify,
-          ...notifications.slice(index + 1),
-        ]);
-      });
-    });
+    this.hubConnection.on(
+      "ReadNotification",
+      (readNotify: IUserNotification) => {
+        this.notifications.pipe(take(1)).subscribe((notifications) => {
+          const index = notifications.findIndex((n) => n.id === readNotify.id);
+          this.notificationsSource.next([
+            ...notifications.slice(0, index),
+            readNotify,
+            ...notifications.slice(index + 1),
+          ]);
+        });
+      }
+    );
   }
 
   public stopHubConnection() {
@@ -69,12 +71,12 @@ export default class NotificationService {
     if (!NotificationService.instance) {
       NotificationService.instance = new NotificationService(token);
     }
-    return NotificationService.instance
+    return NotificationService.instance;
   }
 
-  async readNotify(userNotificationId: string): Promise<any> {
+  public async readNotify(userNotificationId: string): Promise<any> {
     return this.hubConnection
-      .invoke('ReadNotification', userNotificationId)
+      .invoke("ReadNotification", userNotificationId)
       .catch((error) => console.log(error));
   }
 }
