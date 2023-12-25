@@ -29,7 +29,7 @@ export default function IssueProgress(props: IIssueProgress) {
     )?.id;
 
     const doneIssueCount = props.issues.filter(
-      (issue) => issue.status.statusCategoryId === doneStatusCategoryId
+      (issue) => issue.status?.statusCategoryId === doneStatusCategoryId
     )?.length;
     if (doneIssueCount && doneIssueCount > 0) {
       return doneIssueCount;

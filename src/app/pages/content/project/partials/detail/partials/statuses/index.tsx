@@ -1,12 +1,12 @@
 import { red } from "@ant-design/colors";
 import {
+  Alert,
   Button,
   Form,
   Input,
   message,
   Modal,
   Pagination,
-  Popconfirm,
   Select,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -44,7 +44,10 @@ export default function Statuses() {
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
   const [statusId, setStatusId] = useState<string>("");
   const [statusCategories, setStatusCategories] = useState<IStatus[]>([]);
+  const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
+  const [transferId, setTransferId] = useState<string>("");
+  const [deleteStatus, setDeleteStatus] = useState<IStatus>();
   const editPermission =
     projectPermissions && projectPermissions.permissions.project.editPermission;
   const showSuccessMessage = () => {
@@ -66,12 +69,15 @@ export default function Statuses() {
     });
   }, []);
 
-  const onDeleteStatus = async (id: string) => {
-    await StatusService.delete(project?.id!, id).then((res) => {
+  const onDeleteStatus = async (id: string, transferId: string) => {
+    setIsLoadingButtonSave(true);
+    await StatusService.delete(project?.id!, id, transferId).then((res) => {
       if (checkResponseStatus(res)) {
         refreshData();
         dispatch(getProjectByCode(project?.code!));
         showSuccessMessage();
+        setIsLoadingButtonSave(false);
+        setIsShowDeleteModal(false);
       }
     });
   };
@@ -99,25 +105,20 @@ export default function Statuses() {
       width: "40px",
       render: (status: IStatus) => {
         return (
-          <Popconfirm
-            title="Delete the status"
-            description="Are you sure to delete this status?"
-            okText="Yes"
-            cancelText="Cancel"
-            onConfirm={() => onDeleteStatus(status.id)}
+          <Button
+            type="text"
+            shape="circle"
             disabled={status.isMain || !editPermission}
+            onClick={() => {
+              setIsShowDeleteModal(true);
+              setDeleteStatus(status);
+            }}
           >
-            <Button
-              type="text"
-              shape="circle"
-              disabled={status.isMain || !editPermission}
-            >
-              <i
-                style={{ color: red.primary }}
-                className="fa-solid fa-trash-can"
-              ></i>
-            </Button>
-          </Popconfirm>
+            <i
+              style={{ color: red.primary }}
+              className="fa-solid fa-trash-can"
+            ></i>
+          </Button>
         );
       },
     },
@@ -275,6 +276,62 @@ export default function Statuses() {
             <TextArea />
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        title="Delete status"
+        closeIcon={null}
+        onCancel={() => setIsShowDeleteModal(false)}
+        onOk={onSubmit}
+        footer={
+          <>
+            <Button type="default" onClick={() => setIsShowDeleteModal(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="ml-2"
+              type="primary"
+              onClick={() => onDeleteStatus(deleteStatus?.id!, transferId)}
+              htmlType="submit"
+              danger
+              loading={isLoadingButtonSave}
+              disabled={!transferId}
+            >
+              Delete
+            </Button>
+          </>
+        }
+        open={isShowDeleteModal}
+      >
+        <Alert
+          className="mt-2"
+          message={`Before you can delete this status, change ${deleteStatus?.name} issues to another status.`}
+          type="warning"
+        />
+        <Form.Item
+          label={`Change all existing ${deleteStatus?.name} issues to`}
+          required={true}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          rules={[
+            {
+              required: true,
+              message: "Please enter your new status id",
+            },
+          ]}
+        >
+          <Select
+            placeholder="Select new status id"
+            options={listStatus
+              .filter((status) => status.id !== deleteStatus?.id)
+              .map((category) => {
+                return {
+                  label: category.name,
+                  value: category.id,
+                };
+              })}
+            onChange={(e) => setTransferId(e)}
+          ></Select>
+        </Form.Item>
       </Modal>
     </div>
   );
