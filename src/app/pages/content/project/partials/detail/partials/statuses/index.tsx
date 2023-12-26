@@ -1,4 +1,4 @@
-import { red } from "@ant-design/colors";
+import { orange, red } from "@ant-design/colors";
 import {
   Alert,
   Button,
@@ -7,6 +7,7 @@ import {
   message,
   Modal,
   Pagination,
+  Popconfirm,
   Select,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -104,25 +105,48 @@ export default function Statuses() {
       width: "40px",
       render: (status: IStatus) => {
         return (
-          <Button
-            type="text"
-            shape="circle"
-            disabled={status.isMain || !editPermission}
-            loading={isLoadingButtonSave}
-            onClick={() => {
-              if (status.issueCount > 0) {
-                setIsShowDeleteModal(true);
-                setDeleteStatus(status);
-              } else {
-                onDeleteStatus(status.id);
-              }
-            }}
-          >
-            <i
-              style={{ color: red.primary }}
-              className="fa-solid fa-trash-can"
-            ></i>
-          </Button>
+          <>
+            {status.issueCount > 0 ? (
+              <Button
+                type="text"
+                shape="circle"
+                disabled={status.isMain || !editPermission}
+                onClick={() => {
+                  if (status.issueCount > 0) {
+                    setIsShowDeleteModal(true);
+                    setDeleteStatus(status);
+                  } else {
+                    onDeleteStatus(status.id);
+                  }
+                }}
+              >
+                <i
+                  style={{ color: red.primary }}
+                  className="fa-solid fa-trash-can"
+                ></i>
+              </Button>
+            ) : (
+              <Popconfirm
+                title="Delete the status"
+                description="Are you sure to delete this status?"
+                okText="Yes"
+                cancelText="Cancel"
+                onConfirm={() => onDeleteStatus(status.id)}
+                disabled={status.isMain || !editPermission}
+              >
+                <Button
+                  type="text"
+                  shape="circle"
+                  disabled={status.isMain || !editPermission}
+                >
+                  <i
+                    style={{ color: red.primary }}
+                    className="fa-solid fa-trash-can"
+                  ></i>
+                </Button>
+              </Popconfirm>
+            )}
+          </>
         );
       },
     },
@@ -314,7 +338,18 @@ export default function Statuses() {
       >
         <Alert
           className="mt-2"
-          message={`Before you can delete this status, change ${deleteStatus?.name} issues to another status.`}
+          message={
+            <span>
+              <i
+                style={{ color: orange.primary }}
+                className="fa-solid fa-triangle-exclamation"
+              ></i>
+              &nbsp; Your project has <b>{deleteStatus?.issueCount}</b>
+              &nbsp;
+              {deleteStatus?.name} issues. Before you can delete this status,
+              change {deleteStatus?.name} issues to another status.
+            </span>
+          }
           type="warning"
         />
         <Form.Item

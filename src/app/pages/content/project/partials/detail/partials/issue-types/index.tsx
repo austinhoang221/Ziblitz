@@ -1,4 +1,4 @@
-import { red } from "@ant-design/colors";
+import { orange, red } from "@ant-design/colors";
 import {
   Alert,
   Button,
@@ -129,25 +129,48 @@ export default function IssueTypes() {
       width: "40px",
       render: (issueType: IIssueType) => {
         return (
-          <Button
-            type="text"
-            shape="circle"
-            disabled={issueType.isMain || !editPermission}
-            loading={isLoadingButtonSave}
-            onClick={() => {
-              if (issueType.issueCount > 0) {
-                setIsShowDeleteModal(true);
-                setDeleteType(issueType);
-              } else {
-                onDeleteType(issueType.id);
-              }
-            }}
-          >
-            <i
-              style={{ color: red.primary }}
-              className="fa-solid fa-trash-can"
-            ></i>
-          </Button>
+          <>
+            {issueType.issueCount > 0 ? (
+              <Button
+                type="text"
+                shape="circle"
+                disabled={issueType.isMain || !editPermission}
+                onClick={() => {
+                  if (issueType.issueCount > 0) {
+                    setIsShowDeleteModal(true);
+                    setDeleteType(issueType);
+                  } else {
+                    onDeleteType(issueType.id);
+                  }
+                }}
+              >
+                <i
+                  style={{ color: red.primary }}
+                  className="fa-solid fa-trash-can"
+                ></i>
+              </Button>
+            ) : (
+              <Popconfirm
+                title="Delete the issue type"
+                description="Are you sure to delete this issue type?"
+                okText="Yes"
+                cancelText="Cancel"
+                onConfirm={() => onDeleteType(issueType.id)}
+                disabled={issueType.isMain || !editPermission}
+              >
+                <Button
+                  type="text"
+                  shape="circle"
+                  disabled={issueType.isMain || !editPermission}
+                >
+                  <i
+                    style={{ color: red.primary }}
+                    className="fa-solid fa-trash-can"
+                  ></i>
+                </Button>
+              </Popconfirm>
+            )}
+          </>
         );
       },
     },
@@ -379,7 +402,18 @@ export default function IssueTypes() {
       >
         <Alert
           className="mt-2"
-          message={`Before you can delete this issue type, change ${deleteType?.name} issues to another issue type.`}
+          message={
+            <span>
+              <i
+                style={{ color: orange.primary }}
+                className="fa-solid fa-triangle-exclamation"
+              ></i>
+              &nbsp; Your project has <b>{deleteType?.issueCount}</b>
+              &nbsp;
+              {deleteType?.name} issues. Before you can delete this issue type,
+              change {deleteType?.name} issues to another issue type.
+            </span>
+          }
           type="warning"
         />
         <Form.Item

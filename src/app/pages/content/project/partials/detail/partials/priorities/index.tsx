@@ -1,4 +1,4 @@
-import { red } from "@ant-design/colors";
+import { orange, red } from "@ant-design/colors";
 import {
   Alert,
   Button,
@@ -112,25 +112,48 @@ export default function Priorities() {
       width: "40px",
       render: (priority: IPriority) => {
         return (
-          <Button
-            type="text"
-            shape="circle"
-            disabled={priority.isMain || !editPermission}
-            loading={isLoadingButtonSave}
-            onClick={() => {
-              if (priority.issueCount > 0) {
-                setIsShowDeleteModal(true);
-                setDeletePriority(priority);
-              } else {
-                onDeletePriority(priority.id);
-              }
-            }}
-          >
-            <i
-              style={{ color: red.primary }}
-              className="fa-solid fa-trash-can"
-            ></i>
-          </Button>
+          <>
+            {priority.issueCount > 0 ? (
+              <Button
+                type="text"
+                shape="circle"
+                disabled={priority.isMain || !editPermission}
+                onClick={() => {
+                  if (priority.issueCount > 0) {
+                    setIsShowDeleteModal(true);
+                    setDeletePriority(priority);
+                  } else {
+                    onDeletePriority(priority.id);
+                  }
+                }}
+              >
+                <i
+                  style={{ color: red.primary }}
+                  className="fa-solid fa-trash-can"
+                ></i>
+              </Button>
+            ) : (
+              <Popconfirm
+                title="Delete the priority"
+                description="Are you sure to delete this priority?"
+                okText="Yes"
+                cancelText="Cancel"
+                onConfirm={() => onDeletePriority(priority.id)}
+                disabled={priority.isMain || !editPermission}
+              >
+                <Button
+                  type="text"
+                  shape="circle"
+                  disabled={priority.isMain || !editPermission}
+                >
+                  <i
+                    style={{ color: red.primary }}
+                    className="fa-solid fa-trash-can"
+                  ></i>
+                </Button>
+              </Popconfirm>
+            )}
+          </>
         );
       },
     },
@@ -338,7 +361,19 @@ export default function Priorities() {
       >
         <Alert
           className="mt-2"
-          message={`Before you can delete this priority, change ${deletePriority?.name} issues to another priority.`}
+          message={
+            <span>
+              <i
+                style={{ color: orange.primary }}
+                className="fa-solid fa-triangle-exclamation"
+              ></i>
+              &nbsp; Your project has <b>{deletePriority?.issueCount}</b>
+              &nbsp;
+              {deletePriority?.name} issues. Before you can delete this
+              priority, change {deletePriority?.name} issues to another
+              priority.
+            </span>
+          }
           type="warning"
         />
         <Form.Item
