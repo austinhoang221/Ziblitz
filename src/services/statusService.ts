@@ -87,16 +87,12 @@ export class StatusService {
   public static delete = async (
     projectId: string,
     id: string,
-    transferId: string
+    transferId?: string
   ) => {
     try {
+      const request = transferId ? "?newId=" + transferId : "";
       const response: IResponse<IStatus> = await axiosInstance.delete(
-        Endpoint.getStatus +
-          projectId +
-          "/statuses/" +
-          id +
-          "?newId=" +
-          transferId
+        Endpoint.getStatus + projectId + "/statuses/" + id + request
       );
       console.log("POST response:", response.data);
       return response;

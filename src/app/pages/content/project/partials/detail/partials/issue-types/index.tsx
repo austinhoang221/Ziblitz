@@ -1,5 +1,6 @@
 import { red } from "@ant-design/colors";
 import {
+  Alert,
   Button,
   Col,
   Form,
@@ -10,6 +11,7 @@ import {
   Popconfirm,
   Popover,
   Row,
+  Select,
   Table,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -34,6 +36,9 @@ export default function IssueTypes() {
   const [isChangeIcon, setIsChangeIcon] = useState(false);
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
   const [issueTypeId, setIssueTypeId] = useState<string>("");
+  const [transferId, setTransferId] = useState<string>("");
+  const [deleteType, setDeleteType] = useState<IIssueType>();
+  const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
 
   const initialRequestParam: IPagination = {
     pageNum: 1,
@@ -78,12 +83,15 @@ export default function IssueTypes() {
     });
   };
 
-  const onDeleteIssueType = async (id: string) => {
-    await IssueTypeService.delete(project?.id!, id).then((res) => {
+  const onDeleteType = async (id: string, transferId?: string) => {
+    setIsLoadingButtonSave(true);
+    await IssueTypeService.delete(project?.id!, id, transferId).then((res) => {
       if (checkResponseStatus(res)) {
         refreshData();
         dispatch(getProjectByCode(project?.code!));
         showSuccessMessage();
+        setIsLoadingButtonSave(false);
+        setIsShowDeleteModal(false);
       }
     });
   };
@@ -121,25 +129,25 @@ export default function IssueTypes() {
       width: "40px",
       render: (issueType: IIssueType) => {
         return (
-          <Popconfirm
-            title="Delete the issue type"
-            description="Are you sure to delete this issue type?"
-            okText="Yes"
-            cancelText="Cancel"
-            onConfirm={() => onDeleteIssueType(issueType.id)}
+          <Button
+            type="text"
+            shape="circle"
             disabled={issueType.isMain || !editPermission}
+            loading={isLoadingButtonSave}
+            onClick={() => {
+              if (issueType.issueCount > 0) {
+                setIsShowDeleteModal(true);
+                setDeleteType(issueType);
+              } else {
+                onDeleteType(issueType.id);
+              }
+            }}
           >
-            <Button
-              type="text"
-              shape="circle"
-              disabled={issueType.isMain || !editPermission}
-            >
-              <i
-                style={{ color: red.primary }}
-                className="fa-solid fa-trash-can"
-              ></i>
-            </Button>
-          </Popconfirm>
+            <i
+              style={{ color: red.primary }}
+              className="fa-solid fa-trash-can"
+            ></i>
+          </Button>
         );
       },
     },
@@ -242,6 +250,12 @@ export default function IssueTypes() {
     setSearchValue(value);
   };
 
+  const onCancelDelete = () => {
+    setIsShowDeleteModal(false);
+    setTransferId("");
+    setDeleteType(undefined);
+  };
+
   return (
     <div className="issue-types">
       <HeaderProject
@@ -337,6 +351,62 @@ export default function IssueTypes() {
             <TextArea />
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        title="Delete status"
+        closeIcon={null}
+        onCancel={() => onCancelDelete()}
+        onOk={onSubmit}
+        footer={
+          <>
+            <Button type="default" onClick={() => onCancelDelete()}>
+              Cancel
+            </Button>
+            <Button
+              className="ml-2"
+              type="primary"
+              onClick={() => onDeleteType(deleteType?.id!, transferId)}
+              htmlType="submit"
+              danger
+              loading={isLoadingButtonSave}
+              disabled={!transferId}
+            >
+              Delete
+            </Button>
+          </>
+        }
+        open={isShowDeleteModal}
+      >
+        <Alert
+          className="mt-2"
+          message={`Before you can delete this issue type, change ${deleteType?.name} issues to another issue type.`}
+          type="warning"
+        />
+        <Form.Item
+          label={`Change all existing ${deleteType?.name} issues to`}
+          required={true}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          rules={[
+            {
+              required: true,
+              message: "Please enter your new issue type id",
+            },
+          ]}
+        >
+          <Select
+            placeholder="Select new issue type id"
+            options={listIssueType
+              .filter((type) => type.id !== deleteType?.id)
+              .map((type) => {
+                return {
+                  label: type.name,
+                  value: type.id,
+                };
+              })}
+            onChange={(e) => setTransferId(e)}
+          ></Select>
+        </Form.Item>
       </Modal>
     </div>
   );

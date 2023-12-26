@@ -72,10 +72,15 @@ export class IssueTypeService {
     }
   };
 
-  public static delete = async (projectId: string, id: string) => {
+  public static delete = async (
+    projectId: string,
+    id: string,
+    transferId?: string
+  ) => {
     try {
+      const request = transferId ? "?newId=" + transferId : "";
       const response: IResponse<IIssueType> = await axiosInstance.delete(
-        Endpoint.getIssueType + projectId + "/issuetypes/" + id
+        Endpoint.getIssueType + projectId + "/issuetypes/" + id + request
       );
       console.log("POST response:", response.data);
       return response;
