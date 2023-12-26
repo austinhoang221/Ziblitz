@@ -6,4 +6,5 @@ export interface IPriority {
   icon: string;
   projectId: string;
   isMain: boolean;
+  issueCount: number;
 }

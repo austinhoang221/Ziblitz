@@ -72,10 +72,16 @@ export class PriorityService {
     }
   };
 
-  public static delete = async (projectId: string, id: string) => {
+  public static delete = async (
+    projectId: string,
+    id: string,
+    transferId?: string
+  ) => {
     try {
+      const request = transferId ? "?newId=" + transferId : "";
+
       const response: IResponse<IPriority> = await axiosInstance.delete(
-        Endpoint.getIssueType + projectId + "/priorities/" + id
+        Endpoint.getIssueType + projectId + "/priorities/" + id + request
       );
       console.log("POST response:", response.data);
       return response;

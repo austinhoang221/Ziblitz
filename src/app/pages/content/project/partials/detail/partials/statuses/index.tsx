@@ -11,8 +11,7 @@ import {
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import Table, { ColumnsType } from "antd/es/table";
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../../../../../redux/store";
@@ -69,7 +68,7 @@ export default function Statuses() {
     });
   }, []);
 
-  const onDeleteStatus = async (id: string, transferId: string) => {
+  const onDeleteStatus = async (id: string, transferId?: string) => {
     setIsLoadingButtonSave(true);
     await StatusService.delete(project?.id!, id, transferId).then((res) => {
       if (checkResponseStatus(res)) {
@@ -109,9 +108,14 @@ export default function Statuses() {
             type="text"
             shape="circle"
             disabled={status.isMain || !editPermission}
+            loading={isLoadingButtonSave}
             onClick={() => {
-              setIsShowDeleteModal(true);
-              setDeleteStatus(status);
+              if (status.issueCount > 0) {
+                setIsShowDeleteModal(true);
+                setDeleteStatus(status);
+              } else {
+                onDeleteStatus(status.id);
+              }
             }}
           >
             <i
@@ -179,6 +183,12 @@ export default function Statuses() {
 
   const onSearch = (value: string) => {
     setSearchValue(value);
+  };
+
+  const onCancelDelete = () => {
+    setIsShowDeleteModal(false);
+    setTransferId("");
+    setDeleteStatus(undefined);
   };
 
   return (
@@ -280,11 +290,11 @@ export default function Statuses() {
       <Modal
         title="Delete status"
         closeIcon={null}
-        onCancel={() => setIsShowDeleteModal(false)}
+        onCancel={() => onCancelDelete()}
         onOk={onSubmit}
         footer={
           <>
-            <Button type="default" onClick={() => setIsShowDeleteModal(false)}>
+            <Button type="default" onClick={() => onCancelDelete()}>
               Cancel
             </Button>
             <Button

@@ -5,4 +5,5 @@ export interface IIssueType {
   icon: string;
   level: number;
   isMain: boolean;
+  issueCount: number;
 }

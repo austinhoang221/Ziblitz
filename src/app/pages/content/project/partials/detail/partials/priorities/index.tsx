@@ -1,5 +1,6 @@
 import { red } from "@ant-design/colors";
 import {
+  Alert,
   Button,
   ColorPicker,
   Form,
@@ -8,6 +9,7 @@ import {
   Modal,
   Pagination,
   Popconfirm,
+  Select,
   Table,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -25,7 +27,6 @@ import { IPagination } from "../../../../../../../models/IPagination";
 import IssuePriority from "../../../../../../components/issue-priority";
 import HeaderProject from "../header";
 import type { ColorPickerProps } from "antd/es/color-picker";
-import { useEffect } from "react";
 export default function Priorities() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mode, setMode] = useState<string>("");
@@ -34,6 +35,9 @@ export default function Priorities() {
   const [colorValue, setColorValue] =
     useState<ColorPickerProps["value"]>("#1677ff");
   const [searchValue, setSearchValue] = useState<string>("");
+  const [transferId, setTransferId] = useState<string>("");
+  const [deletePriority, setDeletePriority] = useState<IPriority>();
+  const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
 
   const initialRequestParam: IPagination = {
     pageNum: 1,
@@ -63,12 +67,14 @@ export default function Priorities() {
     });
   };
 
-  const onDeletePriority = async (id: string) => {
-    await PriorityService.delete(project?.id!, id).then((res) => {
+  const onDeletePriority = async (id: string, transferId?: string) => {
+    setIsLoadingButtonSave(true);
+    await PriorityService.delete(project?.id!, id, transferId).then((res) => {
       if (checkResponseStatus(res)) {
         refreshData();
         dispatch(getProjectByCode(project?.code!));
         showSuccessMessage();
+        setIsLoadingButtonSave(false);
       }
     });
   };
@@ -106,25 +112,25 @@ export default function Priorities() {
       width: "40px",
       render: (priority: IPriority) => {
         return (
-          <Popconfirm
-            title="Delete the priority"
-            description="Are you sure to delete this priority?"
-            okText="Yes"
-            cancelText="Cancel"
-            onConfirm={() => onDeletePriority(priority.id)}
+          <Button
+            type="text"
+            shape="circle"
             disabled={priority.isMain || !editPermission}
+            loading={isLoadingButtonSave}
+            onClick={() => {
+              if (priority.issueCount > 0) {
+                setIsShowDeleteModal(true);
+                setDeletePriority(priority);
+              } else {
+                onDeletePriority(priority.id);
+              }
+            }}
           >
-            <Button
-              type="text"
-              shape="circle"
-              disabled={priority.isMain || !editPermission}
-            >
-              <i
-                style={{ color: red.primary }}
-                className="fa-solid fa-trash-can"
-              ></i>
-            </Button>
-          </Popconfirm>
+            <i
+              style={{ color: red.primary }}
+              className="fa-solid fa-trash-can"
+            ></i>
+          </Button>
         );
       },
     },
@@ -191,6 +197,12 @@ export default function Priorities() {
 
   const onSearch = (value: string) => {
     setSearchValue(value);
+  };
+
+  const onCancelDelete = () => {
+    setIsShowDeleteModal(false);
+    setTransferId("");
+    setDeletePriority(undefined);
   };
 
   return (
@@ -298,6 +310,62 @@ export default function Priorities() {
             <TextArea />
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        title="Delete status"
+        closeIcon={null}
+        onCancel={() => onCancelDelete()}
+        onOk={onSubmit}
+        footer={
+          <>
+            <Button type="default" onClick={() => onCancelDelete()}>
+              Cancel
+            </Button>
+            <Button
+              className="ml-2"
+              type="primary"
+              onClick={() => onDeletePriority(deletePriority?.id!, transferId)}
+              htmlType="submit"
+              danger
+              loading={isLoadingButtonSave}
+              disabled={!transferId}
+            >
+              Delete
+            </Button>
+          </>
+        }
+        open={isShowDeleteModal}
+      >
+        <Alert
+          className="mt-2"
+          message={`Before you can delete this priority, change ${deletePriority?.name} issues to another priority.`}
+          type="warning"
+        />
+        <Form.Item
+          label={`Change all existing ${deletePriority?.name} issues to`}
+          required={true}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          rules={[
+            {
+              required: true,
+              message: "Please enter your new priority id",
+            },
+          ]}
+        >
+          <Select
+            placeholder="Select new priority id"
+            options={listPriority
+              .filter((priortity) => priortity.id !== deletePriority?.id)
+              .map((priortity) => {
+                return {
+                  label: priortity.name,
+                  value: priortity.id,
+                };
+              })}
+            onChange={(e) => setTransferId(e)}
+          ></Select>
+        </Form.Item>
       </Modal>
     </div>
   );
