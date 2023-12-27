@@ -3,6 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { RootState } from "../../../../redux/store";
+import { sasToken } from "../../../helpers";
 import { IUser } from "../../../models/IUser";
 
 interface IUserAvatarProps {
@@ -27,7 +28,7 @@ export default function UserAvatar(props: IUserAvatarProps) {
           {users.map((user) => {
             return (
               <>
-                <Avatar src={user.avatarUrl} />
+                <Avatar src={user.avatarUrl + sasToken} />
                 {props.isShowName ?? <Link to="">{user.name}</Link>}
               </>
             );

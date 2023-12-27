@@ -9,13 +9,18 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../../../redux/slices/authenticationSlice";
+import { useState } from "react";
 export default function SignUp(props: any) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+
   const onSubmit = async (payload: any) => {
+    setIsLoading(true);
     const response = await AuthenticationService.signUp(payload);
     if (checkResponseStatus(response)) {
       dispatch(login(response?.data!));
+      setIsLoading(false);
       navigate("/project");
     }
   };
@@ -91,7 +96,12 @@ export default function SignUp(props: any) {
       </Form.Item>
 
       <div className="text-center text-lg-start mt-4 pt-2">
-        <Button type="default" className="pl-2 pr-2" htmlType="submit">
+        <Button
+          type="default"
+          className="pl-2 pr-2"
+          htmlType="submit"
+          loading={isLoading}
+        >
           Sign up
         </Button>
       </div>

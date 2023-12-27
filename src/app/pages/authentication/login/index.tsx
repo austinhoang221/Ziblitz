@@ -1,5 +1,5 @@
 import { Button, Checkbox, Form, Input, message } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../../../redux/slices/authenticationSlice";
@@ -11,7 +11,7 @@ export default function Login(props: any) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [messageApi, contextHolder] = message.useMessage();
-
+  const [isLoading, setIsLoading] = useState(false);
   const showErrorMessage = () => {
     messageApi.open({
       type: "error",
@@ -19,6 +19,7 @@ export default function Login(props: any) {
     });
   };
   const onSubmit = async (payload: any) => {
+    setIsLoading(false);
     const response = await AuthenticationService.logIn(payload);
     if (checkResponseStatus(response)) {
       dispatch(login(response?.data!));
@@ -26,6 +27,7 @@ export default function Login(props: any) {
     } else {
       showErrorMessage();
     }
+    setIsLoading(false);
   };
 
   return (
@@ -57,7 +59,12 @@ export default function Login(props: any) {
       </Form.Item>
 
       <div className="text-center text-lg-start mt-4 pt-2">
-        <Button type="default" className="pl-4 pr-4" htmlType="submit">
+        <Button
+          type="default"
+          className="pl-4 pr-4"
+          htmlType="submit"
+          loading={isLoading}
+        >
           Login
         </Button>
       </div>

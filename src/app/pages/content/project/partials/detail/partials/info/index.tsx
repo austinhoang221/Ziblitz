@@ -23,6 +23,7 @@ import {
   checkResponseStatus,
   convertNameToInitials,
   getRandomColor,
+  sasToken,
 } from "../../../../../../../helpers";
 import { IUser } from "../../../../../../../models/IUser";
 import "./index.scss";
@@ -76,13 +77,7 @@ export default function InfoProject() {
 
   const getOptionLabel = (user: IUser) => (
     <>
-      <Avatar
-        style={{ backgroundColor: getRandomColor(), verticalAlign: "middle" }}
-        size={28}
-        className="mr-2"
-        alt=""
-        src={user.avatarUrl}
-      >
+      <Avatar size={28} className="mr-2" alt="" src={user.avatarUrl + sasToken}>
         {convertNameToInitials(user.name)}
       </Avatar>
       <span>{user.name}</span>

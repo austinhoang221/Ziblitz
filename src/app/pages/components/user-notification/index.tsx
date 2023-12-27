@@ -1,5 +1,5 @@
 import { blue } from "@ant-design/colors";
-import { Badge, Button, Col, Dropdown, Menu, Row, Switch } from "antd";
+import { Badge, Button, Col, Dropdown, Empty, Menu, Row, Switch } from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -82,6 +82,7 @@ export default function UserNotification() {
               </div>
             </div>
             <div style={{ maxHeight: "20rem", overflow: "hidden scroll" }}>
+              {notifications?.length === 0 && <Empty></Empty>}
               {notifications?.map((notification: IUserNotification) => {
                 return (
                   <Menu.Item

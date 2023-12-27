@@ -10,6 +10,7 @@ import {
   checkResponseStatus,
   convertNameToInitials,
   getRandomColor,
+  sasToken,
 } from "../../../helpers";
 import SelectUser from "../select-user";
 import SprintSelect from "../sprint-select";
@@ -288,7 +289,8 @@ export default function InlineEdit(props: IInlineEditProps) {
                     className="mr-2"
                     alt=""
                     src={
-                      users.find((user) => user.id === editedValue)?.avatarUrl
+                      users.find((user) => user.id === editedValue)?.avatarUrl +
+                      sasToken
                     }
                   >
                     {convertNameToInitials(

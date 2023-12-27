@@ -31,6 +31,7 @@ import {
   checkResponseStatus,
   convertNameToInitials,
   getRandomColor,
+  sasToken,
 } from "../../../../../../../helpers";
 import { IPagination } from "../../../../../../../models/IPagination";
 import { IUser } from "../../../../../../../models/IUser";
@@ -153,7 +154,7 @@ export default function HeaderProject(props: IHeaderProject) {
         size={28}
         className="mr-2"
         alt=""
-        src={user.avatarUrl}
+        src={user.avatarUrl + sasToken}
       >
         {convertNameToInitials(user.name)}
       </Avatar>
@@ -199,7 +200,7 @@ export default function HeaderProject(props: IHeaderProject) {
                 <Tooltip title={project?.leader.name} placement="top">
                   <Avatar
                     className="cursor-pointer"
-                    src={project?.leader.avatarUrl}
+                    src={project?.leader.avatarUrl + sasToken}
                     style={{
                       backgroundColor: getRandomColor(),
                       verticalAlign: "middle",
@@ -217,14 +218,8 @@ export default function HeaderProject(props: IHeaderProject) {
                     >
                       <Avatar
                         className="cursor-pointer"
-                        src={member?.avatarUrl}
-                        style={{
-                          backgroundColor: getRandomColor(),
-                          verticalAlign: "middle",
-                        }}
-                      >
-                        {convertNameToInitials(member.name)}
-                      </Avatar>
+                        src={member?.avatarUrl + sasToken}
+                      ></Avatar>
                     </Tooltip>
                   );
                 })}

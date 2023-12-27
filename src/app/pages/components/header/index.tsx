@@ -30,6 +30,7 @@ import AssignToMeTask from "./partials/assign-to-me-task";
 import RecentTask from "./partials/recent-task";
 
 import UserNotification from "../user-notification";
+import { sasToken } from "../../../helpers";
 
 export default function Header() {
   const [defaultTabIndex, setDefaultTabIndex] = useState<string>("1");
@@ -118,6 +119,8 @@ export default function Header() {
             width="30px"
             height="30px"
             className="ml-4 mr-4"
+            onClick={() => navigate("/")}
+            style={{ cursor: "pointer" }}
           />
           <div className="d-flex align-center">
             <div className="c-header-dropdown-item">
@@ -267,7 +270,7 @@ export default function Header() {
                     <Avatar
                       size={40}
                       className="mr-2"
-                      src={user?.avatarUrl}
+                      src={user?.avatarUrl + sasToken}
                     ></Avatar>
                     <div className="">
                       <h5 className="mt-0 mb-0">{user?.name}</h5>
@@ -283,7 +286,7 @@ export default function Header() {
           >
             <Avatar
               className="mr-2 ml-2 cursor-pointer"
-              src={user?.avatarUrl}
+              src={user?.avatarUrl + sasToken}
             ></Avatar>
           </Dropdown>
         </div>
