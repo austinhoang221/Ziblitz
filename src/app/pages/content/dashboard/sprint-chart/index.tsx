@@ -13,10 +13,14 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../redux/store";
+import { DashBoardService } from "../../../../../services/dashboardService";
+import { checkResponseStatus, getRandomColor } from "../../../../helpers";
 
 export default function SprintChart() {
   const projects = useSelector((state: RootState) => state.projects);
   const [projectId, setProjectId] = useState(projects?.[0]?.id);
+  const [listData, setListData] = useState<any>();
+
   ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -28,43 +32,47 @@ export default function SprintChart() {
 
   const options = {
     responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
     plugins: {
       legend: {
         position: "top" as const,
       },
       title: {
         display: true,
-        text: "Chart.js Bar Chart",
+        text: "All sprint of project",
       },
     },
     aspectRatio: 1,
+    maintainAspectRatio: false,
   };
 
-  const labels = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-  ];
-
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: "Dataset 1",
-        data: labels.map(() => Math.random()),
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
-      },
-      {
-        label: "Dataset 2",
-        data: labels.map(() => Math.random()),
-        backgroundColor: "rgba(53, 162, 235, 0.5)",
-      },
-    ],
-  };
+  useEffect(() => {
+    if (projectId) {
+      DashBoardService.getSprintChart(projectId).then((res) => {
+        if (checkResponseStatus(res)) {
+          const labels = res?.data.map((item) => item.name);
+          const datasets = res?.data.map((item) => {
+            return {
+              label: item.name,
+              data: res?.data.map((item) => item.issueCount),
+              backgroundColor: getRandomColor(),
+              borderWidth: 1,
+              maxBarThickness: 50,
+            };
+          });
+          const list = {
+            labels: labels,
+            datasets: datasets,
+          };
+          setListData(list);
+        }
+      });
+    }
+  }, [projectId]);
 
   return (
     <Card>
@@ -81,7 +89,9 @@ export default function SprintChart() {
         onChange={(e) => setProjectId(e)}
         value={projectId}
       />
-      <Bar options={options} data={data} />
+      <div style={{ height: "350px" }}>
+        {listData && <Bar options={options} data={listData} />}
+      </div>
     </Card>
   );
 }

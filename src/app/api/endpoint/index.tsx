@@ -50,7 +50,7 @@ export default class Endpoint {
   public static getIssueEvent: string = this.baseUrl + "issueevents/";
   public static getVersion: string = this.baseUrl + "projects/";
   public static getNotificationEvent: string = this.baseUrl + "notifications/";
-  public static getChart: string = this.baseUrl + "projects";
+  public static getChart: string = this.baseUrl + "projects/";
   public static loginUrl: string = this.baseUrl + "users/signin";
   public static signUpUrl: string = this.baseUrl + "users/signup";
 }

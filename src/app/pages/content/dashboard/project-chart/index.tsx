@@ -1,45 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Pie } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 import { Card, Select } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../redux/store";
+import { DashBoardService } from "../../../../../services/dashboardService";
+import { checkResponseStatus, getRandomColor } from "../../../../helpers";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function ProjectChart() {
   const projects = useSelector((state: RootState) => state.projects);
   const [projectId, setProjectId] = useState(projects?.[0]?.id);
+  const [listData, setListData] = useState<any>();
 
   const options = {
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "All member of project",
+      },
+    },
+    maintainAspectRatio: false,
     aspectRatio: 1,
   };
-  const data = {
-    labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-    datasets: [
-      {
-        label: "# of Votes",
-        data: [12, 19, 3, 5, 2, 3],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-          "rgba(255, 159, 64, 0.2)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+
+  useEffect(() => {
+    if (projectId) {
+      DashBoardService.getProjectChart(projectId).then((res) => {
+        if (checkResponseStatus(res)) {
+          const labels = res?.data.map((item) => item.name);
+          const datasets = res?.data.map((item) => {
+            return {
+              label: item.name,
+              data: res?.data.map((item) => item.issueCount),
+              backgroundColor: getRandomColor(),
+              borderWidth: 1,
+            };
+          });
+          const list = {
+            labels: labels,
+            datasets: datasets,
+          };
+          setListData(list);
+        }
+      });
+    }
+  }, [projectId]);
 
   return (
     <Card>
@@ -54,9 +64,12 @@ export default function ProjectChart() {
             value: project.id,
           };
         })}
+        onChange={(e) => setProjectId(e)}
         value={projectId}
       />
-      <Pie data={data} options={options} />;
+      <div style={{ height: "350px", width: "100%" }}>
+        {listData && <Doughnut data={listData} options={options} />}
+      </div>
     </Card>
   );
 }
