@@ -15,15 +15,17 @@ import {
 import TextArea from "antd/es/input/TextArea";
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../../../redux/store";
 import { VersionService } from "../../../../../../../../services/versionService";
 import useVersionData from "../../../../../../../customHooks/fetchVersion";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import { IVersion } from "../../../../../../../models/IVersion";
+import { IVersionStatus } from "../../../../../../../models/IVersionStatus";
 import ChildIssues from "../../../../../../components/child-issues";
 import IssueProgress from "../../../../../../components/issues-progress";
+import VersionStatus from "../../../../../../components/version-status";
 import HeaderProject from "../header";
 
 export default function Release() {
@@ -40,6 +42,7 @@ export default function Release() {
   const [drawerForm] = Form.useForm();
   const { RangePicker } = DatePicker;
   const [date, setDate] = useState<any[]>([]);
+  const [categories, setCategories] = useState<IVersionStatus[]>([]);
 
   const editPermission =
     projectPermissions && projectPermissions.permissions.project.editPermission;
@@ -72,7 +75,13 @@ export default function Release() {
       key: "status",
       width: "15%",
       render: (version: IVersion) => {
-        return <span>{version.statusId}</span>;
+        return (
+          <VersionStatus
+            name={
+              categories?.find((item) => item.id === version.statusId)?.name
+            }
+          ></VersionStatus>
+        );
       },
     },
     {
@@ -137,6 +146,16 @@ export default function Release() {
       },
     },
   ];
+
+  useEffect(() => {
+    if (project?.id) {
+      VersionService.getCategories(project?.id).then((res) => {
+        if (checkResponseStatus(res)) {
+          setCategories(res?.data!);
+        }
+      });
+    }
+  }, [project?.id]);
   const onSearch = (value: string) => {
     setSearchValue(value);
   };
@@ -290,6 +309,31 @@ export default function Release() {
                   })}
                 ></Select>
               </Form.Item>
+              {mode === "edit" && (
+                <Form.Item
+                  label="Status"
+                  required={true}
+                  name="statusId"
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter your status",
+                    },
+                  ]}
+                >
+                  <Select
+                    placeholder="Select status"
+                    options={categories?.map((category) => {
+                      return {
+                        label: category?.name,
+                        value: category?.id,
+                      };
+                    })}
+                  ></Select>
+                </Form.Item>
+              )}
 
               <Form.Item
                 label="Time"
