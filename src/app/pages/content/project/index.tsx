@@ -1,7 +1,7 @@
-import { Button, Dropdown, Menu, message, Pagination, Popconfirm } from "antd";
+import { Button, message, Pagination } from "antd";
 import Search from "antd/es/input/Search";
 import Table, { ColumnsType } from "antd/es/table";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useProjectData from "../../../customHooks/fetchProject";
 import { IPagination } from "../../../models/IPagination";
 import { IProject } from "../../../models/IProject";
@@ -12,9 +12,7 @@ import { useState } from "react";
 import CreateProjectDrawer from "./partials/create";
 import { IUser } from "../../../models/IUser";
 import { ProjectService } from "../../../../services/projectService";
-import { checkResponseStatus } from "../../../helpers";
-import { useDispatch } from "react-redux";
-import { deleteProject } from "../../../../redux/slices/projectSlice";
+
 export default function Project() {
   const initialRequestParam: IPagination = {
     pageNum: 1,
@@ -31,12 +29,6 @@ export default function Project() {
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const showSuccessMessage = () => {
-    messageApi.open({
-      type: "success",
-      content: "Successfully",
-    });
-  };
 
   const columns: ColumnsType<IProject> = [
     {

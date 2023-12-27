@@ -18,7 +18,7 @@ export default function Content() {
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
   const dispatch = useAppDispatch();
   const { listUser, isLoadingUser } = useUserData(userId);
-  const { listProject, isLoading: isLoadingProject } = useProjectData(
+  const { isLoading: isLoadingProject } = useProjectData(
     userId,
     initialRequestParam
   );
@@ -31,10 +31,7 @@ export default function Content() {
     dispatch(setUsers(listUser));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, listUser]);
-  useEffect(() => {
-    dispatch(setProjects(listProject));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, listProject]);
+
   return (
     <>
       <Header></Header>

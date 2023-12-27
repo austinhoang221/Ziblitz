@@ -252,21 +252,6 @@ export default function Header() {
                 </Button>
               </Dropdown>
             </div>
-            <div className="c-header-dropdown-item">
-              <Dropdown
-                arrow
-                overlay={<Menu items={teamItems}></Menu>}
-                trigger={["click"]}
-              >
-                <Button type="text" onClick={(e) => e.preventDefault()}>
-                  <Space>Teams</Space>
-                  <i className="fa-solid fa-angle-down ml-2"></i>
-                </Button>
-              </Dropdown>
-            </div>
-            {/* <Button type="primary" className="ml-2">
-              Create
-            </Button> */}
           </div>
         </div>
         <div className="c-header-config">

@@ -19,6 +19,8 @@ import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { useIsFirstRender } from "../../../../../../../customHooks/useIsFirstRender";
 import IssueFilterSelect from "../../../../../../components/issue-filter-select";
+import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
+import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
 export default function BoardProject(props: any) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
@@ -34,8 +36,7 @@ export default function BoardProject(props: any) {
     projectPermissions,
   } = useSelector((state: RootState) => state.projectDetail);
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
-  const isFirstRender = useIsFirstRender();
-
+  const dispatch = useAppDispatch();
   const { isCombineEnabled, useClone, containerHeight, withScrollableColumns } =
     props;
 
@@ -130,6 +131,7 @@ export default function BoardProject(props: any) {
               moveIssue.id,
               { statusId: destination.droppableId, modificationUserId: userId }
             );
+            dispatch(getProjectByCode(project?.code));
           }
         }
       });
@@ -198,7 +200,7 @@ export default function BoardProject(props: any) {
         actionContent={onRenderAction}
       ></HeaderProject>
 
-      {isLoading || isLoadingProject ? (
+      {isLoading ? (
         <Row gutter={128} className="mt-4">
           {project?.statuses?.map((status, index) => (
             <Col key={index} span={6}>

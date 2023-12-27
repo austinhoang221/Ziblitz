@@ -65,11 +65,6 @@ const Backlog: React.FC = () => {
   const [editSprint, setEditSprint] = useState<ISprint | null>(null);
   const [isShowSprintModal, setShowSprintModal] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (params?.code) {
-      dispatch(getProjectByCode(params?.code!));
-    }
-  }, [params?.code]);
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",

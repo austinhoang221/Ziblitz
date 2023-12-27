@@ -5,6 +5,7 @@ import { RootState } from "../../../../../../redux/store";
 import { SprintService } from "../../../../../../services/sprintService";
 import { checkResponseStatus } from "../../../../../helpers";
 import { IIssueOnBoard } from "../../../../../models/IProject";
+import IssuePriority from "../../../issue-priority";
 import IssueType from "../../../issue-type";
 
 export default function AssignToMeTask() {
@@ -68,7 +69,15 @@ export default function AssignToMeTask() {
                             {item.name}
                           </a>
                         }
-                        description={`${item.code} - ${item.projectName}`}
+                        description={
+                          <span>
+                            {item.code}
+                            &nbsp;
+                            <IssuePriority
+                              priorityId={item.priorityId ?? ""}
+                            ></IssuePriority>
+                          </span>
+                        }
                       />
                     </List.Item>
                   )}

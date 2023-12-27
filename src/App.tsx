@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Authentication from "./app/pages/authentication";
 import Content from "./app/pages/content";
@@ -40,7 +40,8 @@ function App() {
           }
         >
           <Route>
-            <Route path="dashboard" element={<Dashboard />}></Route>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="project" element={<Project />}></Route>
             <Route path="user/:userId" element={<User />} />
             <Route path="filters" element={<CustomFilter />} />

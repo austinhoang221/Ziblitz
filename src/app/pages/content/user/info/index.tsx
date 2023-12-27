@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Avatar, Button, Form, Input } from "antd";
 import React, { useState } from "react";
 import { UserService } from "../../../../../services/userService";
 import { checkResponseStatus } from "../../../../helpers";
@@ -38,7 +38,7 @@ export default function UserInfo(props: any) {
   return (
     <Form form={infoForm} onFinish={onSubmit} onValuesChange={handleFormChange}>
       <div className="text-center">
-        <img src={user?.avatarUrl} alt="" width="100px" height="60px" />
+        <Avatar src={<img src={user?.avatarUrl} alt="avatar" />} />
         <br />
         <Button type="default" className="m-2 mb-4 text-center">
           Change image
