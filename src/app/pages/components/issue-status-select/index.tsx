@@ -1,13 +1,15 @@
 import { blue, geekblue, gray, green } from "@ant-design/colors";
 import { Button, Dropdown, Menu } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
 import { IssueService } from "../../../../services/issueService";
+import { StatusService } from "../../../../services/statusService";
 import { useAppDispatch } from "../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../helpers";
 import { IIssueComponentProps } from "../../../models/IIssueComponent";
+import { IStatusCategory } from "../../../models/IStatusCategory";
 import "./index.scss";
 export default function IssueStatusSelect(props: IIssueComponentProps) {
   const project = useSelector(
@@ -15,6 +17,17 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
   );
   const dispatch = useAppDispatch();
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
+  const [statusCategories, setStatusCategories] = useState<IStatusCategory[]>(
+    []
+  );
+
+  useEffect(() => {
+    StatusService.getCategories().then((res) => {
+      if (checkResponseStatus(res)) {
+        setStatusCategories(res?.data!);
+      }
+    });
+  }, []);
 
   const onChangeIssueStatus = async (e: any) => {
     if (props.type === "backlog") {
@@ -108,6 +121,80 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
     }
   };
 
+  const onRenderSelect = () => {
+    const statusCategoryId = project?.statuses.find(
+      (status) => status.id === props.selectedId
+    )?.statusCategoryId;
+
+    const statusCategoryCode = statusCategories.find(
+      (category) => category.id === statusCategoryId
+    )?.code;
+
+    const todoCategoryId = statusCategories.find(
+      (category) => category.code === "To-do"
+    )?.id;
+    const inProgressCategoryId = statusCategories.find(
+      (category) => category.code === "In-Progress"
+    )?.id;
+    const doneCategoryId = statusCategories.find(
+      (category) => category.code === "Done"
+    )?.id;
+
+    switch (statusCategoryCode) {
+      case "To-do":
+        return (
+          <>
+            {project?.statuses
+              .filter(
+                (status) =>
+                  status.id !== props.issueId &&
+                  status.statusCategoryId !== doneCategoryId &&
+                  status.statusCategoryId !== todoCategoryId
+              )
+              .map((type) => {
+                return (
+                  <Menu.Item key={type.id}>
+                    <div className="font-sz12">{type.name}</div>
+                  </Menu.Item>
+                );
+              })}
+          </>
+        );
+      case "In-Progress":
+        return (
+          <>
+            {project?.statuses
+              .filter((status) => status.id !== props.issueId)
+              .map((type) => {
+                return (
+                  <Menu.Item key={type.id}>
+                    <div className="font-sz12">{type.name}</div>
+                  </Menu.Item>
+                );
+              })}
+          </>
+        );
+      case "Done":
+        return (
+          <>
+            {project?.statuses
+              .filter(
+                (status) =>
+                  status.id !== props.issueId &&
+                  status.statusCategoryId !== inProgressCategoryId
+              )
+              .map((type) => {
+                return (
+                  <Menu.Item key={type.id}>
+                    <div className="font-sz12">{type.name}</div>
+                  </Menu.Item>
+                );
+              })}
+          </>
+        );
+    }
+  };
+
   return (
     <Dropdown
       trigger={["click"]}
@@ -121,15 +208,7 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
           onClick={(e) => onChangeIssueStatus(e)}
           selectedKeys={[props.selectedId.toString() ?? ""]}
         >
-          {project?.statuses
-            .filter((status) => status.id !== props.issueId)
-            .map((type) => {
-              return (
-                <Menu.Item key={type.id}>
-                  <div className="font-sz12">{type.name}</div>
-                </Menu.Item>
-              );
-            })}
+          {onRenderSelect()}
         </Menu>
       }
     >

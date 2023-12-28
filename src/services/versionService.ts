@@ -59,10 +59,15 @@ export class VersionService {
     }
   };
 
-  public static delete = async (projectId: string, id: string) => {
+  public static delete = async (
+    projectId: string,
+    id: string,
+    transferId?: string
+  ) => {
     try {
+      const request = transferId ? "?newId=" + transferId : "";
       const response: IResponse<IVersion> = await axiosInstance.delete(
-        Endpoint.getVersion + projectId + "/versions/" + id
+        Endpoint.getVersion + projectId + "/versions/" + id + request
       );
       console.log("POST response:", response.data);
       return response;

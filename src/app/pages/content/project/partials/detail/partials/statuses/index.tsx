@@ -22,6 +22,7 @@ import useStatusData from "../../../../../../../customHooks/fetchStatus";
 import { checkResponseStatus } from "../../../../../../../helpers";
 import { IPagination } from "../../../../../../../models/IPagination";
 import { IStatus } from "../../../../../../../models/IStatus";
+import { IStatusCategory } from "../../../../../../../models/IStatusCategory";
 import HeaderProject from "../header";
 
 export default function Statuses() {
@@ -43,7 +44,9 @@ export default function Statuses() {
   const [mode, setMode] = useState<string>("");
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
   const [statusId, setStatusId] = useState<string>("");
-  const [statusCategories, setStatusCategories] = useState<IStatus[]>([]);
+  const [statusCategories, setStatusCategories] = useState<IStatusCategory[]>(
+    []
+  );
   const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
   const [transferId, setTransferId] = useState<string>("");

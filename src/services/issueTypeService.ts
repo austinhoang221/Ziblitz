@@ -78,7 +78,7 @@ export class IssueTypeService {
     transferId?: string
   ) => {
     try {
-      const request = transferId ? "?newId=" + transferId : "";
+      const request = transferId ? "?newIssueTypeId=" + transferId : "";
       const response: IResponse<IIssueType> = await axiosInstance.delete(
         Endpoint.getIssueType + projectId + "/issuetypes/" + id + request
       );

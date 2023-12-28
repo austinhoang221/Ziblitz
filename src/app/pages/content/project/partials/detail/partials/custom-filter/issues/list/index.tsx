@@ -95,7 +95,6 @@ export default function CustomFilterList() {
       render: (text: string) => {
         return (
           <>
-            {/* <img src={record.avatarUrl} alt="" />{" "} */}
             <Tooltip title={text}>
               <span>{text}</span>
             </Tooltip>

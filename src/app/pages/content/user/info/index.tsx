@@ -12,7 +12,6 @@ import { RcFile, UploadProps } from "antd/es/upload";
 import React, { useCallback, useState } from "react";
 import { UserService } from "../../../../../services/userService";
 import { checkResponseStatus, sasToken } from "../../../../helpers";
-import { UploadOutlined, EyeOutlined } from "@ant-design/icons";
 import "./index.scss";
 export default function UserInfo(props: any) {
   const { user } = props;
@@ -44,20 +43,19 @@ export default function UserInfo(props: any) {
 
   const uploadNewProps: UploadProps = {
     multiple: true,
-    showUploadList: {
-      showPreviewIcon: true,
-      showRemoveIcon: false,
-      showDownloadIcon: false,
-    },
     beforeUpload(file: UploadFile) {
       const isPNG = file.type === "image/png";
       const isJPG = file.type === "image/jpg";
-      if (!isPNG || !isJPG) {
+      const isJPEG = file.type === "image/jpeg";
+      if (!isPNG && !isJPG && !isJPEG) {
         message.error(`${file.name} is not a png or jpg file`);
       } else {
-        setUploadFileList([file]);
+        setUploadFileList((prevUploadFileList) => [
+          ...prevUploadFileList,
+          file,
+        ]);
       }
-      return isPNG || Upload.LIST_IGNORE;
+      return !isPNG || !isJPG || !isJPEG;
     },
   };
 
@@ -77,23 +75,29 @@ export default function UserInfo(props: any) {
 
   const handleUpload = useCallback(() => {
     const formData = new FormData();
-    formData.append("files", fileList as RcFile, fileList.name); // Note: The third argument is the filename
+    uploadFileList.forEach((file) => {
+      formData.append("formFile", file as RcFile, file.name); // Note: The third argument is the filename
+    });
+
     setIsUploadFile(true);
-    const user = localStorage.getItem("user");
     fetch(
-      `https://task-manager-service.azurewebsites.net/api/issues/${props.issue?.id}/attachments`,
+      `https://task-manager-service.azurewebsites.net/api/users/${user?.id}/photos`,
       {
         method: "POST",
         headers: {
           Accept: "text/plain",
-          Authorization: `Bearer ${JSON.parse(user!).token}`,
+          Authorization: `Bearer ${user?.token}`,
         },
         body: formData,
       }
     )
       .then((res) => res.json())
       .then((result) => {
-        setFileList(result?.data?.[0]);
+        setFileList({
+          uid: user?.id,
+          name: "image.png",
+          url: result?.data?.avatarUrl + sasToken,
+        });
         setUploadFileList([]);
       })
       .catch(() => {})
@@ -147,7 +151,7 @@ export default function UserInfo(props: any) {
           onRemove={() => false}
         ></Upload>
 
-        <Upload {...uploadNewProps}>
+        <Upload {...uploadNewProps} customRequest={() => {}}>
           <Button
             type="text"
             className=" mr-2"

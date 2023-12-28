@@ -41,7 +41,10 @@ export default function UserAvatar(props: IUserAvatarProps) {
       <>
         <Avatar
           className={props.className}
-          src={users.find((user) => user.id === props.userIds[0])?.avatarUrl}
+          src={
+            users.find((user) => user.id === props.userIds[0])?.avatarUrl +
+            sasToken
+          }
         />
         {props.isShowName && (
           <Link to="" className="ml-1">

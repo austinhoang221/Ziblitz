@@ -42,4 +42,16 @@ export class UserService {
       console.error("Error making POST request:", error);
     }
   };
+
+  public static uploadImage = async (userId: string) => {
+    try {
+      const response: IResponse<IUser> = await axiosInstance.post(
+        Endpoint.getAllUser + userId + "/photos"
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
 }

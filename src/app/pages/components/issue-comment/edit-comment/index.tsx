@@ -54,6 +54,7 @@ export default function IssueEditComment(props: any) {
         okText="Yes"
         cancelText="Cancel"
         onConfirm={() => onDeleteComment(props.comment.id)}
+        disabled={userId !== props.comment.creatorUserId}
       >
         <span className="comment-action">Delete</span>
       </Popconfirm>

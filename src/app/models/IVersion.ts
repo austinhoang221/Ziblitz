@@ -10,4 +10,5 @@ export interface IVersion {
   projectId: string;
   statusId: string;
   issues: IIssue[];
+  issueCount: number;
 }

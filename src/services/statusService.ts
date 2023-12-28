@@ -3,6 +3,7 @@ import { axiosInstance } from "../app/middleware";
 import { IPaginateResponse } from "../app/models/IPaginateResponse";
 import { IResponse } from "../app/models/IResponse";
 import { IStatus } from "../app/models/IStatus";
+import { IStatusCategory } from "../app/models/IStatusCategory";
 
 export class StatusService {
   public static getAll = async (
@@ -32,7 +33,7 @@ export class StatusService {
 
   public static getCategories = async () => {
     try {
-      const response: IResponse<IStatus[]> = await axiosInstance.get(
+      const response: IResponse<IStatusCategory[]> = await axiosInstance.get(
         Endpoint.getStatusCategories
       );
       console.log("POST response:", response.data);

@@ -1,5 +1,6 @@
-import { red } from "@ant-design/colors";
+import { orange, red } from "@ant-design/colors";
 import {
+  Alert,
   Button,
   Col,
   DatePicker,
@@ -43,7 +44,9 @@ export default function Release() {
   const { RangePicker } = DatePicker;
   const [date, setDate] = useState<any[]>([]);
   const [categories, setCategories] = useState<IVersionStatus[]>([]);
-
+  const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
+  const [transferId, setTransferId] = useState<string>("");
+  const [deleteVersion, setDeleteVersion] = useState<IVersion>();
   const editPermission =
     projectPermissions && projectPermissions.permissions.project.editPermission;
   const [messageApi, contextHolder] = message.useMessage();
@@ -127,21 +130,44 @@ export default function Release() {
       width: "40px",
       render: (version: IVersion) => {
         return (
-          <Popconfirm
-            title="Delete the version"
-            description="Are you sure to delete this version?"
-            okText="Yes"
-            cancelText="Cancel"
-            onConfirm={() => onDeleteVersion(version.id)}
-            disabled={!editPermission}
-          >
-            <Button type="text" shape="circle" disabled={!editPermission}>
-              <i
-                style={{ color: red.primary }}
-                className="fa-solid fa-trash-can"
-              ></i>
-            </Button>
-          </Popconfirm>
+          <>
+            {version.issueCount > 0 ? (
+              <Button
+                type="text"
+                shape="circle"
+                disabled={!editPermission}
+                onClick={() => {
+                  if (version.issueCount > 0) {
+                    setIsShowDeleteModal(true);
+                    setDeleteVersion(version);
+                  } else {
+                    onDeleteVersion(version.id);
+                  }
+                }}
+              >
+                <i
+                  style={{ color: red.primary }}
+                  className="fa-solid fa-trash-can"
+                ></i>
+              </Button>
+            ) : (
+              <Popconfirm
+                title="Delete the release"
+                description="Are you sure to delete this release?"
+                okText="Yes"
+                cancelText="Cancel"
+                onConfirm={() => onDeleteVersion(version.id)}
+                disabled={!editPermission}
+              >
+                <Button type="text" shape="circle" disabled={!editPermission}>
+                  <i
+                    style={{ color: red.primary }}
+                    className="fa-solid fa-trash-can"
+                  ></i>
+                </Button>
+              </Popconfirm>
+            )}
+          </>
         );
       },
     },
@@ -160,8 +186,8 @@ export default function Release() {
     setSearchValue(value);
   };
 
-  const onDeleteVersion = async (id: string) => {
-    await VersionService.delete(project?.id!, id).then((res) => {
+  const onDeleteVersion = async (id: string, transferId?: string) => {
+    await VersionService.delete(project?.id!, id, transferId).then((res) => {
       if (checkResponseStatus(res)) {
         refreshData();
         showSuccessMessage();
@@ -227,6 +253,12 @@ export default function Release() {
     } catch (error) {
       setIsLoadingButtonSave(false);
     }
+  };
+
+  const onCancelDelete = () => {
+    setIsShowDeleteModal(false);
+    setTransferId("");
+    setDeleteVersion(undefined);
   };
 
   return (
@@ -366,6 +398,73 @@ export default function Release() {
             )}
           </Col>
         </Row>
+      </Modal>
+      <Modal
+        title="Delete release"
+        closeIcon={null}
+        onCancel={() => onCancelDelete()}
+        onOk={onSubmit}
+        footer={
+          <>
+            <Button type="default" onClick={() => onCancelDelete()}>
+              Cancel
+            </Button>
+            <Button
+              className="ml-2"
+              type="primary"
+              onClick={() => onDeleteVersion(deleteVersion?.id!, transferId)}
+              htmlType="submit"
+              danger
+              loading={isLoadingButtonSave}
+              disabled={!transferId}
+            >
+              Delete
+            </Button>
+          </>
+        }
+        open={isShowDeleteModal}
+      >
+        <Alert
+          className="mt-2"
+          message={
+            <span>
+              <i
+                style={{ color: orange.primary }}
+                className="fa-solid fa-triangle-exclamation"
+              ></i>
+              &nbsp; This release contain{" "}
+              <b>{deleteVersion?.issueCount} unresolved issue</b>
+              &nbsp; Before you can delete this release, change{" "}
+              {deleteVersion?.name} issues to another release.
+            </span>
+          }
+          type="warning"
+        />
+        <Form.Item
+          label={`Change all existing ${deleteVersion?.name} issues to`}
+          required={true}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          rules={[
+            {
+              required: true,
+              message: "Please enter your new release id",
+            },
+          ]}
+        >
+          <Select
+            placeholder="Select new release id"
+            options={listVersion
+              .filter((version) => version.id !== deleteVersion?.id)
+              .map((version) => {
+                return {
+                  label: version.name,
+                  value: version.id,
+                };
+              })}
+            onChange={(e) => setTransferId(e)}
+          ></Select>
+        </Form.Item>
       </Modal>
     </div>
   );
