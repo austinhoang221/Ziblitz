@@ -27,7 +27,7 @@ export default function DetailProject() {
   const isTriggerChange = useRef(false);
 
   useEffect(() => {
-    if (!project?.code) {
+    if (!project?.code || project?.code !== params?.code) {
       isTriggerChange.current = true;
       dispatch(getProjectByCode(params?.code!));
     }

@@ -41,7 +41,7 @@ export default function Priorities() {
 
   const initialRequestParam: IPagination = {
     pageNum: 1,
-    pageSize: 5,
+    pageSize: 10,
     sort: ["name:asc"],
   };
   const { project, projectPermissions } = useSelector(
@@ -83,7 +83,7 @@ export default function Priorities() {
     {
       title: "Icon",
       key: "icon",
-      width: "40px",
+      width: "60px",
       render: (priority: IPriority) => {
         return <IssuePriority priorityId={priority.id}></IssuePriority>;
       },
@@ -109,7 +109,7 @@ export default function Priorities() {
     {
       title: "",
       key: "action",
-      width: "40px",
+      width: "60px",
       render: (priority: IPriority) => {
         return (
           <>
@@ -249,6 +249,7 @@ export default function Priorities() {
         rowKey={(record) => record.id}
         pagination={false}
         loading={isLoading}
+        scroll={{ y: 350 }}
       />
       {totalCount > 0 && (
         <Pagination

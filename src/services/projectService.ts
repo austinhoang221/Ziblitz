@@ -131,4 +131,52 @@ export class ProjectService {
       console.error("Error making POST request:", error);
     }
   };
+
+  public static getSprintFilter = async (projectId: string) => {
+    try {
+      const response: IResponse<any[]> = await axiosInstance.get(
+        Endpoint.getFilter + projectId + "/sprint-filter"
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static getEpicFilter = async (projectId: string) => {
+    try {
+      const response: IResponse<any[]> = await axiosInstance.get(
+        Endpoint.getFilter + projectId + "/epic-filter"
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static getTypeFilter = async (projectId: string) => {
+    try {
+      const response: IResponse<any[]> = await axiosInstance.get(
+        Endpoint.getFilter + projectId + "/type-filter"
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
+
+  public static getLabelFilter = async (projectId: string) => {
+    try {
+      const response: IResponse<any[]> = await axiosInstance.get(
+        Endpoint.getFilter + projectId + "/label-filter"
+      );
+      console.log("POST response:", response.data);
+      return response;
+    } catch (error) {
+      console.error("Error making POST request:", error);
+    }
+  };
 }

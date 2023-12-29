@@ -28,7 +28,7 @@ import HeaderProject from "../header";
 export default function Statuses() {
   const initialRequestParam: IPagination = {
     pageNum: 1,
-    pageSize: 5,
+    pageSize: 10,
     sort: ["name:asc"],
   };
   const { project, projectPermissions } = useSelector(
@@ -105,7 +105,7 @@ export default function Statuses() {
     {
       title: "",
       key: "action",
-      width: "40px",
+      width: "60px",
       render: (status: IStatus) => {
         return (
           <>
@@ -239,6 +239,7 @@ export default function Statuses() {
         rowKey={(record) => record.id}
         pagination={false}
         loading={isLoading}
+        scroll={{ y: 350 }}
       />
       {totalCount > 0 && (
         <Pagination

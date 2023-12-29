@@ -126,6 +126,10 @@ export default function UserInfo(props: any) {
     UserService.update(user?.id, payload).then((res) => {
       if (checkResponseStatus(res)) {
         setIsFormDirty(false);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...res?.data!, token: user?.token })
+        );
         props.onSaveSuccess();
       }
       setIsLoadingButtonSave(false);
@@ -151,7 +155,11 @@ export default function UserInfo(props: any) {
           onRemove={() => false}
         ></Upload>
 
-        <Upload {...uploadNewProps} customRequest={() => {}}>
+        <Upload
+          {...uploadNewProps}
+          customRequest={() => {}}
+          showUploadList={undefined}
+        >
           <Button
             type="text"
             className=" mr-2"
@@ -217,8 +225,8 @@ export default function UserInfo(props: any) {
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         required={false}
-        label="location"
-        name="Location"
+        label="Location"
+        name="location"
         initialValue={user?.location}
       >
         <Input placeholder="Location" />

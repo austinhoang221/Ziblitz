@@ -42,7 +42,7 @@ export default function IssueTypes() {
 
   const initialRequestParam: IPagination = {
     pageNum: 1,
-    pageSize: 5,
+    pageSize: 10,
     sort: ["name:asc"],
   };
   const { project, projectPermissions } = useSelector(
@@ -100,7 +100,7 @@ export default function IssueTypes() {
     {
       title: "Icon",
       key: "icon",
-      width: "40px",
+      width: "60px",
       render: (issueType: IIssueType) => {
         return <IssueType issueTypeKey={issueType.icon}></IssueType>;
       },
@@ -126,7 +126,7 @@ export default function IssueTypes() {
     {
       title: "",
       key: "action",
-      width: "40px",
+      width: "70px",
       render: (issueType: IIssueType) => {
         return (
           <>
@@ -300,6 +300,7 @@ export default function IssueTypes() {
         rowKey={(record) => record.id}
         pagination={false}
         loading={isLoading}
+        scroll={{ y: 350 }}
       />
       {totalCount > 0 && (
         <Pagination
@@ -376,7 +377,7 @@ export default function IssueTypes() {
         </Form>
       </Modal>
       <Modal
-        title="Delete status"
+        title="Delete issue type"
         closeIcon={null}
         onCancel={() => onCancelDelete()}
         onOk={onSubmit}

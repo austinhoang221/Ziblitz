@@ -16,7 +16,7 @@ import {
 import TextArea from "antd/es/input/TextArea";
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../../../redux/store";
 import { VersionService } from "../../../../../../../../services/versionService";
@@ -50,6 +50,7 @@ export default function Release() {
   const editPermission =
     projectPermissions && projectPermissions.permissions.project.editPermission;
   const [messageApi, contextHolder] = message.useMessage();
+  const unReleaseStatusId = useRef<string>("");
   const showSuccessMessage = () => {
     messageApi.open({
       type: "success",
@@ -178,6 +179,8 @@ export default function Release() {
       VersionService.getCategories(project?.id).then((res) => {
         if (checkResponseStatus(res)) {
           setCategories(res?.data!);
+          unReleaseStatusId.current =
+            res?.data.find((item) => item.name === "UNRELEASED")?.id ?? "";
         }
       });
     }
@@ -290,7 +293,7 @@ export default function Release() {
         onCancel={onCancel}
         onOk={onSubmit}
         open={isModalOpen}
-        width={mode === "create" ? "20rem" : "40rem"}
+        width={mode === "create" ? "20rem" : "70rem"}
         footer={
           <Footer
             onClickCancel={onCancel}
@@ -455,7 +458,11 @@ export default function Release() {
           <Select
             placeholder="Select new release id"
             options={listVersion
-              .filter((version) => version.id !== deleteVersion?.id)
+              .filter(
+                (version) =>
+                  version.id !== deleteVersion?.id &&
+                  version.statusId === unReleaseStatusId.current
+              )
               .map((version) => {
                 return {
                   label: version.name,

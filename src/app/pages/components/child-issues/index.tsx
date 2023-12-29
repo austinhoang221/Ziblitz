@@ -1,4 +1,4 @@
-import { Button, Table, Tooltip } from "antd";
+import { Button, Table, Tooltip, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import React from "react";
 import { Link } from "react-router-dom";
@@ -27,7 +27,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "code",
-      width: "15%",
+      width: "12%",
       align: "left",
       render: (issue: IIssue) => {
         return (
@@ -45,7 +45,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
       render: (issue: IIssue) => {
         return (
           <Tooltip title={issue.code}>
-            <span>{issue.name}</span>
+            <Typography>{issue.name}</Typography>
           </Tooltip>
         );
       },
@@ -53,7 +53,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "priority",
-      width: "4%",
+      width: "6%",
       align: "center",
       render: (issue: IIssue) => {
         return <IssuePriority priorityId={issue.priorityId!}></IssuePriority>;
@@ -62,7 +62,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "storyPointEstimate",
-      width: "4%",
+      width: "8%",
       align: "center",
       render: (issue: IIssue) => {
         return (
@@ -75,7 +75,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
     {
       title: "",
       key: "assigneeId",
-      width: "6%",
+      width: "10%",
       align: "center",
       render: (issue: IIssue) => {
         return (
@@ -116,6 +116,7 @@ export default function ChildIssues(props: IChildIssuesProps) {
         className="mt-2"
         columns={columns}
         dataSource={props.data}
+        scroll={{ x: 700, y: 300 }}
       ></Table>
     </div>
   );

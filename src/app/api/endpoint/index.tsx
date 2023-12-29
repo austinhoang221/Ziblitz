@@ -22,6 +22,7 @@ export default class Endpoint {
   public static getStatus: string = this.baseUrl + "projects/";
   public static getStatusCategories: string =
     this.baseUrl + "statuscategories/";
+  public static getFilter: string = this.baseUrl + "projects/";
   public static getLabel: string = this.baseUrl + "projects/";
   public static getPriority: string = this.baseUrl + "projects/";
   public static createSprint: string = this.baseUrl + "projects/";

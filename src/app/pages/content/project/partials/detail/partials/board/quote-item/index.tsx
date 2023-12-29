@@ -1,6 +1,6 @@
 import { blue, gray } from "@ant-design/colors";
 import styled from "@xstyled/styled-components";
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import IssueAddParent from "../../../../../../../components/issue-add-parent";
@@ -40,7 +40,7 @@ const Container = styled.aBox`
   padding: 10px;
   margin-bottom: 10px;
   user-select: none;
-
+  width: 215;
   /* anchor overrides */
   color: #091e42;
 
@@ -61,6 +61,7 @@ const Content = styled.divBox`
   /* flex parent */
   display: flex;
   flex-direction: column;
+  width: 200px;
 `;
 
 const ParentName = styled.divBox`
@@ -68,6 +69,10 @@ const ParentName = styled.divBox`
   background-color: #dfd8fd;
   padding: 2px 8px;
   color: #172b4d;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  width: 140px;
 `;
 
 const Footer = styled.divBox`
@@ -111,10 +116,16 @@ function QuoteItem(props: any) {
       aria-label={`${quote.name}`}
     >
       <Content onClick={() => onNavigateToIssue(quote.id)}>
-        <span className="text-black text-truncate">{quote.name}</span>
+        <Tooltip title={quote?.name}>
+          <span className="text-black text-truncate">{quote.name}</span>
+        </Tooltip>
         <div className="align-child-space-between align-center w-100 mb-2">
           <div className="d-flex">
-            {quote?.parentName && <ParentName>{quote?.parentName}</ParentName>}
+            {quote?.parentName && (
+              <Tooltip title={quote?.parentName}>
+                <ParentName>{quote?.parentName}</ParentName>
+              </Tooltip>
+            )}
           </div>
 
           <IssuePriority priorityId={quote.priorityId}></IssuePriority>

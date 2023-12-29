@@ -9,7 +9,6 @@ import { StatusService } from "../../../../services/statusService";
 import { useAppDispatch } from "../../../customHooks/dispatch";
 import { checkResponseStatus } from "../../../helpers";
 import { IIssueComponentProps } from "../../../models/IIssueComponent";
-import { IStatusCategory } from "../../../models/IStatusCategory";
 import "./index.scss";
 export default function IssueStatusSelect(props: IIssueComponentProps) {
   const project = useSelector(
@@ -17,17 +16,6 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
   );
   const dispatch = useAppDispatch();
   const userId = JSON.parse(localStorage.getItem("user")!)?.id;
-  const [statusCategories, setStatusCategories] = useState<IStatusCategory[]>(
-    []
-  );
-
-  useEffect(() => {
-    StatusService.getCategories().then((res) => {
-      if (checkResponseStatus(res)) {
-        setStatusCategories(res?.data!);
-      }
-    });
-  }, []);
 
   const onChangeIssueStatus = async (e: any) => {
     if (props.type === "backlog") {
@@ -126,17 +114,17 @@ export default function IssueStatusSelect(props: IIssueComponentProps) {
       (status) => status.id === props.selectedId
     )?.statusCategoryId;
 
-    const statusCategoryCode = statusCategories.find(
+    const statusCategoryCode = project?.statusCategories?.find(
       (category) => category.id === statusCategoryId
     )?.code;
 
-    const todoCategoryId = statusCategories.find(
+    const todoCategoryId = project?.statusCategories?.find(
       (category) => category.code === "To-do"
     )?.id;
-    const inProgressCategoryId = statusCategories.find(
+    const inProgressCategoryId = project?.statusCategories?.find(
       (category) => category.code === "In-Progress"
     )?.id;
-    const doneCategoryId = statusCategories.find(
+    const doneCategoryId = project?.statusCategories?.find(
       (category) => category.code === "Done"
     )?.id;
 

@@ -176,7 +176,7 @@ export default function IssueTable() {
         rowKey={(record) => record.id}
         pagination={false}
         loading={isLoading}
-        scroll={{ y: 400 }}
+        scroll={{ y: 200 }}
       ></Table>
     </Card>
   );

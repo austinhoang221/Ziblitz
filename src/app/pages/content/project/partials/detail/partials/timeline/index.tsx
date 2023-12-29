@@ -71,6 +71,10 @@ export default function TimelineProject() {
     setSearchValue(value);
   };
 
+  const handleExpanderClick = (task: any) => {
+    setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
+  };
+
   return (
     <>
       <HeaderProject
@@ -82,7 +86,11 @@ export default function TimelineProject() {
       <div className="mt-4">
         {!isLoading ? (
           tasks?.length > 0 ? (
-            <Gantt tasks={tasks} />
+            <Gantt
+              tasks={tasks}
+              onExpanderClick={handleExpanderClick}
+              ganttHeight={370}
+            />
           ) : (
             <Empty></Empty>
           )

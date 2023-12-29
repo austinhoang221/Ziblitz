@@ -147,7 +147,7 @@ const Backlog: React.FC = () => {
           <List.Item className="c-backlog-item">
             <div className="align-child-space-between align-center w-100">
               <div className="d-flex align-center">
-                <Button type="text" className="mr-2">
+                <div className="mr-2" style={{ width: "18px", height: "18px" }}>
                   <IssueType
                     issueTypeKey={
                       project?.issueTypes.find(
@@ -155,7 +155,7 @@ const Backlog: React.FC = () => {
                       )?.icon
                     }
                   ></IssueType>
-                </Button>
+                </div>
                 <EditIssueInput
                   initialValue={issue.name}
                   issueId={issue.id}

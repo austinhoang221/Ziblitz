@@ -1,5 +1,15 @@
 import { blue } from "@ant-design/colors";
-import { Badge, Button, Col, Dropdown, Empty, Menu, Row, Switch } from "antd";
+import {
+  Badge,
+  Button,
+  Col,
+  Dropdown,
+  Empty,
+  Menu,
+  Row,
+  Switch,
+  Tooltip,
+} from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -99,7 +109,7 @@ export default function UserNotification() {
                       </Col>
                       <Col span={19}>
                         <div className="d-flex">
-                          <span className="font-weight-medium noti-name">
+                          <span className="font-weight-medium noti-name text-truncate">
                             {notification.creatorUsername} {notification.name}
                           </span>
                           <span className="text-muted"></span>
@@ -114,8 +124,16 @@ export default function UserNotification() {
                               issueTypeKey={notification.issueType.icon}
                             ></IssueType>
                           </Button>
-                          <p className="m-0">{notification.issueName}</p>
+                          <Tooltip title={notification.issueName}>
+                            <p
+                              className="m-0 text-truncate"
+                              style={{ width: "15rem" }}
+                            >
+                              {notification.issueName}
+                            </p>
+                          </Tooltip>
                         </div>
+
                         <div className="d-flex font-sz12">
                           {notification.issueCode} - {notification.statusName}
                         </div>

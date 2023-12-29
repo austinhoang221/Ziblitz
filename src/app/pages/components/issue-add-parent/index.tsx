@@ -94,12 +94,22 @@ export default function IssueAddParent(props: IIssueAddParent) {
         }
       >
         {!issue?.parentId ? (
-          <Button type="text">
+          <Button
+            type="text"
+            style={{
+              width: "135px",
+            }}
+          >
             <i className="fa-solid fa-pencil mr-2"></i>
             Add Epic
           </Button>
         ) : (
-          <div className="d-flex align-center">
+          <div
+            className="d-flex align-center"
+            style={{
+              maxWidth: "135px",
+            }}
+          >
             <img
               src={require("../../../assets/images/epic.png")}
               alt=""

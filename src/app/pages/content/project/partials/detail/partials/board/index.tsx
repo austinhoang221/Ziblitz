@@ -21,6 +21,7 @@ import { useIsFirstRender } from "../../../../../../../customHooks/useIsFirstRen
 import IssueFilterSelect from "../../../../../../components/issue-filter-select";
 import { useAppDispatch } from "../../../../../../../customHooks/dispatch";
 import { getProjectByCode } from "../../../../../../../../redux/slices/projectDetailSlice";
+import { ProjectService } from "../../../../../../../../services/projectService";
 export default function BoardProject(props: any) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
@@ -29,6 +30,12 @@ export default function BoardProject(props: any) {
   const [checkedTypes, setCheckedTypes] = useState<CheckboxValueType[]>([]);
   const [checkedSprints, setCheckedSprints] = useState<CheckboxValueType[]>([]);
   const [checkedLabels, setCheckedLabels] = useState<CheckboxValueType[]>([]);
+
+  const [epicOptions, setEpicOptions] = useState<any[]>([]);
+  const [labelOptions, setLabelOptions] = useState<any[]>([]);
+  const [typeOptions, setTypeOptions] = useState<any[]>([]);
+  const [sprintOptions, setSprintOptions] = useState<any[]>([]);
+
   const [ordered, setOrdered] = useState<IIssueOnBoard>();
   const {
     project,
@@ -46,6 +53,22 @@ export default function BoardProject(props: any) {
     display: inline-flex;
     min-width: 100vw;
   `;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const sprints = await ProjectService.getSprintFilter(project?.id!);
+      setSprintOptions(sprints?.data!);
+      const type = await ProjectService.getTypeFilter(project?.id!);
+      setTypeOptions(type?.data!);
+      const label = await ProjectService.getLabelFilter(project?.id!);
+      setLabelOptions(label?.data!);
+      const epic = await ProjectService.getEpicFilter(project?.id!);
+      setEpicOptions(epic?.data!);
+    };
+    if (project?.id) {
+      fetchData();
+    }
+  }, [project?.id]);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -143,7 +166,7 @@ export default function BoardProject(props: any) {
       <IssueFilterSelect
         projectId={project?.id}
         initialOption={
-          project?.epics?.map((epic) => ({
+          epicOptions?.map((epic) => ({
             label: epic.name,
             value: epic.id,
           })) ?? []
@@ -155,7 +178,7 @@ export default function BoardProject(props: any) {
       <IssueFilterSelect
         projectId={project?.id}
         initialOption={
-          project?.issueTypes?.map((type) => ({
+          typeOptions?.map((type) => ({
             label: type.name,
             value: type.id,
           })) ?? []
@@ -167,7 +190,7 @@ export default function BoardProject(props: any) {
       <IssueFilterSelect
         projectId={project?.id}
         initialOption={
-          project?.sprints?.map((sprint) => ({
+          sprintOptions?.map((sprint) => ({
             label: sprint.name,
             value: sprint.id,
           })) ?? []
@@ -179,7 +202,7 @@ export default function BoardProject(props: any) {
       <IssueFilterSelect
         projectId={project?.id}
         initialOption={
-          project?.labels?.map((label) => ({
+          labelOptions?.map((label) => ({
             label: label.name,
             value: label.id,
           })) ?? []

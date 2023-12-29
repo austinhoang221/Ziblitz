@@ -100,9 +100,13 @@ const EditIssueInput = (props: IEditIssueInput) => {
           />
         </div>
       ) : (
-        <div>
+        <div className="d-flex">
           <Tooltip title={editedValue}>
-            <span className="edit-issue-name" onClick={onNavigateIssue}>
+            <span
+              className="edit-issue-name text-truncate"
+              style={{ width: "20rem", lineHeight: "2" }}
+              onClick={onNavigateIssue}
+            >
               {editedValue}
             </span>
           </Tooltip>

@@ -150,14 +150,11 @@ export default function HeaderProject(props: IHeaderProject) {
   const getOptionLabel = (user: IUser) => (
     <>
       <Avatar
-        style={{ backgroundColor: getRandomColor(), verticalAlign: "middle" }}
         size={28}
         className="mr-2"
         alt=""
         src={user.avatarUrl + sasToken}
-      >
-        {convertNameToInitials(user.name)}
-      </Avatar>
+      ></Avatar>
       <span>{user.email}</span>
     </>
   );
@@ -201,13 +198,7 @@ export default function HeaderProject(props: IHeaderProject) {
                   <Avatar
                     className="cursor-pointer"
                     src={project?.leader.avatarUrl + sasToken}
-                    style={{
-                      backgroundColor: getRandomColor(),
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    {convertNameToInitials(project?.leader.name!)}
-                  </Avatar>
+                  ></Avatar>
                 </Tooltip>
                 {project?.members?.map((member) => {
                   return (

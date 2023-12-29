@@ -77,9 +77,12 @@ export default function InfoProject() {
 
   const getOptionLabel = (user: IUser) => (
     <>
-      <Avatar size={28} className="mr-2" alt="" src={user.avatarUrl + sasToken}>
-        {convertNameToInitials(user.name)}
-      </Avatar>
+      <Avatar
+        size={28}
+        className="mr-2"
+        alt=""
+        src={user.avatarUrl + sasToken}
+      ></Avatar>
       <span>{user.name}</span>
     </>
   );
@@ -99,8 +102,10 @@ export default function InfoProject() {
   };
 
   const onRenderMember = () => {
-    const members = [...project?.members!];
-    members.unshift(project?.leader!);
+    const members = project?.members ? [...project?.members] : [];
+    if (members) {
+      members.unshift(project?.leader!);
+    }
     return members;
   };
   return (

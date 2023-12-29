@@ -6,12 +6,7 @@ import { getProjectByCode } from "../../../../redux/slices/projectDetailSlice";
 import { RootState } from "../../../../redux/store";
 import { IssueService } from "../../../../services/issueService";
 import { useAppDispatch } from "../../../customHooks/dispatch";
-import {
-  checkResponseStatus,
-  convertNameToInitials,
-  getRandomColor,
-  sasToken,
-} from "../../../helpers";
+import { checkResponseStatus, sasToken } from "../../../helpers";
 import SelectUser from "../select-user";
 import SprintSelect from "../sprint-select";
 import "react-quill/dist/quill.snow.css";
@@ -281,10 +276,6 @@ export default function InlineEdit(props: IInlineEditProps) {
                   onClick={onEdit}
                 >
                   <Avatar
-                    style={{
-                      backgroundColor: getRandomColor(),
-                      verticalAlign: "middle",
-                    }}
                     size={28}
                     className="mr-2"
                     alt=""
@@ -292,11 +283,7 @@ export default function InlineEdit(props: IInlineEditProps) {
                       users.find((user) => user.id === editedValue)?.avatarUrl +
                       sasToken
                     }
-                  >
-                    {convertNameToInitials(
-                      users.find((user) => user.id === editedValue)?.name ?? ""
-                    )}
-                  </Avatar>
+                  ></Avatar>
                   <span>
                     {users.find((user) => user.id === editedValue)?.name}
                   </span>

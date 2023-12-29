@@ -1,4 +1,4 @@
-import { List, Skeleton } from "antd";
+import { List, Skeleton, Tooltip } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../redux/store";
@@ -7,6 +7,7 @@ import { checkResponseStatus } from "../../../../../helpers";
 import { IIssueOnBoard } from "../../../../../models/IProject";
 import IssuePriority from "../../../issue-priority";
 import IssueType from "../../../issue-type";
+import "./index.scss";
 
 export default function AssignToMeTask() {
   const [ordered, setOrdered] = useState<IIssueOnBoard>();
@@ -38,7 +39,10 @@ export default function AssignToMeTask() {
   }, [project?.id]);
 
   return (
-    <div style={{ maxHeight: "20rem", overflow: "hidden scroll" }}>
+    <div
+      className="assign-to-me"
+      style={{ maxHeight: "20rem", overflow: "hidden scroll" }}
+    >
       {project?.statuses?.map((status, index) => {
         return !isLoading ? (
           <>
@@ -56,18 +60,21 @@ export default function AssignToMeTask() {
                   renderItem={(item, index) => (
                     <List.Item>
                       <List.Item.Meta
+                        className="text-truncate"
                         avatar={
                           <IssueType
                             issueTypeKey={item.issueType.icon}
                           ></IssueType>
                         }
                         title={
-                          <a
-                            href={`/project/${item.projectCode}/backlog/${item.id}`}
-                            className="text-truncate"
-                          >
-                            {item.name}
-                          </a>
+                          <Tooltip title={item.name}>
+                            <a
+                              href={`/project/${item.projectCode}/backlog/${item.id}`}
+                              className="text-truncate"
+                            >
+                              {item.name}
+                            </a>
+                          </Tooltip>
                         }
                         description={
                           <span>

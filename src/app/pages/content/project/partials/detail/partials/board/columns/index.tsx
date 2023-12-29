@@ -30,6 +30,9 @@ const Title = styled.divBox`
     outline: 2px solid #998dd9;
     outline-offset: 2px;
   }
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 `;
 
 export default function Column(props: any) {

@@ -58,6 +58,18 @@ export default function IssueVersionSelect(props: IIssueComponentProps) {
           setIsLoading(false);
         }
       });
+    } else {
+      IssueService.updateEpic(project?.id!, props.issueId, {
+        versionIds: uniqueItems,
+        modificationUserId: userId,
+      }).then((res) => {
+        if (checkResponseStatus(res)) {
+          dispatch(getProjectByCode(project?.code!));
+          props.onSaveIssue(res?.data);
+          ref.current?.blur();
+          setIsLoading(false);
+        }
+      });
     }
   };
 

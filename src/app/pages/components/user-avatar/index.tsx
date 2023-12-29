@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { RootState } from "../../../../redux/store";
 import { sasToken } from "../../../helpers";
 import { IUser } from "../../../models/IUser";
+import { UserOutlined } from "@ant-design/icons";
 
 interface IUserAvatarProps {
   userIds: string[];
@@ -28,7 +29,12 @@ export default function UserAvatar(props: IUserAvatarProps) {
           {users.map((user) => {
             return (
               <>
-                <Avatar src={user.avatarUrl + sasToken} />
+                {user.avatarUrl ? (
+                  <Avatar src={user.avatarUrl + sasToken} />
+                ) : (
+                  <Avatar icon={<UserOutlined />} />
+                )}
+
                 {props.isShowName ?? <Link to="">{user.name}</Link>}
               </>
             );
@@ -39,13 +45,17 @@ export default function UserAvatar(props: IUserAvatarProps) {
   } else {
     return (
       <>
-        <Avatar
-          className={props.className}
-          src={
-            users.find((user) => user.id === props.userIds[0])?.avatarUrl +
-            sasToken
-          }
-        />
+        {users?.find((user) => user.id === props?.userIds[0])?.avatarUrl ? (
+          <Avatar
+            src={
+              users.find((user) => user.id === props.userIds[0])?.avatarUrl +
+              sasToken
+            }
+            className={props.className}
+          />
+        ) : (
+          <Avatar className={props.className} icon={<UserOutlined />} />
+        )}
         {props.isShowName && (
           <Link to="" className="ml-1">
             {users.find((user) => user.id === props.userIds[0])?.name}
