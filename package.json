@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@ant-design/colors": "^7.0.0",
+    "@fullcalendar/core": "^6.1.10",
+    "@fullcalendar/daygrid": "^6.1.10",
+    "@fullcalendar/react": "^6.1.10",
     "@microsoft/signalr": "^8.0.0",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.17.0",

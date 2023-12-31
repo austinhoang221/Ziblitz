@@ -215,7 +215,7 @@ export default function Header() {
                 arrow
                 overlay={
                   <Menu>
-                    {filters.slice(0, 3)?.map((filter) => {
+                    {filters?.slice(0, 3)?.map((filter) => {
                       return (
                         <Menu.Item
                           key={filter.id}

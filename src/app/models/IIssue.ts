@@ -18,7 +18,7 @@ export interface IIssue {
   name: string;
   description: string;
   creationTime: string;
-  completeTime: string;
+  completeDate: string;
   priority: PriorityEnum;
   watcher: IWatcher;
   voted: string;

@@ -58,6 +58,14 @@ export default function DetailProject() {
           ),
         },
         {
+          key: "calendar",
+          label: (
+            <span>
+              <i className="fa-regular fa-calendar mr-2"></i>Calendar
+            </span>
+          ),
+        },
+        {
           key: "backlog",
           label: (
             <span>

@@ -92,9 +92,10 @@ export const projectDetailSlice = createSlice({
       (state, action: PayloadAction<any>) => {
         let newState = { ...state };
         newState.project = action.payload;
-        newState.projectPermissions = action.payload.userPermissionGroup;
         newState.isLoading = false;
         if (action.payload !== null) {
+          newState.projectPermissions = action.payload.userPermissionGroup;
+
           if (action.payload.backlog) {
             newState.backlogIssues = action.payload.backlog.issues || [];
           }

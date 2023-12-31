@@ -9,6 +9,7 @@ import DetailProject from "./app/pages/content/project/partials/detail";
 import AccessProject from "./app/pages/content/project/partials/detail/partials/access";
 import BacklogProject from "./app/pages/content/project/partials/detail/partials/backlog";
 import BoardProject from "./app/pages/content/project/partials/detail/partials/board";
+import Calendar from "./app/pages/content/project/partials/detail/partials/calendar";
 import CodeProject from "./app/pages/content/project/partials/detail/partials/code";
 import CustomFilter from "./app/pages/content/project/partials/detail/partials/custom-filter/filters";
 import CustomFilterIssues from "./app/pages/content/project/partials/detail/partials/custom-filter/issues";
@@ -58,6 +59,7 @@ function App() {
                 <Route path=":issueId"></Route>
               </Route>
               <Route path="releases" element={<Release />} />
+              <Route path="calendar" element={<Calendar />} />
               <Route path="details" element={<InfoProject />} />
               <Route path="issueTypes" element={<IssueTypes />} />
               <Route path="priorities" element={<Priorities />} />
