@@ -468,6 +468,7 @@ function Footer(props: any) {
           onClick={props.onSubmit}
           htmlType="submit"
           loading={props.isLoadingButtonSave}
+          disabled={props.disabled}
         >
           Create
         </Button>

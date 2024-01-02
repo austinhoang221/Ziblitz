@@ -94,6 +94,17 @@ export default function Statuses() {
       },
     },
     {
+      title: "Category",
+      dataIndex: "statusCategoryId",
+      key: "statusCategoryId",
+      width: "30%",
+      render: (text: string) => {
+        return (
+          <span>{statusCategories.find((item) => item.id === text)?.name}</span>
+        );
+      },
+    },
+    {
       title: "Description",
       dataIndex: "description",
       key: "description",

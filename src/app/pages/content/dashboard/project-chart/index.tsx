@@ -33,18 +33,18 @@ export default function ProjectChart() {
       DashBoardService.getProjectChart(projectId).then((res) => {
         if (checkResponseStatus(res)) {
           const labels = res?.data.map((item) => item.name);
-          const datasets = res?.data.map((item) => {
-            return {
-              label: item.name,
+          const datasets = [
+            {
               data: res?.data.map((item) => item.issueCount),
-              backgroundColor: getRandomColor(),
+              backgroundColor: res?.data.map((item) => getRandomColor()),
               borderWidth: 1,
-            };
-          });
+            },
+          ];
           const list = {
             labels: labels,
             datasets: datasets,
           };
+          console.log(list);
           setListData(list);
         }
       });

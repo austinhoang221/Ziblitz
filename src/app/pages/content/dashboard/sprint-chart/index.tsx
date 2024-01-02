@@ -55,15 +55,15 @@ export default function SprintChart() {
       DashBoardService.getSprintChart(projectId).then((res) => {
         if (checkResponseStatus(res)) {
           const labels = res?.data.map((item) => item.name);
-          const datasets = res?.data.map((item) => {
-            return {
-              label: item.name,
+          const datasets = [
+            {
+              label: "Issues",
               data: res?.data.map((item) => item.issueCount),
-              backgroundColor: getRandomColor(),
+              backgroundColor: res?.data.map((item) => getRandomColor()),
               borderWidth: 1,
               maxBarThickness: 50,
-            };
-          });
+            },
+          ];
           const list = {
             labels: labels,
             datasets: datasets,

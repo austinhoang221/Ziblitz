@@ -38,26 +38,29 @@ export default function IssueEditComment(props: any) {
 
   return !isEdit ? (
     <>
-      <div
-        className="text-black"
-        dangerouslySetInnerHTML={{
-          __html: props.comment.content ?? "",
-        }}
-      />
-      <span onClick={() => setEdit(true)} className="mr-2 comment-action">
-        Edit
-      </span>
+      {userId === props.comment.creatorUserId && (
+        <>
+          <div
+            className="text-black"
+            dangerouslySetInnerHTML={{
+              __html: props.comment.content ?? "",
+            }}
+          />
+          <span onClick={() => setEdit(true)} className="mr-2 comment-action">
+            Edit
+          </span>
 
-      <Popconfirm
-        title="Delete the comment"
-        description="Are you sure to delete this comment?"
-        okText="Yes"
-        cancelText="Cancel"
-        onConfirm={() => onDeleteComment(props.comment.id)}
-        disabled={userId !== props.comment.creatorUserId}
-      >
-        <span className="comment-action">Delete</span>
-      </Popconfirm>
+          <Popconfirm
+            title="Delete the comment"
+            description="Are you sure to delete this comment?"
+            okText="Yes"
+            cancelText="Cancel"
+            onConfirm={() => onDeleteComment(props.comment.id)}
+          >
+            <span className="comment-action">Delete</span>
+          </Popconfirm>
+        </>
+      )}
     </>
   ) : (
     <>

@@ -38,7 +38,10 @@ export default function Release() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mode, setMode] = useState<string>("");
   const [isLoadingButtonSave, setIsLoadingButtonSave] = useState(false);
+  const [isShowModalTransferIssue, setIsShowModalTransferIssue] =
+    useState(false);
   const [versionId, setVersionId] = useState<string>("");
+  const [newVersionCategoryId, setNewCategoryVersionId] = useState<string>("");
   const [version, setVersion] = useState<IVersion>();
   const [drawerForm] = Form.useForm();
   const { RangePicker } = DatePicker;
@@ -220,48 +223,66 @@ export default function Release() {
 
   const onCancel = () => {
     setIsModalOpen(false);
+    setNewCategoryVersionId("");
     setDate([]);
     drawerForm.resetFields();
   };
 
   const onSubmit = async () => {
-    setIsLoadingButtonSave(true);
     const drawerFormValue = drawerForm.getFieldsValue();
     try {
       await drawerForm.validateFields();
-      setIsLoadingButtonSave(true);
 
-      const payload: any = {
-        ...drawerFormValue,
-        startDate: date?.[0] ? dayjs(date?.[0]).toISOString() : null,
-        releaseDate: date?.[1] ? dayjs(date?.[1]).toISOString() : null,
-        projectId: project?.id,
-      };
-      let response;
-      if (mode === "create") {
-        response = await VersionService.create(project?.id!, payload);
+      if (
+        version?.statusId === unReleaseStatusId.current &&
+        !newVersionCategoryId &&
+        mode === "edit"
+      ) {
+        setIsShowModalTransferIssue(true);
       } else {
-        response = await VersionService.update(
-          project?.id!,
-          versionId,
-          payload
-        );
+        await handleRequest(drawerFormValue);
       }
-      if (checkResponseStatus(response)) {
-        refreshData();
-        showSuccessMessage();
-        setIsModalOpen(false);
-      }
-      setIsLoadingButtonSave(false);
     } catch (error) {
       setIsLoadingButtonSave(false);
     }
+  };
+
+  const handleRequest = async (drawerFormValue: any) => {
+    setIsLoadingButtonSave(true);
+    const payload: any = {
+      ...drawerFormValue,
+      startDate: date?.[0] ? dayjs(date?.[0]).toISOString() : null,
+      releaseDate: date?.[1] ? dayjs(date?.[1]).toISOString() : null,
+      projectId: project?.id,
+    };
+    if (newVersionCategoryId) payload.newVersionId = newVersionCategoryId;
+    let response;
+    if (mode === "create") {
+      response = await VersionService.create(project?.id!, payload);
+    } else {
+      response = await VersionService.update(project?.id!, versionId, payload);
+    }
+    if (checkResponseStatus(response)) {
+      refreshData();
+      showSuccessMessage();
+      setIsModalOpen(false);
+    }
+    setIsLoadingButtonSave(false);
   };
 
   const onCancelDelete = () => {
     setIsShowDeleteModal(false);
     setTransferId("");
     setDeleteVersion(undefined);
+  };
+
+  const onCancelTransfer = () => {
+    setNewCategoryVersionId("");
+    setIsShowModalTransferIssue(false);
+  };
+
+  const onSaveTransfer = () => {
+    setIsShowModalTransferIssue(false);
   };
 
   return (
@@ -436,7 +457,7 @@ export default function Release() {
                 className="fa-solid fa-triangle-exclamation"
               ></i>
               &nbsp; This release contain{" "}
-              <b>{deleteVersion?.issueCount} unresolved issue</b>
+              <b>{deleteVersion?.issueCount} unresolved issue.</b>
               &nbsp; Before you can delete this release, change{" "}
               {deleteVersion?.name} issues to another release.
             </span>
@@ -470,6 +491,67 @@ export default function Release() {
                 };
               })}
             onChange={(e) => setTransferId(e)}
+          ></Select>
+        </Form.Item>
+      </Modal>
+      <Modal
+        title="Transfer issue"
+        closeIcon={null}
+        onCancel={() => onCancelTransfer()}
+        onOk={onSubmit}
+        footer={
+          <Button type="primary" onClick={() => onSaveTransfer()}>
+            Save
+          </Button>
+        }
+        open={isShowModalTransferIssue}
+      >
+        <Alert
+          className="mt-2"
+          message={
+            <span>
+              <i
+                style={{ color: orange.primary }}
+                className="fa-solid fa-triangle-exclamation"
+              ></i>
+              &nbsp; This release contain{" "}
+              <b>{version?.issueCount} unresolved issue</b>
+              &nbsp; Before you can release this release, change {
+                version?.name
+              }{" "}
+              issues to another release.
+            </span>
+          }
+          type="warning"
+        />
+        <Form.Item
+          label={`Change all existing ${version?.name} issues to`}
+          required={true}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          rules={[
+            {
+              required: true,
+              message: "Please enter your new release id",
+            },
+          ]}
+        >
+          <Select
+            placeholder="Select new release id"
+            options={listVersion
+              .filter(
+                (item) =>
+                  item.id !== version?.id &&
+                  item.statusId === unReleaseStatusId.current
+              )
+              .map((version) => {
+                return {
+                  label: version.name,
+                  value: version.id,
+                };
+              })}
+            value={newVersionCategoryId}
+            onChange={(e) => setNewCategoryVersionId(e)}
           ></Select>
         </Form.Item>
       </Modal>
