@@ -19,7 +19,7 @@ export default function Login(props: any) {
     });
   };
   const onSubmit = async (payload: any) => {
-    setIsLoading(false);
+    setIsLoading(true);
     const response = await AuthenticationService.logIn(payload);
     if (checkResponseStatus(response)) {
       dispatch(login(response?.data!));
