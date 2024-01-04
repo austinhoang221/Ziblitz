@@ -328,11 +328,11 @@ export default function IssueModal(props: any) {
                 ></InlineEdit>
               </div>
 
-              <span className="font-weight-bold ml-2 mt-4 mb-4">
-                Child issues
-              </span>
               {issue?.issueType?.name !== "Subtask" && (
                 <>
+                  <span className="font-weight-bold ml-2 mt-4 mb-4">
+                    Child issues
+                  </span>
                   <ChildIssues data={issue?.childIssues ?? []}></ChildIssues>
                   <CreateIssueInput
                     isSubtask={issue?.issueType?.name !== "Epic"}

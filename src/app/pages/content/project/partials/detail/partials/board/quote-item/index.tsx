@@ -149,7 +149,7 @@ function QuoteItem(props: any) {
             <UserAvatar
               isShowName={false}
               isMultiple={false}
-              userIds={[quote.assigneeId]}
+              userIds={[quote.issueDetail?.assigneeId]}
             ></UserAvatar>
           </div>
         </div>

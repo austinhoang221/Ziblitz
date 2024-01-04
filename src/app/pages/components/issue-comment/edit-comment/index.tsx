@@ -38,14 +38,15 @@ export default function IssueEditComment(props: any) {
 
   return !isEdit ? (
     <>
+      <div
+        className="text-black"
+        dangerouslySetInnerHTML={{
+          __html: props.comment.content ?? "",
+        }}
+      ></div>
       {userId === props.comment.creatorUserId && (
         <>
-          <div
-            className="text-black"
-            dangerouslySetInnerHTML={{
-              __html: props.comment.content ?? "",
-            }}
-          />
+          <div />
           <span onClick={() => setEdit(true)} className="mr-2 comment-action">
             Edit
           </span>

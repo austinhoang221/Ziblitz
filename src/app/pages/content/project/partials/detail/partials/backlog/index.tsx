@@ -300,7 +300,7 @@ const Backlog: React.FC = () => {
         onSearch={onSearch}
         actionContent={
           <>
-            <Dropdown
+            {/* <Dropdown
               overlay={
                 <Menu>
                   <Menu.Item>
@@ -351,7 +351,7 @@ const Backlog: React.FC = () => {
               onChangeOption={function (options: any[]): void {
                 throw new Error("Function not implemented.");
               }}
-            />
+            /> */}
           </>
         }
       ></HeaderProject>

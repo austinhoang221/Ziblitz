@@ -35,6 +35,7 @@ export default function CreateProjectDrawer(props: any) {
       if (checkResponseStatus(response)) {
         dispatch(createProject(response!.data));
         navigate(`/project/${response!.data.code}/board`);
+        window.location.reload();
         onClickCancel();
       }
       setIsLoadingButtonSave(false);

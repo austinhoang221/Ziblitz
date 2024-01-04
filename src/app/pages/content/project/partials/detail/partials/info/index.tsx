@@ -83,7 +83,7 @@ export default function InfoProject() {
         alt=""
         src={user?.avatarUrl + sasToken}
       ></Avatar>
-      <span>{user.name}</span>
+      <span>{user?.name}</span>
     </>
   );
   const handleFormChange = () => {

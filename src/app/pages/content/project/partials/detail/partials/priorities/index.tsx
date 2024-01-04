@@ -74,6 +74,7 @@ export default function Priorities() {
         refreshData();
         dispatch(getProjectByCode(project?.code!));
         showSuccessMessage();
+        setIsModalOpen(false);
         setIsLoadingButtonSave(false);
       }
     });
