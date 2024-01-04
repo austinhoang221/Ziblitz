@@ -93,7 +93,7 @@ export const projectDetailSlice = createSlice({
         let newState = { ...state };
         newState.project = action.payload;
         newState.isLoading = false;
-        if (action.payload !== null) {
+        if (action.payload) {
           newState.projectPermissions = action.payload.userPermissionGroup;
 
           if (action.payload.backlog) {

@@ -10,7 +10,6 @@ import { useAppDispatch } from "../../../../../customHooks/dispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../redux/store";
 import { IProjectPermissions } from "../../../../../models/IPermission";
-import { useIsFirstRender } from "../../../../../customHooks/useIsFirstRender";
 import { useRef } from "react";
 export default function DetailProject() {
   const params = useParams();

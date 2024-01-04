@@ -1,5 +1,5 @@
 import { red } from "@ant-design/colors";
-import { Button, Popconfirm, Tooltip, UploadFile } from "antd";
+import { Button, message, Popconfirm, Tooltip, UploadFile } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import { useCallback, useState } from "react";
@@ -38,6 +38,11 @@ export default function Attachments(props: IAttachments) {
   const uploadProps: UploadProps = {
     multiple: true,
     beforeUpload(file: UploadFile) {
+      const isLt2M = file.size! / 1024 / 1024 < 20;
+      if (!isLt2M) {
+        message.error("File must smaller than 20MB!");
+        return isLt2M;
+      }
       setUploadFileList((prevUploadFileList) => [...prevUploadFileList, file]);
       return false;
     },

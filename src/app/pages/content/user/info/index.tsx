@@ -128,7 +128,11 @@ export default function UserInfo(props: any) {
         setIsFormDirty(false);
         localStorage.setItem(
           "user",
-          JSON.stringify({ ...res?.data!, token: user?.token })
+          JSON.stringify({
+            ...res?.data!,
+            token: user?.token,
+            isLoggedIn: true,
+          })
         );
         props.onSaveSuccess();
       }
@@ -199,7 +203,7 @@ export default function UserInfo(props: any) {
         initialValue={user?.email}
         rules={[{ required: true, message: "Please enter your email" }]}
       >
-        <Input placeholder="Name" />
+        <Input placeholder="Name" disabled={true} />
       </Form.Item>
       <Form.Item
         labelCol={{ span: 24 }}

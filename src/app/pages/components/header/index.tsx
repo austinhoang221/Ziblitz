@@ -45,27 +45,6 @@ export default function Header() {
     (state: RootState) => state.projectDetail.project
   );
 
-  const dashboardItems: MenuProps["items"] = [
-    {
-      key: "1",
-      label: "View all dashboards",
-    },
-    {
-      key: "2",
-      label: "Create dashboard",
-    },
-  ];
-
-  const teamItems: MenuProps["items"] = [
-    {
-      key: "1",
-      label: "Invite people to Jira",
-    },
-    {
-      key: "2",
-      label: "Create a team",
-    },
-  ];
   const yourWorkTabs: TabsProps["items"] = [
     {
       key: "1",
@@ -153,7 +132,7 @@ export default function Header() {
               <Dropdown
                 arrow
                 trigger={["click"]}
-                overlayStyle={{ width: "200px" }}
+                overlayStyle={{ width: "250px" }}
                 overlay={
                   <Menu
                     title="Recent"
