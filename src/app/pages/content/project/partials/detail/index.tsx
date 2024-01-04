@@ -245,6 +245,7 @@ export default function DetailProject() {
           mode="inline"
           defaultOpenKeys={["planning", "development"]}
           selectedKeys={[lastSegment]}
+          theme="light"
           style={{
             bottom: 0,
             height: "80vh",

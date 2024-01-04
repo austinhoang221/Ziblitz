@@ -107,7 +107,21 @@ export default function HeaderProject(props: IHeaderProject) {
 
   const onClickOk = () => {
     const mentions = getMentions(addMemberForm.getFieldValue("name"));
-    if (mentions?.length > 0) {
+    if (mentions?.length >= 1) {
+      const projectOwnerId = permissions?.find(
+        (permission) => permission.name === "Product Owner"
+      )?.id;
+      const scrumMasterId = permissions?.find(
+        (permission) => permission.name === "Scrum Master"
+      )?.id;
+      if (mentions?.length >= 2 && permissionId === projectOwnerId) {
+        message.error("Each project can have only one Product Owner");
+        return;
+      }
+      if (mentions?.length >= 2 && permissionId === scrumMasterId) {
+        message.error("Each project can have only one Scrum Master");
+        return;
+      }
       setLoadingButtonSave(true);
       const role = addMemberForm.getFieldValue("role");
       let userIds: string[] = [];
@@ -271,29 +285,32 @@ export default function HeaderProject(props: IHeaderProject) {
                 loading={isLoading}
                 onChange={setPermissionId}
                 defaultValue={permissions?.find((item) => item.id)?.id}
-                options={permissions?.map((permission) => {
-                  return {
-                    key: permission.id,
-                    label: permission.name,
-                    value: permission.id,
-                    disabled:
-                      (permission.name === "Product Owner" &&
-                        members.some(
-                          (member) =>
-                            permissions?.find(
-                              (permission) =>
-                                permission.name === "Product Owner"
-                            )?.id === member.permissionGroupId
-                        )) ||
-                      (permission.name === "Scrum Master" &&
-                        members.some(
-                          (member) =>
-                            permissions?.find(
-                              (permission) => permission.name === "Scrum Master"
-                            )?.id === member.permissionGroupId
-                        )),
-                  };
-                })}
+                options={permissions
+                  ?.filter((permission) => permission.name !== "Project Lead")
+                  .map((permission) => {
+                    return {
+                      key: permission.id,
+                      label: permission.name,
+                      value: permission.id,
+                      disabled:
+                        (permission.name === "Product Owner" &&
+                          members.some(
+                            (member) =>
+                              permissions?.find(
+                                (permission) =>
+                                  permission.name === "Product Owner"
+                              )?.id === member.permissionGroupId
+                          )) ||
+                        (permission.name === "Scrum Master" &&
+                          members.some(
+                            (member) =>
+                              permissions?.find(
+                                (permission) =>
+                                  permission.name === "Scrum Master"
+                              )?.id === member.permissionGroupId
+                          )),
+                    };
+                  })}
               ></Select>
             </Form.Item>
           </Form>

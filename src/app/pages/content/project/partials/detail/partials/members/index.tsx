@@ -119,7 +119,8 @@ export default function MembersProject() {
                         permissions.find(
                           (permission) => permission.name === "Scrum Master"
                         )?.id === member.permissionGroupId
-                    )),
+                    )) ||
+                  permission.name === "Project Lead",
               };
             })}
           ></Select>
@@ -128,20 +129,23 @@ export default function MembersProject() {
     },
     {
       title: "",
-      dataIndex: "id",
       key: "action",
       width: "40px",
-      render: (id: string) => {
+      render: (member: IMember) => {
         return (
           <Popconfirm
             title="Delete member from project"
             description="Are you sure to delete this member from project?"
             okText="Yes"
             cancelText="Cancel"
-            onConfirm={() => onDeleteMember(id)}
-            disabled={!editPermission}
+            onConfirm={() => onDeleteMember(member.id)}
+            disabled={!editPermission || member.email === user.email}
           >
-            <Button type="text" shape="circle" disabled={!editPermission}>
+            <Button
+              type="text"
+              shape="circle"
+              disabled={!editPermission || member.email === user.email}
+            >
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"
