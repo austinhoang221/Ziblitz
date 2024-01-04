@@ -16,7 +16,7 @@ import { ProjectService } from "../../../../services/projectService";
 export default function Project() {
   const initialRequestParam: IPagination = {
     pageNum: 1,
-    pageSize: 5,
+    pageSize: 20,
     sort: ["name:asc"],
   };
 

@@ -45,7 +45,7 @@ export class FilterService {
   public static getAllIssue = async (payload: any) => {
     try {
       const response: IResponse<IIssue[]> = await axiosInstance.post(
-        Endpoint.getFilters + "/get-issues",
+        Endpoint.getFilters + "get-issues",
         payload
       );
       console.log("POST response:", response.data);

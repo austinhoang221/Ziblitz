@@ -276,39 +276,45 @@ export default function CustomFilterList() {
       name: searchValue,
       project: {
         projectIds: [projectId],
-        sprint: {
-          sprintIds: sprintValue,
-        },
+        sprintIds: sprintValue,
+        backlogIds: null,
+      },
+      sprints: {
+        noSprint: false,
+        sprintIds: sprintValue?.length > 0 ? sprintValue : null,
       },
       type: {
-        issueTypeId: typeValue,
+        issueTypeIds: typeValue?.length > 0 ? typeValue : null,
       },
       status: {
-        statusId: statusValue,
+        statusIds: statusValue?.length > 0 ? statusValue : null,
       },
-      assignee: {
+      assginee: {
         unassigned: unassignedValue,
-        userIds: assigneeValue,
+        currentUserId: null,
+        userIds: assigneeValue?.length > 0 ? assigneeValue : null,
       },
       created: {
-        ...createdDateValue,
+        ...(createdDateValue ? createdDateValue : null),
       },
       dueDate: {
-        ...dueDateValue,
+        ...(dueDateValue ? dueDateValue : null),
       },
       updated: {
-        ...updatedDate,
+        ...(updatedDate ? updatedDate : null),
       },
       labels: {
-        labelIds: labelValue,
+        labelIds: labelValue?.length > 0 ? labelValue : null,
       },
       priority: {
-        priorityIds: priorityValue,
+        priorityIds: priorityValue?.length > 0 ? priorityValue : null,
       },
       reporter: {
+        currentUserId: null,
         unassigned: false,
-        userIds: reporterValue,
+        userIds: reporterValue?.length > 0 ? reporterValue : null,
       },
+      resolved: null,
     };
   };
 

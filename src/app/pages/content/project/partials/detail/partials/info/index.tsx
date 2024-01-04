@@ -81,7 +81,7 @@ export default function InfoProject() {
         size={28}
         className="mr-2"
         alt=""
-        src={user.avatarUrl + sasToken}
+        src={user?.avatarUrl + sasToken}
       ></Avatar>
       <span>{user.name}</span>
     </>
