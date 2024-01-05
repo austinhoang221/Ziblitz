@@ -51,9 +51,9 @@ export default function Epic() {
     <div className="epic">
       <div className="align-child-space-between align-center header">
         <span className="font-weight-medium">Epic</span>
-        <Button type="text" onClick={() => onCloseEpic()}>
+        {/* <Button type="text" onClick={() => onCloseEpic()}>
           <i className="fa-solid fa-xmark"></i>
-        </Button>
+        </Button> */}
       </div>
 
       <div className="">
