@@ -14,4 +14,5 @@ export interface IPermissionGroup {
   id: string;
   name: string;
   permissions: IProjectPermissions;
+  isMain: boolean;
 }

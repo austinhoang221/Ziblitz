@@ -226,20 +226,23 @@ export default function AccessProject() {
     },
     {
       title: "",
-      dataIndex: "id",
       key: "action",
       width: "40px",
-      render: (id: string) => {
+      render: (permissions: any) => {
         return (
           <Popconfirm
             title="Delete the group"
             description="Are you sure to delete this group?"
             okText="Yes"
             cancelText="Cancel"
-            onConfirm={() => onDeletePermission(id)}
-            disabled={!editPermission}
+            onConfirm={() => onDeletePermission(permissions.id)}
+            disabled={!editPermission || permissions.isMain}
           >
-            <Button type="text" shape="circle" disabled={!editPermission}>
+            <Button
+              type="text"
+              shape="circle"
+              disabled={!editPermission || permissions.isMain}
+            >
               <i
                 style={{ color: red.primary }}
                 className="fa-solid fa-trash-can"
