@@ -1,4 +1,5 @@
-import { message, Select, Table, Tooltip } from "antd";
+import { blue, geekblue, gray, green } from "@ant-design/colors";
+import { Button, message, Select, Table, Tooltip } from "antd";
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
@@ -13,6 +14,7 @@ import { useIsFirstRender } from "../../../../../../../../../customHooks/useIsFi
 import { checkResponseStatus } from "../../../../../../../../../helpers";
 import { IFilter } from "../../../../../../../../../models/IFilter";
 import { IIssue } from "../../../../../../../../../models/IIssue";
+import { IStatus } from "../../../../../../../../../models/IStatus";
 import IssueDateSelect from "../../../../../../../../components/issue-date-select";
 import IssueFilterSelect from "../../../../../../../../components/issue-filter-select";
 import IssuePriority from "../../../../../../../../components/issue-priority";
@@ -64,6 +66,71 @@ export default function CustomFilterList() {
       content: "Successfully",
     });
   };
+
+  const onRenderStatusContent = (status: IStatus) => {
+    switch (status.name) {
+      case "DONE":
+        return (
+          <div>
+            <Button
+              style={{
+                backgroundColor: green.primary,
+                color: "#ffff",
+                fontSize: "12px",
+              }}
+            >
+              Done
+              <i className="fa-solid fa-angle-down ml-2"></i>
+            </Button>
+          </div>
+        );
+      case "IN PROGRESS":
+        return (
+          <div>
+            <Button
+              style={{
+                backgroundColor: geekblue.primary,
+                color: "#ffff",
+                fontSize: "12px",
+              }}
+            >
+              Inprogress
+              <i className="fa-solid fa-angle-down ml-2"></i>
+            </Button>
+          </div>
+        );
+      case "TO DO":
+        return (
+          <div>
+            <Button
+              style={{
+                backgroundColor: gray.primary,
+                color: "#ffff",
+                fontSize: "12px",
+              }}
+            >
+              Ready
+              <i className="fa-solid fa-angle-down ml-2"></i>
+            </Button>
+          </div>
+        );
+      default:
+        return (
+          <div>
+            <Button
+              style={{
+                backgroundColor: blue.primary,
+                color: "#ffff",
+                fontSize: "12px",
+              }}
+            >
+              {status.name}
+            </Button>
+          </div>
+        );
+    }
+  };
+
   const columns: ColumnsType<IIssue> = [
     {
       title: "",
@@ -158,25 +225,7 @@ export default function CustomFilterList() {
       key: "status",
       width: "10%",
       render: (issue: IIssue) => {
-        return (
-          <>
-            {/* <img src={record.avatarUrl} alt="" />{" "} */}
-            <IssueStatusSelect
-              type={
-                issue?.backlogId
-                  ? "backlog"
-                  : issue?.sprintId
-                  ? "sprint"
-                  : "epic"
-              }
-              selectedId={issue?.statusId!}
-              periodId={issue?.sprintId ?? issue?.backlogId!}
-              issueId={issue?.id!}
-              style={{ width: "120px", minWidth: "120px" }}
-              onSaveIssue={() => {}}
-            ></IssueStatusSelect>
-          </>
-        );
+        return <>{onRenderStatusContent(issue.status)}</>;
       },
     },
     {
